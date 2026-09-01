@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+
+# Uploaded files (server)
+/server/uploads/
+uploads/
+
+# Misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
