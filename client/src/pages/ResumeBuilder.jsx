@@ -1,216 +1,417 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { dummyResumeData } from '../assets/assets'
-import { ArrowLeftIcon, Briefcase, ChevronLeft, ChevronRight, DownloadIcon, EyeIcon, EyeOffIcon, FileText, FolderIcon, GraduationCap, Share2Icon, Sparkles, User } from 'lucide-react'
-import PersonalInfoForm from '../components/PersonalInfoForm'
-import ResumePreview from '../components/ResumePreview'
-import TemplateSelector from '../components/TemplateSelector'
-import ColorPicker from '../components/ColorPicker'
-import ProfessionalSummaryForm from '../components/ProfessionalSummaryForm'
-import ExperienceForm from '../components/ExperienceForm'
-import EducationForm from '../components/EducationForm'
-import ProjectForm from '../components/ProjectForm'
-import SkillsForm from '../components/SkillsForm'
-import { useSelector } from 'react-redux'
-import api from '../configs/api'
-import toast from 'react-hot-toast'
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import PersonalInfoForm from "../components/PersonalInfoForm";
+import ResumePreview from "../components/ResumePreview";
+import ProfessionalSummaryForm from "../components/ProfessionalSummaryForm";
+import ExperienceForm from "../components/ExperienceForm";
+import EducationForm from "../components/EducationForm";
+import ProjectForm from "../components/ProjectForm";
+import SkillsForm from "../components/SkillsForm";
+import CertificationForm from "../components/CertificationForm";
+import AchievementForm from "../components/AchievementForm";
+import { BuilderHeader, BuilderStepper, BuilderToolbar } from "../components/builder";
+import { useResume } from "../hooks/useResume";
+import { BUILDER_SECTIONS } from "../constants/sections";
+import { exportResumeAsPdf, exportResumeAsDoc } from "../utils/exportResume";
+import { useCopilot } from "../hooks/useCopilot";
+import { useSEO } from "../hooks/useSEO";
+import toast from "react-hot-toast";
 
 const ResumeBuilder = () => {
+  const { resumeId } = useParams();
+  const {
+    setActiveResumeId,
+    setActiveResumeData,
+    registerApplyHandler,
+    registerDirectUpdateHandler,
+  } = useCopilot();
 
-  const { resumeId } = useParams()
-  const {token} = useSelector(state => state.auth)
+  const {
+    resumeData,
+    setResumeData,
+    isLoading,
+    isSaving,
+    removeBackground,
+    setRemoveBackground,
+    saveResume,
+    toggleVisibility,
+    shareResume,
+  } = useResume(resumeId);
 
-  const [resumeData, setResumeData] = useState({
-    _id: '',
-    title: '',
-    personal_info: {},
-    professional_summary: "",
-    experience: [],
-    education: [],
-    project: [],
-    skills: [],
-    template: "classic",
-    accent_color: "#3B82F6",
-    public: false,
-  })
+  useSEO({
+    title: resumeData?.title ? `${resumeData.title} | froggie Resume Editor` : "AI Resume Editor & Builder | froggie",
+    description: "Design, enhance, and optimize your resume with froggie AI Resume Studio. Includes ATS keyword tailoring, real-time live preview, and multi-format export.",
+  });
 
-  const loadExistingResume = async () => {
-   try {
-    const {data} = await api.get('/api/resumes/get/' + resumeId, {headers: { Authorization: token }})
-    if(data.resume){
-      setResumeData(data.resume)
-      document.title = data.resume.title;
-    }
-   } catch (error) {
-    console.log(error.message)
-   }
-  }
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0)
-  const [removeBackground, setRemoveBackground] = useState(false);
+  // Sync active resume with Career Copilot
+  React.useEffect(() => {
+    if (resumeId) setActiveResumeId(resumeId);
+  }, [resumeId, setActiveResumeId]);
 
-  const sections = [
-    { id: "personal", name: "Personal Info", icon: User },
-    { id: "summary", name: "Summary", icon: FileText },
-    { id: "experience", name: "Experience", icon: Briefcase },
-    { id: "education", name: "Education", icon: GraduationCap },
-    { id: "projects", name: "Projects", icon: FolderIcon },
-    { id: "skills", name: "Skills", icon: Sparkles },
-  ]
+  React.useEffect(() => {
+    if (resumeData) setActiveResumeData(resumeData);
+  }, [resumeData, setActiveResumeData]);
 
-  const activeSection = sections[activeSectionIndex]
+  // Handle Apply to Resume from AI Copilot suggestions
+  React.useEffect(() => {
+    registerApplyHandler((section, text, index) => {
+      setResumeData((prev) => {
+        const next = { ...prev };
+        const sec = (section || "").toLowerCase();
 
-  useEffect(()=>{
-    loadExistingResume()
-  },[])
+        if (sec.includes("summary")) {
+          next.professional_summary = typeof text === "string" ? text : String(text || "");
+        } else if (sec.includes("skill")) {
+          const newSkills = Array.isArray(text)
+            ? text
+            : typeof text === "string"
+            ? text.split(/,\s*|\n/).map((s) => s.trim()).filter(Boolean)
+            : [];
+          next.skills = Array.from(new Set([...(prev.skills || []), ...newSkills]));
+        } else if (sec.includes("exp")) {
+          const expCopy = [...(prev.experience || [])];
+          if (typeof text === "object" && text !== null && !Array.isArray(text)) {
+            if (index >= 0 && index < expCopy.length) {
+              expCopy[index] = { ...expCopy[index], ...text };
+            } else {
+              expCopy.push(text);
+            }
+          } else if (index >= 0 && index < expCopy.length) {
+            expCopy[index] = { ...expCopy[index], description: text };
+          } else if (expCopy.length > 0) {
+            expCopy[0] = { ...expCopy[0], description: text };
+          } else {
+            expCopy.push({ position: "Role", company: "Company", description: text, is_current: true });
+          }
+          next.experience = expCopy;
+        } else if (sec.includes("proj")) {
+          const projCopy = [...(prev.project || [])];
+          if (typeof text === "object" && text !== null && !Array.isArray(text)) {
+            if (index >= 0 && index < projCopy.length) {
+              projCopy[index] = { ...projCopy[index], ...text };
+            } else {
+              projCopy.push(text);
+            }
+          } else if (index >= 0 && index < projCopy.length) {
+            projCopy[index] = { ...projCopy[index], description: text };
+          } else if (projCopy.length > 0) {
+            projCopy[0] = { ...projCopy[0], description: text };
+          } else {
+            projCopy.push({ name: "New Project", description: text, type: "Full Stack" });
+          }
+          next.project = projCopy;
+        } else if (sec.includes("cert")) {
+          const certCopy = [...(prev.certifications || [])];
+          if (typeof text === "object" && text !== null) {
+            certCopy.push(text);
+          } else if (typeof text === "string") {
+            certCopy.push({ name: text, issuer: "Certified Authority", date: new Date().toISOString().slice(0, 7) });
+          }
+          next.certifications = certCopy;
+        } else if (sec.includes("achieve")) {
+          const achCopy = [...(prev.achievements || [])];
+          if (typeof text === "object" && text !== null) {
+            achCopy.push(text);
+          } else if (typeof text === "string") {
+            achCopy.push({ title: text, description: text, date: new Date().toISOString().slice(0, 7) });
+          }
+          next.achievements = achCopy;
+        }
 
-  const changeResumeVisibility = async () => {
+        setActiveResumeData(next);
+        return next;
+      });
+    });
+
+    // Direct multi-field updates (e.g. adding skills, new project, title, certs, awards)
+    registerDirectUpdateHandler((updates) => {
+      if (!updates || typeof updates !== "object") return;
+
+      setResumeData((prev) => {
+        const next = { ...prev };
+
+        // 1. Personal Info
+        if (updates.personal_info && typeof updates.personal_info === "object") {
+          next.personal_info = { ...next.personal_info, ...updates.personal_info };
+        }
+        if (updates.profession) {
+          next.personal_info = { ...next.personal_info, profession: updates.profession };
+        }
+        if (updates.full_name) {
+          next.personal_info = { ...next.personal_info, full_name: updates.full_name };
+        }
+        if (updates.email) {
+          next.personal_info = { ...next.personal_info, email: updates.email };
+        }
+        if (updates.phone) {
+          next.personal_info = { ...next.personal_info, phone: updates.phone };
+        }
+        if (updates.location) {
+          next.personal_info = { ...next.personal_info, location: updates.location };
+        }
+        if (updates.github) {
+          next.personal_info = { ...next.personal_info, github: updates.github };
+        }
+        if (updates.linkedin) {
+          next.personal_info = { ...next.personal_info, linkedin: updates.linkedin };
+        }
+        if (updates.website) {
+          next.personal_info = { ...next.personal_info, website: updates.website };
+        }
+
+        // 2. Summary
+        if (updates.professional_summary !== undefined) {
+          next.professional_summary = updates.professional_summary;
+        } else if (updates.summary !== undefined) {
+          next.professional_summary = updates.summary;
+        }
+
+        // 3. Skills
+        if (Array.isArray(updates.skills)) {
+          next.skills = updates.skills;
+        } else if (typeof updates.skills === "string") {
+          const splitSkills = updates.skills.split(/,\s*|\n/).map((s) => s.trim()).filter(Boolean);
+          next.skills = Array.from(new Set([...(prev.skills || []), ...splitSkills]));
+        } else if (Array.isArray(updates.newSkills)) {
+          next.skills = Array.from(new Set([...(prev.skills || []), ...updates.newSkills]));
+        }
+
+        // 4. Experience
+        if (Array.isArray(updates.experience)) {
+          next.experience = updates.experience;
+        } else if (updates.experience && typeof updates.experience === "object") {
+          next.experience = [...(prev.experience || []), updates.experience];
+        } else if (updates.newExperience && typeof updates.newExperience === "object") {
+          next.experience = [...(prev.experience || []), updates.newExperience];
+        }
+
+        // 5. Projects
+        if (Array.isArray(updates.project)) {
+          next.project = updates.project;
+        } else if (updates.project && typeof updates.project === "object") {
+          next.project = [...(prev.project || []), updates.project];
+        } else if (updates.newProject && typeof updates.newProject === "object") {
+          next.project = [...(prev.project || []), updates.newProject];
+        }
+
+        // 6. Education
+        if (Array.isArray(updates.education)) {
+          next.education = updates.education;
+        } else if (updates.education && typeof updates.education === "object") {
+          next.education = [...(prev.education || []), updates.education];
+        }
+
+        // 7. Certifications
+        if (Array.isArray(updates.certifications)) {
+          next.certifications = updates.certifications;
+        } else if (updates.certifications && typeof updates.certifications === "object") {
+          next.certifications = [...(prev.certifications || []), updates.certifications];
+        } else if (updates.newCertification && typeof updates.newCertification === "object") {
+          next.certifications = [...(prev.certifications || []), updates.newCertification];
+        }
+
+        // 8. Achievements
+        if (Array.isArray(updates.achievements)) {
+          next.achievements = updates.achievements;
+        } else if (updates.achievements && typeof updates.achievements === "object") {
+          next.achievements = [...(prev.achievements || []), updates.achievements];
+        } else if (updates.newAchievement && typeof updates.newAchievement === "object") {
+          next.achievements = [...(prev.achievements || []), updates.newAchievement];
+        }
+
+        setActiveResumeData(next);
+        return next;
+      });
+    });
+  }, [registerApplyHandler, registerDirectUpdateHandler, setResumeData, setActiveResumeData]);
+
+  const activeSection = BUILDER_SECTIONS[activeSectionIndex];
+
+  // Handle Export (PDF & Word DOC)
+  const handleDownload = async (type = "pdf") => {
+    setIsExporting(true);
+
     try {
-       const formData = new FormData()
-       formData.append("resumeId", resumeId)
-       formData.append("resumeData", JSON.stringify({public: !resumeData.public}))
+      if (type === "doc") {
+        exportResumeAsDoc(resumeData);
+        toast.success("Word (.doc) file downloaded successfully");
+        return;
+      }
 
-       const {data} = await api.put('/api/resumes/update', formData, {headers: { Authorization: token }})
+      // PDF Export
+      const previewNode =
+        document.getElementById("resume-preview") ||
+        document.getElementById("resume-export-content") ||
+        document.getElementById("resume-pages-container");
 
-       setResumeData({...resumeData, public: !resumeData.public})
-       toast.success(data.message)
+      if (!previewNode) {
+        toast.error("Preview is not ready yet. Please wait a moment.");
+        return;
+      }
+
+      await exportResumeAsPdf(previewNode, resumeData);
+      toast.success("PDF downloaded successfully!");
     } catch (error) {
-      console.error("Error saving resume:", error)
+      console.error("Export error:", error);
+      toast.error(error.message || "Download failed. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
-  }
-
-  const handleShare = () =>{
-    const frontendUrl = window.location.href.split('/app/')[0];
-    const resumeUrl = frontendUrl + '/view/' + resumeId;
-
-    if(navigator.share){
-      navigator.share({url: resumeUrl, text: "My Resume", })
-    }else{
-      alert('Share not supported on this browser.')
-    }
-  }
-
-  const downloadResume = ()=>{
-    window.print();
-  }
-
-
-const saveResume = async () => {
-  try {
-    let updatedResumeData = structuredClone(resumeData)
-
-    // remove image from updatedResumeData
-    if(typeof resumeData.personal_info.image === 'object'){
-      delete updatedResumeData.personal_info.image
-    }
-
-    const formData = new FormData();
-    formData.append("resumeId", resumeId)
-    formData.append('resumeData', JSON.stringify(updatedResumeData))
-    removeBackground && formData.append("removeBackground", "yes");
-    typeof resumeData.personal_info.image === 'object' && formData.append("image", resumeData.personal_info.image)
-
-    const { data } = await api.put('/api/resumes/update', formData, {headers: { Authorization: token }})
-
-    setResumeData(data.resume)
-    toast.success(data.message)
-  } catch (error) {
-    console.error("Error saving resume:", error)
-  }
-}
+  };
 
   return (
-    <div>
+    <div className="lg:h-screen lg:max-h-screen flex flex-col bg-slate-100/80 overflow-x-hidden">
+      {/* TOP COMPACT NAVBAR */}
+      <BuilderHeader
+        title={resumeData.title}
+        isPublic={resumeData.public}
+        isLoading={isLoading}
+        isSaving={isSaving}
+        isExporting={isExporting}
+        onSave={saveResume}
+        onToggleVisibility={toggleVisibility}
+        onShare={shareResume}
+        onDownload={handleDownload}
+      />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <Link to={'/app'} className='inline-flex gap-2 items-center text-slate-500 hover:text-slate-700 transition-all'>
-          <ArrowLeftIcon className="size-4"/> Back to Dashboard
-        </Link>
-      </div>
+      {/* MAIN 2-PANEL WORKSPACE */}
+      <main className="resume-builder-workspace flex-1 min-h-0 px-3 sm:px-5 lg:px-8 py-3 sm:py-4 overflow-hidden">
+        <div className="max-w-8xl mx-auto w-full h-full min-h-0">
+          <div className="grid lg:grid-cols-12 gap-4 sm:gap-5 h-full min-h-0">
+            
+            {/* LEFT PANEL - UI FORM EDITOR */}
+            <section className="builder-form-panel no-print lg:col-span-5 h-full flex flex-col min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden relative">
+              
+              {/* STEP PROGRESS & ICONS */}
+              <BuilderStepper
+                activeSectionIndex={activeSectionIndex}
+                onSelectSection={setActiveSectionIndex}
+              />
 
-      <div className='max-w-7xl mx-auto px-4 pb-8'>
-        <div className='grid lg:grid-cols-12 gap-8'>
-          {/* Left Panel - Form */}
-          <div className='relative lg:col-span-5 rounded-lg overflow-hidden'>
-            <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-6 pt-1'>
-              {/* progress bar using activeSectionIndex */}
-              <hr className="absolute top-0 left-0 right-0 border-2 border-gray-200"/>
-              <hr className="absolute top-0 left-0  h-1 bg-gradient-to-r from-green-500 to-green-600 border-none transition-all duration-2000" style={{width: `${activeSectionIndex * 100 / (sections.length - 1)}%`}}/>
+            {/* SECTION TOOLBAR (TEMPLATES, COLORS, NAV) */}
+            <BuilderToolbar
+              template={resumeData.template}
+              accentColor={resumeData.accent_color}
+              activeSectionIndex={activeSectionIndex}
+              totalSections={BUILDER_SECTIONS.length}
+              onChangeTemplate={(template) => setResumeData((prev) => ({ ...prev, template }))}
+              onChangeAccentColor={(accent_color) => setResumeData((prev) => ({ ...prev, accent_color }))}
+              onPrevSection={() => setActiveSectionIndex((prev) => Math.max(prev - 1, 0))}
+              onNextSection={() =>
+                setActiveSectionIndex((prev) => Math.min(prev + 1, BUILDER_SECTIONS.length - 1))
+              }
+            />
 
-              {/* Section Navigation */}
-              <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1">
-
-                <div className='flex items-center gap-2'>
-                  <TemplateSelector selectedTemplate={resumeData.template} onChange={(template)=> setResumeData(prev => ({...prev, template}))}/>
-                  <ColorPicker selectedColor={resumeData.accent_color} onChange={(color)=>setResumeData(prev => ({...prev, accent_color: color}))}/>
+            {/* SCROLLABLE FORM CONTENT */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 no-scrollbar hide-scrollbar">
+              {isLoading ? (
+                <div className="space-y-4 animate-pulse pt-2">
+                  <div className="h-4 bg-slate-100 rounded w-1/3" />
+                  <div className="h-10 bg-slate-100 rounded-xl" />
+                  <div className="h-10 bg-slate-100 rounded-xl" />
+                  <div className="h-24 bg-slate-100 rounded-xl" />
                 </div>
-
-                <div className='flex items-center'>
-                  {activeSectionIndex !== 0 && (
-                    <button onClick={()=> setActiveSectionIndex((prevIndex)=> Math.max(prevIndex - 1, 0))} className='flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all' disabled={activeSectionIndex === 0}>
-                      <ChevronLeft className="size-4"/> Previous
-                    </button>
+              ) : (
+                <div className="space-y-6">
+                  {activeSection.id === "personal" && (
+                    <PersonalInfoForm
+                      data={resumeData.personal_info}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, personal_info: data }))}
+                      removeBackground={removeBackground}
+                      setRemoveBackground={setRemoveBackground}
+                    />
                   )}
-                  <button onClick={()=> setActiveSectionIndex((prevIndex)=> Math.min(prevIndex + 1, sections.length - 1))} className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${activeSectionIndex === sections.length - 1 && 'opacity-50'}`} disabled={activeSectionIndex === sections.length - 1}>
-                      Next <ChevronRight className="size-4"/>
-                    </button>
+
+                  {activeSection.id === "summary" && (
+                    <ProfessionalSummaryForm
+                      data={resumeData.professional_summary}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, professional_summary: data }))}
+                      setResumeData={setResumeData}
+                    />
+                  )}
+
+                  {activeSection.id === "experience" && (
+                    <ExperienceForm
+                      data={resumeData.experience}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, experience: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "education" && (
+                    <EducationForm
+                      data={resumeData.education}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, education: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "projects" && (
+                    <ProjectForm
+                      data={resumeData.project}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, project: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "skills" && (
+                    <SkillsForm
+                      data={resumeData.skills}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, skills: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "certifications" && (
+                    <CertificationForm
+                      data={resumeData.certifications || []}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, certifications: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "achievements" && (
+                    <AchievementForm
+                      data={resumeData.achievements || []}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, achievements: data }))}
+                    />
+                  )}
                 </div>
-              </div>
+              )}
+            </div>
 
-              {/* Form Content */}
-              <div className='space-y-6'>
-                  {activeSection.id === 'personal' && (
-                    <PersonalInfoForm data={resumeData.personal_info} onChange={(data)=>setResumeData(prev => ({...prev, personal_info: data }))} removeBackground={removeBackground} setRemoveBackground={setRemoveBackground} />
-                  )}
-                  {activeSection.id === 'summary' && (
-                    <ProfessionalSummaryForm data={resumeData.professional_summary} onChange={(data)=> setResumeData(prev=> ({...prev, professional_summary: data}))} setResumeData={setResumeData}/>
-                  )}
-                  {activeSection.id === 'experience' && (
-                    <ExperienceForm data={resumeData.experience} onChange={(data)=> setResumeData(prev=> ({...prev, experience: data}))}/>
-                  )}
-                  {activeSection.id === 'education' && (
-                    <EducationForm data={resumeData.education} onChange={(data)=> setResumeData(prev=> ({...prev, education: data}))}/>
-                  )}
-                  {activeSection.id === 'projects' && (
-                    <ProjectForm data={resumeData.project} onChange={(data)=> setResumeData(prev=> ({...prev, project: data}))}/>
-                  )}
-                  {activeSection.id === 'skills' && (
-                    <SkillsForm data={resumeData.skills} onChange={(data)=> setResumeData(prev=> ({...prev, skills: data}))}/>
-                  )}
-                  
-              </div>
-              <button onClick={()=> {toast.promise(saveResume, {loading: 'Saving...'})}} className='bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm'>
-                Save Changes
+            {/* FIXED BOTTOM FOOTER OF FORM */}
+            <div className="shrink-0 p-3 sm:px-5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between text-xs">
+              <span className="text-slate-500 font-medium">
+                Step {activeSectionIndex + 1} of {BUILDER_SECTIONS.length}:{" "}
+                <strong className="text-slate-800">{activeSection.name}</strong>
+              </span>
+
+              <button
+                onClick={saveResume}
+                disabled={isSaving || isLoading}
+                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-1.5 rounded-lg transition-all shadow-xs disabled:opacity-60 cursor-pointer"
+              >
+                {isSaving && <Loader2 className="size-3.5 animate-spin" />}
+                <span>{isSaving ? "Saving..." : "Save Changes"}</span>
               </button>
             </div>
-          </div>
+          </section>
 
-          {/* Right Panel - Preview */}
-          <div className='lg:col-span-7 max-lg:mt-6'>
-              <div className='relative w-full'>
-                <div className='absolute bottom-3 left-0 right-0 flex items-center justify-end gap-2'>
-                    {resumeData.public && (
-                      <button onClick={handleShare} className='flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors'>
-                        <Share2Icon className='size-4'/> Share
-                      </button>
-                    )}
-                    <button onClick={changeResumeVisibility} className='flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300 rounded-lg hover:ring transition-colors'>
-                      {resumeData.public ? <EyeIcon className="size-4"/> : <EyeOffIcon className="size-4"/>}
-                      {resumeData.public ? 'Public' : 'Private'}
-                    </button>
-                    <button onClick={downloadResume} className='flex items-center gap-2 px-6 py-2 text-xs bg-gradient-to-br from-green-100 to-green-200 text-green-600 rounded-lg ring-green-300 hover:ring transition-colors'>
-                      <DownloadIcon className='size-4'/> Download
-                    </button>
-                </div>
-              </div>
-
-              <ResumePreview data={resumeData} template={resumeData.template} accentColor={resumeData.accent_color}/>
+          {/* RIGHT PANEL - LIVE PREVIEW WORKSPACE */}
+          <section className="lg:col-span-7 h-full flex flex-col min-h-0 bg-slate-200/70 rounded-2xl border border-slate-200/90 p-2 sm:p-4 shadow-inner overflow-hidden max-lg:min-h-[600px]">
+            <div className="flex-1 min-h-0 overflow-y-auto rounded-xl no-scrollbar hide-scrollbar">
+              <ResumePreview
+                data={resumeData}
+                template={resumeData.template}
+                accentColor={resumeData.accent_color}
+              />
+            </div>
+          </section>
           </div>
         </div>
-      </div>
-      
+      </main>
     </div>
-  )
-}
+  );
+};
 
-export default ResumeBuilder
+export default ResumeBuilder;

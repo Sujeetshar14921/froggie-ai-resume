@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Resume from "../models/Resume.js";
+import fs from "fs";
+import imagekit from "../configs/imageKit.js";
 
 
 const generateToken = (userId)=>{
@@ -105,3 +107,46 @@ export const getUserResumes = async (req, res) => {
         return res.status(400).json({message: error.message})
     }
 }
+
+// controller for updating user profile
+// PUT: /api/users/profile
+export const updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { name, profession, phone, location, bio, removeImage } = req.body;
+        const image = req.file;
+
+        const updateData = {};
+        if (name) updateData.name = name.trim();
+        if (profession !== undefined) updateData.profession = profession.trim();
+        if (phone !== undefined) updateData.phone = phone.trim();
+        if (location !== undefined) updateData.location = location.trim();
+        if (bio !== undefined) updateData.bio = bio.trim();
+
+        if (removeImage === 'true' || removeImage === true) {
+            updateData.image = '';
+        }
+
+        if (image) {
+            const imageBufferData = fs.createReadStream(image.path);
+            const response = await imagekit.files.upload({
+                file: imageBufferData,
+                fileName: `user_${userId}_${Date.now()}.png`,
+                folder: 'user-profiles',
+                transformation: {
+                    pre: 'w-300,h-300,fo-face,z-0.75'
+                }
+            });
+            updateData.image = response.url;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+}

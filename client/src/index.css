@@ -1,28 +1,266 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
-*{
-  font-family: "Outfit", sans-serif;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+* {
+  font-family: "Outfit", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
 }
 
 @layer base {
   button {
     @apply cursor-pointer;
   }
-  input:not([type="checkbox"]){
-    @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg;
+  input:not([type="checkbox"]) {
+    @apply outline-none transition-all duration-200;
   }
   textarea {
-    @apply outline-none focus:ring border border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-lg resize-none;
+    @apply outline-none transition-all duration-200 resize-none;
   }
 }
 
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
 
+.glass-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+/* Gradient mesh animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1deg);
+  }
+}
 
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
 
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
 
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Hide scrollbar while preserving smooth scrolling */
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar,
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Custom max-w-8xl container (1440px / 90rem) */
+.max-w-8xl {
+  max-width: 90rem;
+}
+
+/* Seamless Infinite Marquee Scrolling (Right to Left) */
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marqueeLeft 40s linear infinite;
+}
+
+.animate-marquee-left:hover {
+  animation-play-state: paused;
+}
+
+/* ==========================================================================
+   RESUME PRINT & A4 EXPORT SYSTEM
+   ========================================================================== */
+
+@page {
+  size: A4 portrait;
+  margin: 0mm;
+}
+
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: auto !important;
+    min-height: 297mm !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide ALL editor UI, forms, toolbars, sidebars, headers, drawers, and floating widgets */
+  header:not([data-resume-section="header"]):not([data-resume-main="header"]),
+  nav,
+  aside:not(.resume-sidebar),
+  footer,
+  form,
+  button,
+  .no-print,
+  .builder-header,
+  .builder-stepper,
+  .builder-toolbar,
+  .builder-form-panel,
+  #copilot-widget,
+  #copilot-drawer,
+  .toast,
+  .toaster,
+  .blur-3xl {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Reset main layouts and scroll wrappers */
+  #root,
+  main,
+  section.resume-builder-workspace,
+  .resume-builder-layout,
+  .resume-preview-scroll-wrapper {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  #resume-preview {
+    display: none !important;
+  }
+
+  #resume-pages-container {
+    display: block !important;
+    position: static !important;
+    visibility: visible !important;
+    width: 210mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    top: auto !important;
+    left: auto !important;
+    z-index: auto !important;
+  }
+
+  /* Dedicated Discrete A4 Page Styling */
+  .resume-page {
+    display: block !important;
+    position: relative !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .resume-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Resume sidebar support */
+  .resume-sidebar {
+    display: flex !important;
+    visibility: visible !important;
+    height: 100% !important;
+  }
+
+  /* Section item page breaks */
+  .break-inside-avoid,
+  [data-resume-item],
+  [data-resume-sidebar-item],
+  [data-resume-main-item] {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
 
 
 

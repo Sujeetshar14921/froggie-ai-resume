@@ -1,59 +1,269 @@
-import { Zap } from 'lucide-react';
-import React from 'react'
-import Title from './Title';
+import React from "react";
+import {
+  Sparkles,
+  Upload,
+  FileCheck2,
+  Download,
+  Palette,
+  ShieldCheck,
+  Zap,
+  Globe2,
+  CheckCircle,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import FrogFace from "../FrogLogo";
 
 const Features = () => {
-    const [isHover, setIsHover] = React.useState(false);
   return (
-    <div id='features' className='flex flex-col items-center my-10 scroll-mt-12'>
+    <section id="features" className="py-28 bg-slate-50/70 relative overflow-hidden">
 
-    <div className="flex items-center gap-2 text-sm text-green-600 bg-green-400/10 rounded-full px-6 py-1.5">
-        <Zap width={14}/>
-        <span>Simple Process</span>
-    </div>
-    <Title title='Build your resume' description='Our streamlined process helps you create a professional resume in minutes with intelligent AI-powered tools and features.'/>
+      {/* Decorative ambient lighting */}
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="flex flex-col md:flex-row items-center xl:-mt-10">
-                <img className="max-w-2xl w-full xl:-ml-32" src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/features/group-image-1.png" alt="" />
-                <div className="px-4 md:px-0" onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
-                    <div className={"flex items-center justify-center gap-6 max-w-md group cursor-pointer"}>
-                        <div className={`p-6 group-hover:bg-violet-100 border border-transparent group-hover:border-violet-300  flex gap-4 rounded-xl transition-colors ${!isHover ? 'border-violet-300 bg-violet-100' : ''}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 stroke-violet-600"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" /><circle cx="16.5" cy="7.5" r=".5" fill="currentColor" /></svg>
-                            <div className="space-y-2">
-                                <h3 className="text-base font-semibold text-slate-700">Real-Time Analytics</h3>
-                                <p className="text-sm text-slate-600 max-w-xs">Get instant insights into your finances with live dashboards.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-6 max-w-md group cursor-pointer">
-                        <div className="p-6 group-hover:bg-green-100 border border-transparent group-hover:border-green-300 flex gap-4 rounded-xl transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 stroke-green-600"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" /></svg>
-                            <div className="space-y-2">
-                                <h3 className="text-base font-semibold text-slate-700">Bank-Grade Security</h3>
-                                <p className="text-sm text-slate-600 max-w-xs">End-to-end encryption, 2FA, compliance with GDPR standards.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex items-center justify-center gap-6 max-w-md group cursor-pointer">
-                        <div className="p-6 group-hover:bg-orange-100 border border-transparent group-hover:border-orange-300 flex gap-4 rounded-xl transition-colors">
-                            <svg className="size-6 stroke-orange-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>
-                            <div className="space-y-2">
-                                <h3 className="text-base font-semibold text-slate-700">Customizable Reports</h3>
-                                <p className="text-sm text-slate-600 max-w-xs">Export professional, audit-ready financial reports for tax or internal review.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-            
-                * {
-                    font-family: 'Poppins', sans-serif;
-                }
-            `}</style>
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        {/* SECTION HEADER */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.span
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4"
+          >
+            <Zap size={14} />
+            Engineered For Success
+          </motion.span>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight"
+          >
+            Everything You Need to Get{" "}
+            <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
+              Hired Faster
+            </span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 text-base sm:text-lg text-slate-600"
+          >
+            Powerful froggie AI automation paired with precision ATS formatting and designer templates.
+          </motion.p>
         </div>
-  )
-}
 
-export default Features
+        {/* BENTO GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[auto]">
+
+          {/* CARD 1: AI WRITER (Large Hero Bento Card) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-2 lg:col-span-2 bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl border border-slate-800 flex flex-col justify-between"
+          >
+            {/* Emerald glow */}
+            <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-600/20 blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-emerald-400/30 flex items-center justify-center text-white mb-6">
+                <FrogFace size={30} />
+              </div>
+
+              <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                froggie AI 2.0 Engine
+              </span>
+
+              <h3 className="text-2xl sm:text-3xl font-black mt-4 leading-tight">
+                AI Summary & Bullet Point Enhancer
+              </h3>
+
+              <p className="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed max-w-md">
+                Turn plain descriptions into quantifiable, high-impact career statements. Generate tailored keywords tailored for your target job title in seconds.
+              </p>
+            </div>
+
+            {/* Interactive Preview pill */}
+            <div className="relative z-10 mt-8 bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-emerald-500/30 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+                <CheckCircle size={14} />
+                <span>AI Enhancement Result</span>
+              </div>
+              <p className="text-xs text-slate-200 italic">
+                "Spearheaded cloud architecture refactoring, reducing latency by 42% and driving 99.98% service reliability for 2M+ active users."
+              </p>
+            </div>
+          </motion.div>
+
+          {/* CARD 2: ATS FRIENDLY SCORE */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
+                <ShieldCheck size={26} />
+              </div>
+
+              <h3 className="text-xl font-bold text-slate-900">
+                100% ATS Compliant
+              </h3>
+
+              <p className="text-slate-600 text-sm mt-2 leading-relaxed">
+                Standardized typography, single-column parsing, and clean metadata guaranteed to pass Workday, Taleo, and Greenhouse.
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 flex items-baseline justify-between">
+              <span className="text-3xl font-extrabold text-emerald-600">99.2%</span>
+              <span className="text-xs text-slate-400 font-medium">Average ATS Score</span>
+            </div>
+          </motion.div>
+
+          {/* CARD 3: PDF TO RESUME UPLOAD */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-6">
+                <Upload size={26} />
+              </div>
+
+              <h3 className="text-xl font-bold text-slate-900">
+                PDF Resume Importer
+              </h3>
+
+              <p className="text-slate-600 text-sm mt-2 leading-relaxed">
+                Have an old resume? Upload your PDF and our AI will automatically parse sections, experience, and skills into editable templates.
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100">
+              <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                <Zap size={13} /> Auto-populate in 3 seconds
+              </span>
+            </div>
+          </motion.div>
+
+          {/* CARD 4: ONE CLICK EXPORT (PDF + DOC) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ y: -5 }}
+            className="bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-lg border border-slate-800 flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center mb-6">
+                <Download size={26} />
+              </div>
+
+              <h3 className="text-xl font-bold text-white">
+                Multi-Format Export
+              </h3>
+
+              <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+                Download high-resolution vector PDF or clean Word DOC formats anytime with zero watermark.
+              </p>
+            </div>
+
+            <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-emerald-300">
+              <span className="px-2.5 py-1 rounded-md bg-white/10">PDF</span>
+              <span className="px-2.5 py-1 rounded-md bg-white/10">DOC</span>
+            </div>
+          </motion.div>
+
+          {/* CARD 5: 6 DESIGNER TEMPLATES & ACCENTS */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            whileHover={{ y: -5 }}
+            className="md:col-span-2 lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <Palette size={26} />
+                </div>
+                <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-200/80">
+                  6 ATS Layouts
+                </span>
+              </div>
+
+              <h3 className="text-2xl font-bold text-slate-900">
+                Custom Color Themes & Pro Templates
+              </h3>
+
+              <p className="text-slate-600 text-sm mt-2 leading-relaxed max-w-lg">
+                Switch instantly between Classic Corporate, Modern Tech, ATS Pro Minimal, Executive Leadership, Technical, and Compact styles.
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {["#10B981", "#059669", "#0F766E", "#0284C7", "#1E3A8A", "#7C3AED", "#0F172A"].map((hex) => (
+                <span
+                  key={hex}
+                  className="w-7 h-7 rounded-full shadow-xs hover:scale-125 transition-transform cursor-pointer ring-2 ring-white"
+                  style={{ backgroundColor: hex }}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CARD 6: SHAREABLE PUBLIC LINK */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-6">
+                <Globe2 size={26} />
+              </div>
+
+              <h3 className="text-xl font-bold text-slate-900">
+                Live Public Sharing
+              </h3>
+
+              <p className="text-slate-600 text-sm mt-2 leading-relaxed">
+                Toggle public visibility to generate an instant portfolio link to paste on LinkedIn, GitHub, or emails.
+              </p>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
+              <FileCheck2 size={15} /> One-Click Link Copy
+            </div>
+          </motion.div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+export default Features;

@@ -29,22 +29,22 @@ const SkillsForm = ({ data, onChange }) => {
       </div>
 
       <div className="flex gap-2">
-            <input type="text" placeholder="Enter a skill (e.g., JavaScript, Project Management)" className='flex-1 px-3 py-2 text-sm'
+            <input type="text" placeholder="Enter a skill (e.g., React, TypeScript, Node.js)" className='flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none'
             onChange={(e)=>setNewSkill(e.target.value)}
             value={newSkill}
             onKeyDown={handleKeyPress}
             />
-            <button onClick={addSkill} disabled={!newSkill.trim} className='flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'>
-                <Plus className="size-4"/> Add
+            <button onClick={addSkill} disabled={!newSkill.trim()} className='flex items-center gap-1.5 px-4 py-2 text-sm bg-slate-950 hover:bg-slate-900 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold border border-emerald-500/30'>
+                <Plus className="size-4 text-emerald-400"/> Add
             </button>
       </div>
 
       {data.length > 0 ? (
         <div className='flex flex-wrap gap-2'>
             {data.map((skill, index)=>(
-                <span key={index} className='flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm'>
+                <span key={index} className='flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200/80 rounded-full text-xs font-semibold'>
                     {skill}
-                    <button onClick={()=> removeSkill(index)} className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors">
+                    <button onClick={()=> removeSkill(index)} className="ml-1 hover:bg-emerald-200/70 rounded-full p-0.5 transition-colors cursor-pointer">
                         <X className="w-3 h-3" />
                     </button>
                 </span>
@@ -60,8 +60,8 @@ const SkillsForm = ({ data, onChange }) => {
         </div>
     )}
 
-    <div className='bg-blue-50 p-3 rounded-lg'>
-        <p className='text-sm text-blue-800'><strong>Tip:</strong> Add 8-12 relevant skills. Include both technical skills (programming languages, tools) and soft skills (leadership, communication).</p>
+    <div className='bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200/80'>
+        <p className='text-xs text-emerald-950 leading-relaxed'><strong>froggie Tip:</strong> Add 8-12 relevant skills. Include both technical skills (programming languages, frameworks, cloud) and role competencies (system design, leadership).</p>
     </div>
     </div>
   )

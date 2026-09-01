@@ -5,7 +5,7 @@ const ResumeSchema = new mongoose.Schema({
     title: {type: String, default: 'Untitled Resume'},
     public: { type: Boolean, default: false },
     template: { type: String, default: "classic" },
-    accent_color: { type: String, default: "#3B82F6" },
+    accent_color: { type: String, default: "#10B981" },
     professional_summary: { type: String, default: '' },
     skills: [{ type: String }],
     personal_info: {
@@ -16,7 +16,11 @@ const ResumeSchema = new mongoose.Schema({
         phone: {type: String, default: '' },
         location: {type: String, default: '' },
         linkedin: {type: String, default: '' },
+        linkedin_label: {type: String, default: '' },
+        github: {type: String, default: '' },
+        github_label: {type: String, default: '' },
         website: {type: String, default: '' },
+        website_label: {type: String, default: '' },
     },
     experience: [
         {
@@ -42,6 +46,21 @@ const ResumeSchema = new mongoose.Schema({
             field: { type: String },
             graduation_date: { type: String },
             gpa: { type: String },
+        }
+    ],
+    certifications: [
+        {
+            name: { type: String },
+            issuer: { type: String },
+            date: { type: String },
+            url: { type: String },
+        }
+    ],
+    achievements: [
+        {
+            title: { type: String },
+            date: { type: String },
+            description: { type: String },
         }
     ],
 }, {timestamps: true, minimize: false})

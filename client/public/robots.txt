@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Allow: /faq
+Allow: /login
+Allow: /view/
+Disallow: /api/
+
+Sitemap: https://froggie-resume.com/sitemap.xml
