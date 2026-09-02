@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import ProfileModal from "./ProfileModal";
 import FrogFace from "./FrogLogo";
+import { NotificationBell } from "./notifications";
 import { useCopilot } from "../hooks/useCopilot";
 
 const Navbar = () => {
@@ -124,7 +125,10 @@ const Navbar = () => {
           )}
 
           {/* RIGHT SIDE ACTIONS */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* NOTIFICATION BELL & DESKTOP ALERTS */}
+            <NotificationBell />
+
             {user ? (
               /* AUTHENTICATED USER DROPDOWN */
               <div className="relative">

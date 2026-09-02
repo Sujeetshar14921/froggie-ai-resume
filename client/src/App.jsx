@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { authApi } from './api/authApi'
 import { login, setLoading } from './app/features/authSlice'
-import { Toaster } from 'react-hot-toast'
+import { FroggieToaster } from './components/notifications'
 import { CopilotProvider } from './context/CopilotContext'
 import { CopilotWidget, CopilotDrawer } from './components/copilot'
 
@@ -58,7 +58,7 @@ const App = () => {
 
   return (
     <CopilotProvider>
-      <Toaster />
+      <FroggieToaster />
 
       <Suspense fallback={<PageLoader />}>
         <Routes>
