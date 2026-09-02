@@ -46,6 +46,7 @@ export const initiateOAuth = (req, res) => {
 
   try {
     const redirectUri = getCallbackUri(req, provider);
+    console.log(`[OAuth] Initiating ${provider} authentication with redirectUri: ${redirectUri}`);
     const authUrl = getAuthorizationUrl(provider, redirectUri);
     return res.redirect(authUrl);
   } catch (error) {
