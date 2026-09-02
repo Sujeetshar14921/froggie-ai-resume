@@ -317,22 +317,90 @@ export const normalizeCopilotResponse = (rawParsed, rawText = "", currentResume 
     };
   }
   // 9. Detect Recruiter Outreach / LinkedIn Message
+  // 10. Detect Action Result (Create, Delete, Update status)
   else if (
-    rawCardType.includes("recruit") ||
-    rawCardType.includes("outreach") ||
-    rawCardType.includes("linkedin") ||
-    rawCardType.includes("cold_email") ||
-    cardData?.linkedinMessage ||
-    cardData?.coldEmail
+    rawCardType.includes("action") ||
+    cardData?.status === "success" ||
+    cardData?.status === "failed" ||
+    cardData?.action
   ) {
-    cardType = "recruiter_message";
-    const msg = cardData?.linkedinMessage || cardData?.message || cardData?.coldEmail || (typeof cardData === "string" ? cardData : "");
+    cardType = "action_result";
     cardData = {
-      targetRole: cardData?.targetRole || currentResume?.personal_info?.profession || "Target Role",
-      linkedinMessage: cardData?.linkedinMessage || msg,
-      coldEmail: cardData?.coldEmail || msg,
-      referralRequest: cardData?.referralRequest || msg,
-      followUp: cardData?.followUp || msg,
+      action: cardData?.action || "Action Completed",
+      status: cardData?.status || "success",
+      resumeId: cardData?.resumeId,
+      resumeTitle: cardData?.resumeTitle,
+      deletedCount: cardData?.deletedCount,
+      message: cardData?.message || "Action performed successfully.",
+      buttons: Array.isArray(cardData?.buttons) ? cardData.buttons : [],
+    };
+  }
+  // 11. Detect Confirmation Action (Destructive operation warning)
+  else if (
+    rawCardType.includes("confirm") ||
+    cardData?.requiresConfirmation ||
+    cardData?.confirmPayload
+  ) {
+    cardType = "confirm_action";
+    cardData = {
+      actionType: cardData?.actionType || "delete_resume",
+      targetId: cardData?.targetId,
+      targetTitle: cardData?.targetTitle,
+      totalCount: cardData?.totalCount,
+      message:
+        cardData?.message ||
+        "This action is permanent and cannot be undone. Are you sure you want to proceed?",
+      confirmPayload: cardData?.confirmPayload || {},
+    };
+  }
+  // 12. Detect File List / My Resumes listing
+  else if (
+    rawCardType.includes("file") ||
+    rawCardType.includes("list") ||
+    Array.isArray(cardData?.files) ||
+    Array.isArray(cardData?.resumes)
+  ) {
+    cardType = "file_list";
+    const files = cardData?.files || cardData?.resumes || [];
+    cardData = {
+      totalCount: cardData?.totalCount || files.length,
+      files: files.map((f) => ({
+        _id: f._id || f.id,
+        title: f.title || "Untitled Resume",
+        profession: f.profession || f.personal_info?.profession || "",
+        updatedAt: f.updatedAt,
+      })),
+    };
+  }
+  // 13. Detect Career Analysis & Learning Roadmap
+  else if (
+    rawCardType.includes("career") ||
+    cardData?.suitableRoles ||
+    cardData?.learningRoadmap ||
+    cardData?.skillGaps
+  ) {
+    cardType = "career_analysis";
+    cardData = {
+      targetCareer: cardData?.targetCareer || "Career Pathways",
+      suitableRoles: Array.isArray(cardData?.suitableRoles) ? cardData.suitableRoles : [],
+      skillGaps: Array.isArray(cardData?.skillGaps) ? cardData.skillGaps : [],
+      learningRoadmap: Array.isArray(cardData?.learningRoadmap) ? cardData.learningRoadmap : [],
+      projectRecommendations: Array.isArray(cardData?.projectRecommendations)
+        ? cardData.projectRecommendations
+        : [],
+    };
+  }
+  // 14. Detect LinkedIn Profile Package
+  else if (
+    rawCardType.includes("linkedin_profile") ||
+    (cardData?.headline && cardData?.about)
+  ) {
+    cardType = "linkedin_profile";
+    cardData = {
+      headline: cardData?.headline || "",
+      about: cardData?.about || "",
+      topSkills: Array.isArray(cardData?.topSkills) ? cardData.topSkills : [],
+      featuredExperienceSummary: cardData?.featuredExperienceSummary || "",
     };
   }
 

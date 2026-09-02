@@ -139,8 +139,7 @@ const Login = () => {
             }.`,
             { icon: "🐸" }
           );
-          navigate("/app");
-        } catch (err) {
+        } catch {
           toast.error("Failed to complete social login. Please try again.");
         } finally {
           setLoading(false);

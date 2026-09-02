@@ -64,6 +64,18 @@ export const copilotApi = {
     );
     return data;
   },
+
+  /**
+   * Execute confirmed action directly
+   * @param {Object} payload - { actionType, payload, chatId }
+   * @param {string} token
+   */
+  executeAction: async (payload, token) => {
+    const { data } = await api.post("/api/copilot/action", payload, {
+      headers: { Authorization: token },
+    });
+    return data;
+  },
 };
 
 export default copilotApi;

@@ -7,6 +7,17 @@ const FrogSplashIntro = ({ onComplete }) => {
   const [stage, setStage] = useState(0); // 0: Jump in progress, 1: Slogan reveal, 2: Exiting
   const [isVisible, setIsVisible] = useState(true);
 
+  const handleExit = React.useCallback(() => {
+    setStage(2);
+    setTimeout(() => {
+      setIsVisible(false);
+      sessionStorage.setItem("froggie_splash_seen", "true");
+      if (typeof onComplete === "function") {
+        onComplete();
+      }
+    }, 600);
+  }, [onComplete]);
+
   useEffect(() => {
     // Stage 0 -> 1: Jump reaches peak and settles at 1.1s, then slogan appears
     const timer1 = setTimeout(() => {
@@ -22,18 +33,7 @@ const FrogSplashIntro = ({ onComplete }) => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, []);
-
-  const handleExit = () => {
-    setStage(2);
-    setTimeout(() => {
-      setIsVisible(false);
-      sessionStorage.setItem("froggie_splash_seen", "true");
-      if (typeof onComplete === "function") {
-        onComplete();
-      }
-    }, 600);
-  };
+  }, [handleExit]);
 
   if (!isVisible) return null;
 

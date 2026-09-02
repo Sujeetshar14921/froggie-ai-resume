@@ -34,6 +34,9 @@ export const useResumeList = () => {
 
   useEffect(() => {
     loadResumes();
+    const handleSync = () => loadResumes();
+    window.addEventListener("resumes-updated", handleSync);
+    return () => window.removeEventListener("resumes-updated", handleSync);
   }, [loadResumes]);
 
   const deleteResume = async (id) => {

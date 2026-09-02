@@ -44,7 +44,7 @@ export const isSoundEnabled = () => {
   try {
     const stored = localStorage.getItem(SOUND_STORAGE_KEY);
     return stored === null ? true : stored === "true";
-  } catch (_) {
+  } catch {
     return true;
   }
 };
@@ -55,7 +55,9 @@ export const isSoundEnabled = () => {
 export const setSoundEnabled = (enabled) => {
   try {
     localStorage.setItem(SOUND_STORAGE_KEY, String(enabled));
-  } catch (_) {}
+  } catch {
+    // Storage unavailable
+  }
 };
 
 /**
@@ -111,7 +113,7 @@ export const playNotificationSound = (type = "success") => {
       osc.start();
       osc.stop(ctx.currentTime + 0.25);
     }
-  } catch (_) {
+  } catch {
     // AudioContext blocked or not allowed by browser autoplay policy
   }
 };
@@ -169,7 +171,7 @@ export const recordNotification = ({ title, message, type = "success" }) => {
     // Dispatch custom event so listeners like NotificationBell can re-render
     window.dispatchEvent(new CustomEvent("froggie_notifications_updated"));
     return item;
-  } catch (_) {
+  } catch {
     return null;
   }
 };
@@ -186,7 +188,7 @@ export const getNotificationHistory = () => {
     return Array.isArray(parsed)
       ? parsed.filter((n) => n.type !== "error" && n.type !== "warning" && n.type !== "alert")
       : [];
-  } catch (_) {
+  } catch {
     return [];
   }
 };
@@ -198,5 +200,8 @@ export const clearNotificationHistory = () => {
   try {
     localStorage.removeItem(HISTORY_STORAGE_KEY);
     window.dispatchEvent(new CustomEvent("froggie_notifications_updated"));
-  } catch (_) {}
+  } catch {
+    // Storage unavailable
+  }
 };
+

@@ -13,6 +13,11 @@ import RecruiterMessageCard from "./cards/RecruiterMessageCard";
 import CredibilityCard from "./cards/CredibilityCard";
 import DirectResumeUpdateCard from "./cards/DirectResumeUpdateCard";
 import InChatAtsCard from "./cards/InChatAtsCard";
+import ActionResultCard from "./cards/ActionResultCard";
+import ConfirmationCard from "./cards/ConfirmationCard";
+import FileListCard from "./cards/FileListCard";
+import CareerAnalysisCard from "./cards/CareerAnalysisCard";
+import LinkedInProfileCard from "./cards/LinkedInProfileCard";
 
 /**
  * Format markdown-like text (bold, list items, paragraphs) cleanly and filter any JSON
@@ -155,6 +160,16 @@ const CopilotMessageList = () => {
         return <DirectResumeUpdateCard data={cardData} />;
       case "in_chat_ats_score":
         return <InChatAtsCard data={cardData} />;
+      case "action_result":
+        return <ActionResultCard data={cardData} />;
+      case "confirm_action":
+        return <ConfirmationCard data={cardData} />;
+      case "file_list":
+        return <FileListCard data={cardData} />;
+      case "career_analysis":
+        return <CareerAnalysisCard data={cardData} />;
+      case "linkedin_profile":
+        return <LinkedInProfileCard data={cardData} />;
       default:
         return null;
     }

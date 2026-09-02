@@ -128,6 +128,7 @@ const FroggieToast = ({ toast }) => {
         body: messageText,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toast.id]);
 
   return (

@@ -2,6 +2,7 @@ import express from "express";
 import protect from "../middlewares/authMiddleware.js";
 import {
   sendMessage,
+  executeAction,
   getChats,
   getChatById,
   deleteChat,
@@ -12,6 +13,9 @@ const copilotRouter = express.Router();
 
 // Send message / action to Copilot
 copilotRouter.post("/message", protect, sendMessage);
+
+// Direct execution of confirmed action
+copilotRouter.post("/action", protect, executeAction);
 
 // Get list of past chat sessions
 copilotRouter.get("/chats", protect, getChats);

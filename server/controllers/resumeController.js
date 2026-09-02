@@ -123,13 +123,18 @@ export const createResume = async (req, res) => {
 };
 
 // controller for deleting a resume
-// DELETE: /api/resumes/delete
+// DELETE: /api/resumes/delete/:resumeId
 export const deleteResume = async (req, res) => {
   try {
     const userId = req.userId;
     const { resumeId } = req.params;
 
-    await Resume.findOneAndDelete({ userId, _id: resumeId });
+    const deleted = await Resume.findOneAndDelete({ userId, _id: resumeId });
+    if (!deleted) {
+      return res.status(403).json({
+        message: "Access denied. Resume not found or does not belong to your account.",
+      });
+    }
 
     // return success message
     return res.status(200).json({ message: "Resume deleted successfully" });
@@ -137,6 +142,22 @@ export const deleteResume = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
+
+// controller for deleting all resumes belonging to the authenticated user
+// DELETE: /api/resumes/delete-all
+export const deleteAllResumes = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const result = await Resume.deleteMany({ userId });
+    return res.status(200).json({
+      message: `Deleted ${result.deletedCount || 0} resumes successfully`,
+      deletedCount: result.deletedCount || 0,
+    });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 
 // get user resume by id
 // GET: /api/resumes/get
@@ -148,7 +169,9 @@ export const getResumeById = async (req, res) => {
     const resume = await Resume.findOne({ userId, _id: resumeId });
 
     if (!resume) {
-      return res.status(404).json({ message: "Resume not found" });
+      return res.status(403).json({
+        message: "Access denied. Resume not found or does not belong to your account.",
+      });
     }
 
     resume.__v = undefined;
@@ -240,6 +263,12 @@ export const updateResume = async (req, res) => {
       sanitizedUpdates,
       { new: true }
     );
+
+    if (!resume) {
+      return res.status(403).json({
+        message: "Access denied. Resume not found or does not belong to your account.",
+      });
+    }
 
     return res.status(200).json({ message: "Saved successfully", resume });
   } catch (error) {

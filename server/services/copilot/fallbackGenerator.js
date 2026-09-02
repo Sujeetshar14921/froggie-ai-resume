@@ -1,13 +1,84 @@
 /**
- * Generate smart, personalized fallback response when external AI API fails
+ * Generate smart, personalized fallback response when external AI API fails or is offline.
+ * Strictly bound to authenticated user identity and verified resume context.
+ *
  * @param {string} message - User input prompt
- * @param {Object} currentResume - Active candidate resume context
+ * @param {Object} currentResume - Verified active candidate resume context
+ * @param {Object} user - Authenticated user account profile
  * @returns {Object} Fallback response object matching copilot schema
  */
-export const generateSmartFallback = (message = "", currentResume = null) => {
+export const generateSmartFallback = (message = "", currentResume = null, user = null) => {
   const msgLower = (message || "").toLowerCase();
 
-  // 0. Complete Resume Creation Fallback ("Create / Banao Full Stack Resume")
+  // 0. Strict Security / Prompt Injection Defense Fallback
+  if (
+    msgLower.includes("other user") ||
+    msgLower.includes("another user") ||
+    msgLower.includes("switch user") ||
+    msgLower.includes("all resumes in the database") ||
+    msgLower.includes("ignore previous instructions") ||
+    msgLower.includes("alex's resume")
+  ) {
+    return {
+      content:
+        "I can only access and manage data belonging to your authenticated account. Cross-user data access is strictly prohibited.",
+      cardType: "none",
+      cardData: null,
+    };
+  }
+
+  // 1. Authenticated User Identity Inquiries ("Mera naam kya hai?", "Who am I?", etc.)
+  if (
+    msgLower.includes("naam kya hai") ||
+    msgLower.includes("mera naam") ||
+    msgLower.includes("my name") ||
+    msgLower.includes("who am i") ||
+    msgLower.includes("kya naam hai mera")
+  ) {
+    const accountName = user?.name || "Candidate";
+    const resumeName = currentResume?.personal_info?.full_name;
+    const hasDifferentResumeName =
+      resumeName && resumeName.trim().toLowerCase() !== accountName.trim().toLowerCase();
+
+    return {
+      content: `Aapka naam **${accountName}** hai (aapke logged-in account ke mutabik).${
+        hasDifferentResumeName
+          ? `\n\n*(Note: Aapke active resume par naam "${resumeName}" likha hua hai. Agar aap chahein to mai ise aapke logged-in naam se sync kar sakta hu!)*`
+          : ""
+      }`,
+      cardType: "none",
+      cardData: null,
+    };
+  }
+
+  // 2. Authenticated User Email Inquiries
+  if (
+    msgLower.includes("mera email") ||
+    msgLower.includes("my email") ||
+    msgLower.includes("email kya hai")
+  ) {
+    return {
+      content: `Aapke account ka email **${user?.email || "Not specified"}** hai.`,
+      cardType: "none",
+      cardData: null,
+    };
+  }
+
+  // 3. Resume Ownership Inquiries ("Ye resume kiska hai?", "Resume par kya naam hai?")
+  if (
+    msgLower.includes("resume kiska hai") ||
+    msgLower.includes("resume me kya naam") ||
+    msgLower.includes("resume par kya naam")
+  ) {
+    const resumeName = currentResume?.personal_info?.full_name || user?.name || "None specified";
+    return {
+      content: `Aapke active resume document par naam **${resumeName}** darz hai.`,
+      cardType: "none",
+      cardData: null,
+    };
+  }
+
+  // 4. Complete Resume Creation Fallback ("Create / Banao Full Stack Resume")
   if (
     msgLower.includes("create") ||
     msgLower.includes("banao") ||
@@ -21,14 +92,17 @@ export const generateSmartFallback = (message = "", currentResume = null) => {
       ? "Backend Engineer"
       : "Full Stack Developer";
 
+    const candidateName = user?.name || currentResume?.personal_info?.full_name || "Candidate Name";
+    const candidateEmail = user?.email || currentResume?.personal_info?.email || "candidate@example.com";
+
     return {
-      content: `### ✨ 100% ATS-Friendly ${role} Resume Prepared!\n\nI have structured a complete, production-grade resume with STAR metric bullets, high-density keywords, modern tech stack, and optimized summary.\n\nClick **"⚡ Create in My Resumes & Open in Editor"** below to save this directly to your account!`,
+      content: `### ✨ 100% ATS-Friendly ${role} Resume Prepared for ${candidateName}!\n\nI have structured a complete, production-grade resume with STAR metric bullets, high-density keywords, modern tech stack, and optimized summary.\n\nClick **"⚡ Create in My Resumes & Open in Editor"** below to save this directly to your account!`,
       cardType: "direct_resume_update",
       cardData: {
         isNewResume: true,
         resumeTitle: `${role} ATS Resume`,
         targetRole: role,
-        summaryOfChanges: `Complete 100% ATS-optimized ${role} resume created.`,
+        summaryOfChanges: `Complete 100% ATS-optimized ${role} resume created for ${candidateName}.`,
         affectedSections: [
           "personal_info",
           "professional_summary",
@@ -41,13 +115,13 @@ export const generateSmartFallback = (message = "", currentResume = null) => {
         ],
         updates: {
           personal_info: {
-            full_name: currentResume?.personal_info?.full_name || "Alex Morgan",
+            full_name: candidateName,
             profession: role,
-            email: currentResume?.personal_info?.email || "alex.morgan.dev@example.com",
-            phone: currentResume?.personal_info?.phone || "+91 98765 43210",
-            location: currentResume?.personal_info?.location || "Bengaluru, India",
-            linkedin: currentResume?.personal_info?.linkedin || "linkedin.com/in/alexmorgan",
-            github: currentResume?.personal_info?.github || "github.com/alexmorgan",
+            email: candidateEmail,
+            phone: user?.phone || currentResume?.personal_info?.phone || "+91 98765 43210",
+            location: user?.location || currentResume?.personal_info?.location || "Bengaluru, India",
+            linkedin: currentResume?.personal_info?.linkedin || "linkedin.com/in/candidate",
+            github: currentResume?.personal_info?.github || "github.com/candidate",
           },
           professional_summary:
             `High-impact ${role} with 3+ years of experience architecting high-scale web applications, microservices, and modern user interfaces. Proven track record of improving API latency by 42% and scaling architectures to 250k+ active users. Skilled in modern JavaScript/TypeScript ecosystems, cloud containerization, and clean test-driven design.`,
@@ -133,7 +207,7 @@ export const generateSmartFallback = (message = "", currentResume = null) => {
     };
   }
 
-  // 1. Direct Skills or Resume Updates Fallback
+  // 5. Direct Skills or Resume Updates Fallback
   if (
     msgLower.includes("skill") ||
     msgLower.includes("add") ||
@@ -158,7 +232,7 @@ export const generateSmartFallback = (message = "", currentResume = null) => {
     };
   }
 
-  // 2. ATS Score Audit Fallback
+  // 6. ATS Score Audit Fallback
   if (msgLower.includes("ats") || msgLower.includes("score")) {
     return {
       content:
@@ -187,7 +261,7 @@ export const generateSmartFallback = (message = "", currentResume = null) => {
     };
   }
 
-  // 3. Job Role Matching Fallback
+  // 7. Job Role Matching Fallback
   if (
     msgLower.includes("job") ||
     msgLower.includes("role") ||
@@ -215,7 +289,7 @@ Based on your technical skills, experience, and projects in **${role}**, here ar
     };
   }
 
-  // 4. Mock Interview Fallback
+  // 8. Mock Interview Fallback
   if (
     msgLower.includes("question") ||
     msgLower.includes("interview") ||
@@ -244,10 +318,10 @@ Here are 3 tailored interview questions based on your resume:
     };
   }
 
-  // 5. Default General Advice Fallback
+  // 9. Default General Advice Fallback
   return {
     content:
-      "I've analyzed your resume profile. How would you like to optimize your resume today? You can ask me to calculate your ATS score, rewrite any section, suggest matching job roles, or ask you interview questions!",
+      `Hello ${user?.name || "there"}! I've analyzed your profile and active resume. How would you like to optimize your career today? You can ask me to calculate your ATS score, rewrite any section, suggest matching job roles, or conduct a mock interview!`,
     cardType: "none",
     cardData: null,
   };

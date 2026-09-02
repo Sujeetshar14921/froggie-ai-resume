@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useState, useEffect, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { copilotApi } from "../api/copilotApi";
@@ -24,19 +24,58 @@ export const CopilotProvider = ({ children }) => {
   const [applyCallback, setApplyCallback] = useState(null);
   const [directUpdateCallback, setDirectUpdateCallback] = useState(null);
 
+  const currentUserIdRef = useRef(user?._id || null);
+
+  // Clean up all copilot state on logout or when switching accounts
+  useEffect(() => {
+    if (!token || !user) {
+      setActiveResumeId(null);
+      setActiveResumeData(null);
+      setUserResumes([]);
+      setActiveChatId(null);
+      setMessages([]);
+      setJobContext("");
+      setIsTyping(false);
+      setIsOpen(false);
+      currentUserIdRef.current = null;
+      return;
+    }
+
+    if (user._id !== currentUserIdRef.current) {
+      currentUserIdRef.current = user._id;
+      setActiveResumeId(null);
+      setActiveResumeData(null);
+      setUserResumes([]);
+      setActiveChatId(null);
+      setMessages([]);
+      setJobContext("");
+      setIsTyping(false);
+    }
+  }, [token, user]);
+
   // Load user resumes on login
   const fetchUserResumes = useCallback(async () => {
-    if (!token) return;
+    if (!token || !user) return;
     try {
       const data = await resumeApi.getUserResumes(token);
-      setUserResumes(data.resumes || []);
-      if (!activeResumeId && data.resumes && data.resumes.length > 0) {
-        setActiveResumeId(data.resumes[0]._id);
+      const list = data.resumes || [];
+      setUserResumes(list);
+      if (list.length > 0) {
+        // If current activeResumeId does not belong to the user, default to first resume
+        setActiveResumeId((prev) => {
+          if (!prev || !list.some((r) => r._id === prev)) {
+            return list[0]._id;
+          }
+          return prev;
+        });
+      } else {
+        setActiveResumeId(null);
+        setActiveResumeData(null);
       }
     } catch (err) {
       console.error("Failed to load resumes for copilot:", err);
     }
-  }, [token, activeResumeId]);
+  }, [token, user]);
 
   useEffect(() => {
     fetchUserResumes();
@@ -95,13 +134,23 @@ export const CopilotProvider = ({ children }) => {
         "Full Stack Developer";
       const title = customTitle || `${role} ATS Resume`;
 
+      // Always inject authenticated user's name and email if missing
+      const finalUpdates = {
+        ...updates,
+        personal_info: {
+          ...updates?.personal_info,
+          full_name: updates?.personal_info?.full_name || user?.name || "Candidate Name",
+          email: updates?.personal_info?.email || user?.email || "candidate@example.com",
+        },
+      };
+
       // 1. Create new resume document in database
       const createRes = await resumeApi.createResume(
         {
           title,
           template: "classic",
           accent_color: "#10B981",
-          resumeData: updates,
+          resumeData: finalUpdates,
         },
         token
       );
@@ -113,15 +162,16 @@ export const CopilotProvider = ({ children }) => {
       await resumeApi.updateResume(
         {
           resumeId: newId,
-          resumeData: updates,
+          resumeData: finalUpdates,
         },
         token
       );
 
       // 3. Update local state and reload list
       setActiveResumeId(newId);
-      setActiveResumeData(updates);
+      setActiveResumeData(finalUpdates);
       await fetchUserResumes();
+      window.dispatchEvent(new CustomEvent("resumes-updated"));
 
       toast.success(`✨ "${title}" created successfully in My Resumes!`, {
         duration: 4000,
@@ -152,17 +202,69 @@ export const CopilotProvider = ({ children }) => {
     if (typeof directUpdateCallback === "function") {
       directUpdateCallback(updates);
       toast.success(`Applied changes: ${summary} 🚀`);
+      window.dispatchEvent(new CustomEvent("resumes-updated"));
     } else if (activeResumeId && token) {
       try {
         await resumeApi.updateResume({ resumeId: activeResumeId, resumeData: updates }, token);
         toast.success(`Updated resume in database: ${summary} 🚀`);
         fetchUserResumes();
+        window.dispatchEvent(new CustomEvent("resumes-updated"));
       } catch (err) {
         console.error("Failed to update resume:", err);
         toast.error("Failed to update resume directly. Please open Resume Builder.");
       }
     } else {
       return await createNewResumeFromCopilot(updates, options?.title || options?.resumeTitle);
+    }
+  };
+
+  // Direct action confirmation handler for destructive or one-click actions
+  const confirmAction = async (actionType, payload = {}) => {
+    if (!token) return;
+
+    setIsTyping(true);
+    try {
+      const data = await copilotApi.executeAction(
+        { actionType, payload: { ...payload, confirmed: true }, chatId: activeChatId },
+        token
+      );
+
+      // Auto-refresh user resumes and notify pages
+      await fetchUserResumes();
+      window.dispatchEvent(new CustomEvent("resumes-updated"));
+
+      if (actionType === "delete_resume") {
+        if (activeResumeId === payload.resumeId) {
+          setActiveResumeId(null);
+          setActiveResumeData(null);
+        }
+        toast.success("Resume deleted successfully 🗑️");
+      } else if (actionType === "delete_all_resumes") {
+        setActiveResumeId(null);
+        setActiveResumeData(null);
+        toast.success("All resumes deleted successfully 🗑️");
+      } else {
+        toast.success("Action completed successfully ✅");
+      }
+
+      // Add assistant confirmation message in chat
+      if (data?.result) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: data.result.message || "Action executed successfully.",
+            cardType: data.result.cardType || "action_result",
+            cardData: data.result.cardData || data.result,
+            timestamp: new Date(),
+          },
+        ]);
+      }
+    } catch (err) {
+      console.error("Confirm action error:", err);
+      toast.error(err?.response?.data?.message || "Failed to execute action");
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -207,6 +309,16 @@ export const CopilotProvider = ({ children }) => {
       if (data.reply) {
         setMessages((prev) => [...prev, data.reply]);
 
+        // Auto-refresh resumes if resume was modified or created
+        if (
+          data.reply.cardType === "action_result" ||
+          data.reply.cardType === "file_list" ||
+          data.reply.cardType === "direct_resume_update"
+        ) {
+          fetchUserResumes();
+          window.dispatchEvent(new CustomEvent("resumes-updated"));
+        }
+
         // Auto-apply direct resume updates if inside active editor
         if (
           data.reply.cardType === "direct_resume_update" &&
@@ -220,12 +332,19 @@ export const CopilotProvider = ({ children }) => {
       }
     } catch (err) {
       console.error("Copilot error:", err);
+      const isForbidden = err?.response?.status === 403;
+      if (isForbidden) {
+        setActiveResumeId(null);
+        setActiveResumeData(null);
+        setActiveChatId(null);
+        fetchUserResumes();
+      }
       toast.error(err?.response?.data?.message || "Failed to get AI response");
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `⚠️ **Error:** ${err?.response?.data?.message || "Failed to get response"}. Please try again.`,
+          content: `⚠️ **Security Alert:** ${err?.response?.data?.message || "Failed to get response"}. Please try again.`,
           cardType: "none",
           cardData: null,
           timestamp: new Date(),
@@ -288,6 +407,7 @@ export const CopilotProvider = ({ children }) => {
         registerDirectUpdateHandler,
         applyDirectResumeUpdate,
         createNewResumeFromCopilot,
+        confirmAction,
       }}
     >
       {children}

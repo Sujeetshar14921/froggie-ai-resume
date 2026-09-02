@@ -79,7 +79,9 @@ export const NotificationBell = () => {
       setNotifications(updated);
       try {
         localStorage.setItem("froggie_notification_history", JSON.stringify(updated));
-      } catch (_) {}
+      } catch {
+        // Storage quota exceeded or disabled
+      }
     }
   };
 
