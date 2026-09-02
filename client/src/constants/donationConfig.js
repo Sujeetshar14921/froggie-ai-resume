@@ -57,7 +57,7 @@ export const DONATION_CONFIG = {
     },
   ],
 
-  // Transparency breakdown of costs
+  // Transparency breakdown  of costs
   costBreakdown: [
     {
       percentage: "45%",
