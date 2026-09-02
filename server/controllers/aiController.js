@@ -41,7 +41,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
       messages: [
         {
           role: "system",
@@ -84,7 +84,7 @@ export const enhanceJobDescription = async (req, res) => {
     }
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
       messages: [
         {
           role: "system",
@@ -184,7 +184,7 @@ Provide data in the following JSON format with no additional markdown wrapper or
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -192,7 +192,13 @@ Provide data in the following JSON format with no additional markdown wrapper or
       response_format: { type: "json_object" },
     });
 
-    const extractedData = response.choices[0].message.content;
+    let extractedData = response.choices[0]?.message?.content?.trim() || "{}";
+    if (extractedData.startsWith("```")) {
+      extractedData = extractedData
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, "")
+        .trim();
+    }
     const parsedData = JSON.parse(extractedData);
 
     const newResume = await Resume.create({

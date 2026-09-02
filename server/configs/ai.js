@@ -10,7 +10,7 @@ const baseURL = (process.env.OPENAI_BASE_URL || "").replace(/["']/g, "").trim();
 const defaultModel = (
   process.env.GEMINI_MODEL ||
   process.env.OPENAI_MODEL ||
-  "gemini-2.5-flash"
+  "gemini-3.5-flash-lite"
 )
   .replace(/["']/g, "")
   .trim();
@@ -23,7 +23,7 @@ class UniversalAiClient {
   constructor({ apiKey, baseURL, model }) {
     this.apiKey = apiKey;
     this.baseURL = baseURL;
-    this.model = model || "gemini-2.5-flash";
+    this.model = model || "gemini-3.5-flash-lite";
   }
 
   get isGemini() {
@@ -47,10 +47,12 @@ class UniversalAiClient {
     const targetModel = model || this.model;
     const modelsToTry = [
       targetModel,
+      "gemini-3.5-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-3.1-flash-lite",
+      "gemini-3-flash-preview",
       "gemini-2.5-flash",
       "gemini-3.5-flash",
-      "gemini-1.5-flash",
-      "gemini-2.5-pro",
     ];
 
     const uniqueModels = [...new Set(modelsToTry)];

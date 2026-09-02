@@ -222,7 +222,7 @@ Analyze and return JSON matching this exact structure:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gemini-2.5-flash",
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -230,7 +230,11 @@ Analyze and return JSON matching this exact structure:
       response_format: { type: "json_object" },
     });
 
-    const parsedResult = JSON.parse(response.choices[0].message.content.trim());
+    let rawOutput = response.choices[0]?.message?.content?.trim() || "{}";
+    if (rawOutput.startsWith("```")) {
+      rawOutput = rawOutput.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    }
+    const parsedResult = JSON.parse(rawOutput);
 
     // 4. Calculate Deterministic Weighted Overall Score
     const rawScores = parsedResult.scores || {};
