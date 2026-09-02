@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
 import {
   ChevronDown,
   HelpCircle,
@@ -12,7 +13,8 @@ import {
   ArrowRight,
   MessageSquare,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/home/Footer";
 import { useCopilot } from "../hooks/useCopilot";
@@ -76,13 +78,41 @@ const ALL_FAQS = [
 ];
 
 const FaqPage = () => {
+  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { openCopilot } = useCopilot();
+
   useSEO({
     title: "Frequently Asked Questions (FAQ) | froggie AI Resume Builder",
     description: "Got questions about ATS resume optimization, AI career copilot, PDF/Word exports, or privacy? Browse our comprehensive knowledge base and FAQs.",
-    canonical: "https://froggie-resume.com/faq",
+    keywords: "froggie FAQ, ATS resume questions, how does ATS work, AI resume maker FAQ, free resume builder questions, ATS score calculation, resume export PDF Word",
+    canonical: "https://froggie.site/faq",
+    schema: {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": ALL_FAQS.map((faq) => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.a,
+        },
+      })),
+    },
   });
 
-  const { openCopilot } = useCopilot();
+  const handleAskCopilot = () => {
+    if (!user) {
+      toast.error("Please create a free account or sign in to chat with froggie AI Career Copilot!", {
+        icon: "🐸",
+        duration: 4000,
+      });
+      navigate("/login?state=register");
+      return;
+    }
+    openCopilot({ prompt: "I have a question about improving my resume." });
+  };
+
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [openIndex, setOpenIndex] = useState(0);
@@ -261,7 +291,7 @@ const FaqPage = () => {
             </div>
 
             <button
-              onClick={() => openCopilot({ prompt: "I have a question about improving my resume." })}
+              onClick={handleAskCopilot}
               className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer"
             >
               <span>Ask froggie Now</span>

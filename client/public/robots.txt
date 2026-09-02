@@ -1,8 +1,30 @@
+# froggie AI Resume Builder robots.txt
+# https://froggie.site
+
 User-agent: *
 Allow: /
 Allow: /faq
 Allow: /login
 Allow: /view/
+Disallow: /app/
 Disallow: /api/
 
-Sitemap: https://froggie-resume.com/sitemap.xml
+User-agent: Googlebot
+Allow: /
+Allow: /faq
+Allow: /login
+Allow: /view/
+Disallow: /app/
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Allow: /faq
+Allow: /login
+Allow: /view/
+Disallow: /app/
+Disallow: /api/
+
+# Host & Sitemap Declaration
+Host: https://froggie.site
+Sitemap: https://froggie.site/sitemap.xml

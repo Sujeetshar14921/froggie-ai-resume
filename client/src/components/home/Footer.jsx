@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Zap,
   Bot,
+  Coffee,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import FeedbackModal from "./FeedbackModal";
@@ -194,6 +195,15 @@ const Footer = () => {
               Help make froggie better! Share your experience or request new features.
             </p>
 
+            {/* SUPPORT / DONATE BUTTON */}
+            <Link
+              to="/donate"
+              className="w-full px-4 py-2.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 text-xs font-bold rounded-xl border border-amber-500/30 transition-all flex items-center justify-center gap-2"
+            >
+              <Coffee size={15} className="text-amber-400" />
+              <span>Support & Donate ☕</span>
+            </Link>
+
             {/* FEEDBACK CTA BUTTON */}
             <button
               onClick={() => setIsFeedbackOpen(true)}
@@ -232,6 +242,11 @@ const Footer = () => {
             <span className="text-slate-700 hidden sm:inline">•</span>
             <Link to="/faq" className="hover:text-white text-slate-400 transition-colors">
               FAQ & Help Center
+            </Link>
+            <span className="text-slate-700 hidden sm:inline">•</span>
+            <Link to="/donate" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors flex items-center gap-1">
+              <Coffee size={12} />
+              <span>Donate</span>
             </Link>
             <span className="text-slate-700 hidden sm:inline">•</span>
             <button

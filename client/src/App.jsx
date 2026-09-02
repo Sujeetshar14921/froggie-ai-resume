@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, Suspense, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { authApi } from './api/authApi'
 import { login, setLoading } from './app/features/authSlice'
 import { Toaster } from 'react-hot-toast'
@@ -17,6 +17,7 @@ const MyResumes = lazy(() => import('./pages/MyResumes'))
 const AtsChecker = lazy(() => import('./pages/AtsChecker'))
 const Login = lazy(() => import('./pages/Login'))
 const FaqPage = lazy(() => import('./pages/FaqPage'))
+const DonatePage = lazy(() => import('./pages/DonatePage'))
 
 // Minimalist fallback loader
 const PageLoader = () => (
@@ -28,6 +29,7 @@ const PageLoader = () => (
 
 const App = () => {
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user)
 
   const getUserData = useCallback(async () => {
     const token = localStorage.getItem('token')
@@ -63,6 +65,7 @@ const App = () => {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/faq' element={<FaqPage />} />
+          <Route path='/donate' element={<DonatePage />} />
 
           <Route path='app' element={<Layout />}>
             <Route index element={<Dashboard />} />
@@ -75,9 +78,13 @@ const App = () => {
         </Routes>
       </Suspense>
 
-      {/* GLOBAL FLOATING CAREER COPILOT WIDGET & SLIDE-OVER DRAWER */}
-      <CopilotWidget />
-      <CopilotDrawer />
+      {/* GLOBAL FLOATING CAREER COPILOT WIDGET & SLIDE-OVER DRAWER (Visible only when user creates account / logs in) */}
+      {user && (
+        <>
+          <CopilotWidget />
+          <CopilotDrawer />
+        </>
+      )}
     </CopilotProvider>
   )
 }

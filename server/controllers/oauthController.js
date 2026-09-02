@@ -1,0 +1,122 @@
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import {
+  isProviderConfigured,
+  getAuthorizationUrl,
+  getProfileFromCode,
+} from "../services/oauthService.js";
+
+const getClientUrl = (req) => {
+  const origin = req?.headers?.origin || req?.headers?.referer;
+  if (origin) {
+    try {
+      const parsed = new URL(origin);
+      if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+        return `${parsed.protocol}//${parsed.host}`;
+      }
+    } catch (_) {}
+  }
+  return process.env.CLIENT_URL || "https://froggie.site";
+};
+
+const getCallbackUri = (req, provider) => {
+  if (process.env.SERVER_URL && !req.get("host")?.includes("localhost")) {
+    return `${process.env.SERVER_URL.replace(/\/$/, "")}/api/users/auth/${provider}/callback`;
+  }
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol || "http";
+  const host = req.headers["x-forwarded-host"] || req.get("host");
+  return `${protocol}://${host}/api/users/auth/${provider}/callback`;
+};
+
+/**
+ * Initiate OAuth consent flow: /api/users/auth/:provider
+ */
+export const initiateOAuth = (req, res) => {
+  const { provider } = req.params;
+  const clientUrl = getClientUrl(req);
+
+  const allowedProviders = ["google", "github", "linkedin", "facebook"];
+  if (!allowedProviders.includes(provider)) {
+    return res.redirect(`${clientUrl}/login?error=unsupported_provider&provider=${provider}`);
+  }
+
+  if (!isProviderConfigured(provider)) {
+    return res.redirect(`${clientUrl}/login?error=not_configured&provider=${provider}`);
+  }
+
+  try {
+    const redirectUri = getCallbackUri(req, provider);
+    const authUrl = getAuthorizationUrl(provider, redirectUri);
+    return res.redirect(authUrl);
+  } catch (error) {
+    console.error(`Error initiating OAuth for ${provider}:`, error.message);
+    return res.redirect(`${clientUrl}/login?error=initiation_failed&provider=${provider}`);
+  }
+};
+
+/**
+ * Handle OAuth provider callback: /api/users/auth/:provider/callback
+ */
+export const handleOAuthCallback = async (req, res) => {
+  const { provider } = req.params;
+  const { code, error, error_description } = req.query;
+  const clientUrl = getClientUrl(req);
+
+  if (error) {
+    console.warn(`OAuth error from ${provider}:`, error, error_description);
+    return res.redirect(`${clientUrl}/login?error=access_denied&provider=${provider}`);
+  }
+
+  if (!code) {
+    return res.redirect(`${clientUrl}/login?error=missing_code&provider=${provider}`);
+  }
+
+  try {
+    const redirectUri = getCallbackUri(req, provider);
+    const profile = await getProfileFromCode(provider, code, redirectUri);
+
+    if (!profile || !profile.email) {
+      return res.redirect(`${clientUrl}/login?error=missing_email&provider=${provider}`);
+    }
+
+    // 1. Check if user already exists by email
+    let user = await User.findOne({ email: profile.email.toLowerCase() });
+
+    if (user) {
+      // Update missing photo or provider linking
+      let shouldSave = false;
+      if (!user.image && profile.image) {
+        user.image = profile.image;
+        shouldSave = true;
+      }
+      if (!user.providerId && profile.providerId) {
+        user.providerId = profile.providerId;
+        user.authProvider = provider;
+        shouldSave = true;
+      }
+      if (shouldSave) {
+        await user.save();
+      }
+    } else {
+      // 2. Create new user with profile info
+      user = await User.create({
+        name: profile.name,
+        email: profile.email.toLowerCase(),
+        image: profile.image || "",
+        authProvider: provider,
+        providerId: profile.providerId,
+      });
+    }
+
+    // 3. Issue JWT token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // 4. Redirect to client login with token
+    return res.redirect(`${clientUrl}/login?token=${token}&provider=${provider}`);
+  } catch (err) {
+    console.error(`OAuth callback failure for ${provider}:`, err.message);
+    return res.redirect(`${clientUrl}/login?error=auth_failed&provider=${provider}`);
+  }
+};

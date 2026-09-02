@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { useCopilot } from "../../hooks/useCopilot";
 import CopilotHeader from "./CopilotHeader";
 import CopilotMessageList from "./CopilotMessageList";
@@ -6,10 +7,11 @@ import CopilotInputBar from "./CopilotInputBar";
 import CopilotHistoryDrawer from "./CopilotHistoryDrawer";
 
 const CopilotDrawer = () => {
+  const { user } = useSelector((state) => state.auth);
   const { isOpen, closeCopilot } = useCopilot();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  if (!isOpen) return null;
+  if (!user || !isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">

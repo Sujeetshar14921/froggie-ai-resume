@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://froggie-resume.com/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://froggie.site/</loc>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://froggie.site/og-image.png</image:loc>
+      <image:title>froggie AI ATS Resume Builder &amp; Career Studio</image:title>
+      <image:caption>Build 100% ATS-compliant resumes with real-time scoring and AI copilot</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://froggie.site/favicon.svg</image:loc>
+      <image:title>froggie Mascot Brand Logo</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://froggie-resume.com/faq</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://froggie.site/faq</loc>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://froggie-resume.com/login</loc>
-    <lastmod>2026-09-01</lastmod>
+    <loc>https://froggie.site/login</loc>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://froggie.site/login?state=register</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://froggie.site/donate</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
 </urlset>

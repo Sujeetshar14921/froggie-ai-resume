@@ -158,13 +158,32 @@ export const normalizeCopilotResponse = (rawParsed, rawText = "", currentResume 
     }
 
     const affected = Object.keys(updates);
+    const isNew =
+      Boolean(cardData?.isNewResume || rawParsed?.isNewResume) ||
+      (affected.includes("professional_summary") &&
+        affected.includes("skills") &&
+        affected.includes("experience"));
+
+    const role =
+      updates.personal_info?.profession ||
+      cardData?.targetRole ||
+      rawParsed?.targetRole ||
+      "Target Role";
 
     cardData = {
-      action: "update_resume",
+      action: isNew ? "create_resume" : "update_resume",
+      isNewResume: isNew,
+      targetRole: role,
+      resumeTitle:
+        cardData?.resumeTitle ||
+        rawParsed?.resumeTitle ||
+        `${role} ATS Resume`,
       summaryOfChanges:
         cardData?.summaryOfChanges ||
         rawParsed?.summaryOfChanges ||
-        `Updated ${affected.join(", ") || "resume fields"} with your requested modifications.`,
+        (isNew
+          ? `Complete 100% ATS-optimized ${role} resume created.`
+          : `Updated ${affected.join(", ") || "resume fields"} with your requested modifications.`),
       affectedSections: affected.length > 0 ? affected : ["skills"],
       updates: updates,
     };

@@ -21,8 +21,8 @@ const Layout = () => {
       <Navbar />
 
       <main className="relative">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-30"></div>
-        <div className="absolute right-0 top-40 w-96 h-96 bg-purple-100 rounded-full blur-3xl opacity-30"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute right-0 top-40 w-96 h-96 bg-teal-100/40 rounded-full blur-3xl opacity-40"></div>
 
         <div className="relative">
           <Outlet />

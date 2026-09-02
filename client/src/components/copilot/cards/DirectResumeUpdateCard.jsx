@@ -5,18 +5,47 @@ import toast from "react-hot-toast";
 import FrogFace from "../../FrogLogo";
 
 const DirectResumeUpdateCard = ({ data = {} }) => {
-  const { applyDirectResumeUpdate } = useCopilot();
+  const { applyDirectResumeUpdate, createNewResumeFromCopilot, activeResumeId } = useCopilot();
   const [applied, setApplied] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const {
     summaryOfChanges = "Resume updates prepared by froggie AI",
     affectedSections = [],
     updates = {},
+    isNewResume = false,
+    targetRole = "",
+    resumeTitle = "",
   } = data;
+
+  const isBrandNew = isNewResume || !activeResumeId || data.action === "create_resume";
+  const displayRole = updates?.personal_info?.profession || targetRole || "Full Stack Developer";
+
+  const handleCreateNew = async () => {
+    if (!updates || Object.keys(updates).length === 0) {
+      toast.error("No resume data found to create.");
+      return;
+    }
+
+    try {
+      setIsCreating(true);
+      await createNewResumeFromCopilot(updates, resumeTitle || `${displayRole} ATS Resume`);
+      setApplied(true);
+    } catch (err) {
+      console.error("Create new resume error:", err);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleApply = async () => {
     if (!updates || Object.keys(updates).length === 0) {
       toast.error("No updates found to apply.");
+      return;
+    }
+
+    if (isBrandNew) {
+      await handleCreateNew();
       return;
     }
 
@@ -35,10 +64,20 @@ const DirectResumeUpdateCard = ({ data = {} }) => {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-extrabold uppercase tracking-wider text-[10px] border border-emerald-200">
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg font-extrabold uppercase tracking-wider text-[10px] border ${
+            isBrandNew
+              ? "bg-emerald-600 text-white border-emerald-700 shadow-xs"
+              : "bg-emerald-50 text-emerald-800 border-emerald-200"
+          }`}>
             <FrogFace size={13} />
-            Resume Updates Ready
+            {isBrandNew ? "✨ New ATS Resume Ready" : "Resume Updates Ready"}
           </span>
+
+          {displayRole && (
+            <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 font-bold text-[10px]">
+              {displayRole}
+            </span>
+          )}
         </div>
       </div>
 
@@ -130,20 +169,66 @@ const DirectResumeUpdateCard = ({ data = {} }) => {
         )}
       </div>
 
-      {/* APPLY BUTTON */}
-      <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+      {/* ACTION BUTTONS */}
+      <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-2">
+        {/* SECONDARY ACTION */}
+        {!isBrandNew ? (
+          <button
+            type="button"
+            onClick={handleCreateNew}
+            disabled={isCreating}
+            className="w-full sm:w-auto px-4 py-2 rounded-xl font-bold text-[11px] text-slate-700 bg-slate-100 hover:bg-slate-200/80 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+          >
+            <Sparkles size={13} className="text-emerald-600" />
+            <span>Save as New Resume in My Resumes</span>
+          </button>
+        ) : (
+          activeResumeId && (
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await applyDirectResumeUpdate(updates, summaryOfChanges);
+                  setApplied(true);
+                  setTimeout(() => setApplied(false), 3500);
+                } catch (e) {
+                  console.error(e);
+                }
+              }}
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl font-semibold text-[11px] text-slate-600 hover:bg-slate-100 transition-all cursor-pointer"
+            >
+              Apply to Current Open Resume
+            </button>
+          )
+        )}
+
+        {/* PRIMARY ACTION */}
         <button
           onClick={handleApply}
+          disabled={isCreating}
           className={`w-full sm:w-auto px-5 py-2.5 rounded-xl font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
             applied
               ? "bg-emerald-600 text-white"
+              : isBrandNew
+              ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/25"
               : "bg-slate-950 hover:bg-slate-900 text-white shadow-slate-950/20 border border-emerald-500/30"
           }`}
         >
-          {applied ? (
+          {isCreating ? (
+            <>
+              <div className="size-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+              <span>Creating Resume in My Resumes...</span>
+            </>
+          ) : applied ? (
             <>
               <CheckCircle2 size={15} />
-              <span>Applied to Resume Successfully!</span>
+              <span>{isBrandNew ? "Created in My Resumes!" : "Applied to Resume Successfully!"}</span>
+            </>
+          ) : isBrandNew ? (
+            <>
+              <Sparkles size={15} />
+              <span>⚡ Create in My Resumes & Open in Editor</span>
+              <ArrowRight size={14} className="text-white" />
             </>
           ) : (
             <>

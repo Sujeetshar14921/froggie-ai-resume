@@ -7,6 +7,132 @@
 export const generateSmartFallback = (message = "", currentResume = null) => {
   const msgLower = (message || "").toLowerCase();
 
+  // 0. Complete Resume Creation Fallback ("Create / Banao Full Stack Resume")
+  if (
+    msgLower.includes("create") ||
+    msgLower.includes("banao") ||
+    msgLower.includes("full stack") ||
+    msgLower.includes("new resume") ||
+    msgLower.includes("generate")
+  ) {
+    const role = msgLower.includes("frontend")
+      ? "Frontend Engineer"
+      : msgLower.includes("backend")
+      ? "Backend Engineer"
+      : "Full Stack Developer";
+
+    return {
+      content: `### ✨ 100% ATS-Friendly ${role} Resume Prepared!\n\nI have structured a complete, production-grade resume with STAR metric bullets, high-density keywords, modern tech stack, and optimized summary.\n\nClick **"⚡ Create in My Resumes & Open in Editor"** below to save this directly to your account!`,
+      cardType: "direct_resume_update",
+      cardData: {
+        isNewResume: true,
+        resumeTitle: `${role} ATS Resume`,
+        targetRole: role,
+        summaryOfChanges: `Complete 100% ATS-optimized ${role} resume created.`,
+        affectedSections: [
+          "personal_info",
+          "professional_summary",
+          "skills",
+          "experience",
+          "project",
+          "education",
+          "certifications",
+          "achievements",
+        ],
+        updates: {
+          personal_info: {
+            full_name: currentResume?.personal_info?.full_name || "Alex Morgan",
+            profession: role,
+            email: currentResume?.personal_info?.email || "alex.morgan.dev@example.com",
+            phone: currentResume?.personal_info?.phone || "+91 98765 43210",
+            location: currentResume?.personal_info?.location || "Bengaluru, India",
+            linkedin: currentResume?.personal_info?.linkedin || "linkedin.com/in/alexmorgan",
+            github: currentResume?.personal_info?.github || "github.com/alexmorgan",
+          },
+          professional_summary:
+            `High-impact ${role} with 3+ years of experience architecting high-scale web applications, microservices, and modern user interfaces. Proven track record of improving API latency by 42% and scaling architectures to 250k+ active users. Skilled in modern JavaScript/TypeScript ecosystems, cloud containerization, and clean test-driven design.`,
+          skills: [
+            "React.js",
+            "Node.js",
+            "Express",
+            "TypeScript",
+            "Next.js",
+            "MongoDB",
+            "PostgreSQL",
+            "REST APIs",
+            "GraphQL",
+            "Docker",
+            "AWS (S3/EC2)",
+            "Tailwind CSS",
+            "Redux Toolkit",
+            "Jest",
+            "Git & GitHub",
+            "CI/CD Pipelines",
+          ],
+          experience: [
+            {
+              company: "Nexus Cloud Systems",
+              position: `Senior ${role}`,
+              start_date: "2023-01",
+              end_date: "Present",
+              is_current: true,
+              description:
+                "• Architected and deployed microservices handling 250k+ monthly requests, improving API response time by 42%.\n• Spearheaded the migration from legacy monolith to React & Node.js, slashing page load times by 35%.\n• Implemented automated CI/CD deployment pipelines using Docker and GitHub Actions, cutting release cycles from 2 days to 30 minutes.",
+            },
+            {
+              company: "Horizon Tech Labs",
+              position: `${role}`,
+              start_date: "2021-06",
+              end_date: "2022-12",
+              is_current: false,
+              description:
+                "• Built responsive, accessible user interfaces in React.js and Tailwind CSS for 4 enterprise web applications.\n• Engineered secure RESTful backend APIs in Express and MongoDB with JWT authentication and rate limiting.\n• Reduced database query bottlenecks by 28% through indexing and Redis caching strategies.",
+            },
+          ],
+          project: [
+            {
+              name: "CloudScale Microservices E-Commerce",
+              type: "Full Stack Distributed Web App",
+              description:
+                "Engineered a scalable e-commerce platform using React, Node.js, MongoDB, and Redis featuring real-time inventory management and Stripe integration.",
+            },
+            {
+              name: "AI-Powered Talent Analyzer",
+              type: "AI & Full Stack Application",
+              description:
+                "Developed an automated resume parser and candidate match scoring engine utilizing Next.js, Express, and OpenAI API with 98% parsing accuracy.",
+            },
+          ],
+          education: [
+            {
+              institution: "National Institute of Technology",
+              degree: "B.Tech in Computer Science & Engineering",
+              field: "Computer Science",
+              graduation_date: "2021",
+              gpa: "8.8 / 10",
+            },
+          ],
+          certifications: [
+            {
+              name: "AWS Certified Developer – Associate",
+              issuer: "Amazon Web Services",
+              date: "2024",
+              url: "https://aws.amazon.com",
+            },
+          ],
+          achievements: [
+            {
+              title: "1st Place – Smart India Hackathon",
+              date: "2023",
+              description:
+                "Built an automated logistics optimizer serving 10,000 simulated routes in real-time.",
+            },
+          ],
+        },
+      },
+    };
+  }
+
   // 1. Direct Skills or Resume Updates Fallback
   if (
     msgLower.includes("skill") ||

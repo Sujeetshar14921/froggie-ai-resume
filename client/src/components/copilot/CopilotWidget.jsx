@@ -1,11 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import FrogFace from "../FrogLogo";
 import { useCopilot } from "../../hooks/useCopilot";
 
 const CopilotWidget = () => {
+  const { user } = useSelector((state) => state.auth);
   const { isOpen, openCopilot } = useCopilot();
 
-  if (isOpen) return null;
+  if (!user || isOpen) return null;
 
   return (
     <aside

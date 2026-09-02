@@ -15,11 +15,14 @@ const connectDB = async () => {
 
   try {
     isConnecting = true;
-    const mongodbURI = process.env.MONGODB_URI;
+    let mongodbURI = process.env.MONGODB_URI;
 
     if (!mongodbURI) {
       throw new Error("MONGODB_URI environment variable is missing in .env file");
     }
+
+    // Strip accidental quotes or trailing whitespaces
+    mongodbURI = mongodbURI.trim().replace(/^["']|["']$/g, "").trim();
 
     // Set connection event listeners once
     if (mongoose.connection.listenerCount("connected") === 0) {

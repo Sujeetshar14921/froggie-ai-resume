@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { copilotApi } from "../api/copilotApi";
 import { resumeApi } from "../api/resumeApi";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ const CopilotContext = createContext(null);
 
 export const CopilotProvider = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   const [activeResumeId, setActiveResumeId] = useState(null);
@@ -79,8 +81,74 @@ export const CopilotProvider = ({ children }) => {
     }
   };
 
+  // Create a completely new resume directly from Copilot
+  const createNewResumeFromCopilot = async (updates = {}, customTitle = null) => {
+    if (!token) {
+      toast.error("Please log in to save your resume");
+      return;
+    }
+
+    try {
+      const role =
+        updates?.personal_info?.profession ||
+        customTitle ||
+        "Full Stack Developer";
+      const title = customTitle || `${role} ATS Resume`;
+
+      // 1. Create new resume document in database
+      const createRes = await resumeApi.createResume(
+        {
+          title,
+          template: "classic",
+          accent_color: "#10B981",
+          resumeData: updates,
+        },
+        token
+      );
+
+      const newId = createRes?.resume?._id;
+      if (!newId) throw new Error("Could not retrieve created resume ID");
+
+      // 2. Also ensure all nested fields and arrays are populated
+      await resumeApi.updateResume(
+        {
+          resumeId: newId,
+          resumeData: updates,
+        },
+        token
+      );
+
+      // 3. Update local state and reload list
+      setActiveResumeId(newId);
+      setActiveResumeData(updates);
+      await fetchUserResumes();
+
+      toast.success(`✨ "${title}" created successfully in My Resumes!`, {
+        duration: 4000,
+        icon: "🐸",
+      });
+
+      // 4. Navigate directly to resume builder
+      navigate(`/app/builder/${newId}`);
+      return newId;
+    } catch (err) {
+      console.error("Failed to create new resume from copilot:", err);
+      const errMsg = err?.response?.data?.message || err.message || "Failed to save resume";
+      toast.error("Could not create resume: " + errMsg);
+      return null;
+    }
+  };
+
   // Apply complete or multi-section direct updates to resume
-  const applyDirectResumeUpdate = async (updates, summary = "Updates applied") => {
+  const applyDirectResumeUpdate = async (updates, summary = "Updates applied", options = {}) => {
+    const isExplicitNew = options?.createNew || options?.isNewResume;
+    const hasNoActiveResume = !activeResumeId && typeof directUpdateCallback !== "function";
+
+    // If it's a new resume request or there is no open resume, create a brand new resume in My Resumes!
+    if (isExplicitNew || hasNoActiveResume) {
+      return await createNewResumeFromCopilot(updates, options?.title || options?.resumeTitle);
+    }
+
     if (typeof directUpdateCallback === "function") {
       directUpdateCallback(updates);
       toast.success(`Applied changes: ${summary} 🚀`);
@@ -94,8 +162,7 @@ export const CopilotProvider = ({ children }) => {
         toast.error("Failed to update resume directly. Please open Resume Builder.");
       }
     } else {
-      navigator.clipboard.writeText(JSON.stringify(updates, null, 2));
-      toast.success("Copied update payload to clipboard!");
+      return await createNewResumeFromCopilot(updates, options?.title || options?.resumeTitle);
     }
   };
 
@@ -220,6 +287,7 @@ export const CopilotProvider = ({ children }) => {
         applyToResume,
         registerDirectUpdateHandler,
         applyDirectResumeUpdate,
+        createNewResumeFromCopilot,
       }}
     >
       {children}
