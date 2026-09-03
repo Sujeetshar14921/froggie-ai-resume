@@ -3,12 +3,15 @@ import { animationConfig, isReducedMotion } from "./config";
 
 /**
  * Advanced Cinematic GSAP sequence for FrogSplashIntro
- * Animates the logo directly from the CENTER of the screen:
- * - Center quantum core spark & flare
- * - 3D expansion from screen center with camera proximity
- * - Snaps into center position with back overshoot and kinetic camera shake
- * - Concentric 360-degree shockwaves bursting from screen center
- * - Cascading slogan, telemetry, and hyperspace portal zoom exit
+ * Sequence order:
+ * 1. Center quantum core spark & flare
+ * 2. Logo expands from its zone's center with camera proximity
+ * 3. Snaps into position with back overshoot + kinetic camera shake
+ * 4. Concentric 360-degree shockwaves bursting from the logo's center
+ * 5. Logo holds briefly, then SLIDES UP out of the way
+ * 6. Slogan/telemetry reveals in its own zone (no overlap with the logo)
+ * 7. Hyperspace portal zoom exit — slogan fades out fully BEFORE the logo zooms,
+ *    so nothing overlaps on the way out either.
  */
 export function initSplashAnimation(container, { onComplete }) {
   if (!container) return { kill: () => {}, exit: () => {} };
@@ -20,12 +23,14 @@ export function initSplashAnimation(container, { onComplete }) {
 
   const masterTl = gsap.timeline();
 
-  // 1. Initial State Setup (Dead Center Origin)
+  // 1. Initial State Setup
   gsap.set(".splash-overlay", { opacity: 1 });
+  gsap.set(".splash-mascot-wrapper", {
+    y: 0,
+    transformOrigin: "center center",
+  });
   gsap.set(".splash-mascot", {
     scale: 0,
-    y: 0,
-    x: 0,
     opacity: 0,
     rotationX: 35,
     rotationY: -45,
@@ -43,7 +48,7 @@ export function initSplashAnimation(container, { onComplete }) {
     opacity: 0,
     transformOrigin: "center center",
   });
-  gsap.set(".splash-slogan-box", { opacity: 0, y: 35, filter: "blur(10px)" });
+  gsap.set(".splash-slogan-box", { opacity: 0, y: 20, scale: 0.96, filter: "blur(10px)" });
   gsap.set(".splash-chip", { opacity: 0, scale: 0.85, y: 15 });
   gsap.set(".splash-progress-fill", { width: "0%" });
   gsap.set(".splash-flash", { opacity: 0 });
@@ -66,7 +71,7 @@ export function initSplashAnimation(container, { onComplete }) {
       0.25
     )
 
-    // 3. Logo Emerges and Expands from the Screen Center (0.15s - 0.7s)
+    // 3. Logo Emerges and Expands (0.15s - 0.7s)
     .to(
       ".splash-mascot",
       {
@@ -81,7 +86,7 @@ export function initSplashAnimation(container, { onComplete }) {
       0.15
     )
 
-    // 4. Snaps into Center Position with High-Energy Overshoot (0.7s - 1.25s)
+    // 4. Snaps into Position with High-Energy Overshoot (0.7s - 1.25s)
     .to(
       ".splash-mascot",
       {
@@ -95,7 +100,7 @@ export function initSplashAnimation(container, { onComplete }) {
       0.7
     )
 
-    // Camera Shake on Center Impact (at 0.72s)
+    // Camera Shake on Impact (at 0.72s)
     .to(
       ".splash-shake-wrapper",
       {
@@ -111,7 +116,7 @@ export function initSplashAnimation(container, { onComplete }) {
       0.72
     )
 
-    // Concentric Shockwaves Blast 360° from Center (at 0.72s)
+    // Concentric Shockwaves Blast 360° (at 0.72s)
     .fromTo(
       ".splash-shockwave-1",
       { scale: 0.2, opacity: 1 },
@@ -131,7 +136,7 @@ export function initSplashAnimation(container, { onComplete }) {
       0.85
     )
 
-    // Orbiting Sparkles Emerge from Center
+    // Orbiting Sparkles Emerge
     .fromTo(
       ".splash-sparkle",
       { scale: 0, opacity: 0, rotate: -60 },
@@ -139,17 +144,42 @@ export function initSplashAnimation(container, { onComplete }) {
       0.85
     )
 
-    // 5. Slogan & Brand Telemetry Cascade Down (0.95s - 1.5s)
+    // 5. HOLD — let the frog sit fully visible at its spot for a beat
+    // (nothing scheduled here on purpose — this is the "look at the logo" pause: 0.85s -> 1.5s)
+
+    // 6. FROG SLIDES UP, fully clearing the slogan zone (starts 1.5s)
+    .to(
+      ".splash-mascot-wrapper",
+      {
+        y: -90,
+        scale: 0.78,
+        duration: 0.6,
+        ease: "power3.inOut",
+      },
+      1.5
+    )
+    .to(
+      ".splash-sparkle",
+      {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power1.in",
+      },
+      1.5
+    )
+
+    // 7. Slogan reveal — starts only AFTER the frog's slide has fully finished (2.15s)
     .to(
       ".splash-slogan-box",
       {
         opacity: 1,
         y: 0,
+        scale: 1,
         filter: "blur(0px)",
         duration: 0.7,
         ease: "power3.out",
       },
-      0.95
+      2.15
     )
 
     // Feature Badges Pop In
@@ -163,10 +193,10 @@ export function initSplashAnimation(container, { onComplete }) {
         stagger: 0.08,
         ease: "back.out(1.7)",
       },
-      1.15
+      2.35
     )
 
-    // 6. HUD Telemetry & Progress Fill (1.1s - 3.2s)
+    // 8. HUD Telemetry & Progress Fill (2.3s - 4.4s)
     .to(
       ".splash-progress-fill",
       {
@@ -174,7 +204,7 @@ export function initSplashAnimation(container, { onComplete }) {
         duration: 2.1,
         ease: "power1.inOut",
       },
-      1.1
+      2.3
     )
     .to(
       percentObj,
@@ -195,19 +225,17 @@ export function initSplashAnimation(container, { onComplete }) {
           }
         },
       },
-      1.1
+      2.3
     );
 
-  // Subtle 3D idle floating for mascot in the center
-  const floatTween = gsap.to(".splash-mascot", {
-    y: -8,
-    rotationY: 5,
-    rotationX: -3,
+  // Subtle idle drift for mascot once it's parked in its slid-up spot
+  const floatTween = gsap.to(".splash-mascot-wrapper", {
+    y: "-=8",
     duration: 2.5,
     repeat: -1,
     yoyo: true,
     ease: "sine.inOut",
-    delay: 1.4,
+    delay: 2.5,
   });
 
   // End of sequence -> trigger exit
@@ -227,15 +255,34 @@ export function initSplashAnimation(container, { onComplete }) {
       },
     });
 
-    // Epic Camera Portal Push & Emerald Flash through the Center
+    // 1. Slogan fades/shrinks out FIRST and completely (0s - 0.3s)
     exitTl
-      .to(".splash-flash", {
-        opacity: 0.5,
-        duration: 0.18,
-        ease: "power2.in",
-      })
       .to(
-        ".splash-mascot",
+        ".splash-slogan-box",
+        {
+          opacity: 0,
+          scale: 0.9,
+          filter: "blur(12px)",
+          duration: 0.3,
+          ease: "power2.in",
+        },
+        0
+      )
+
+      // 2. Flash starts once slogan is basically gone (0.25s)
+      .to(
+        ".splash-flash",
+        {
+          opacity: 0.5,
+          duration: 0.18,
+          ease: "power2.in",
+        },
+        0.25
+      )
+
+      // 3. ONLY NOW does the frog zoom/portal out — slogan is already invisible
+      .to(
+        ".splash-mascot-wrapper",
         {
           scale: 4.5,
           opacity: 0,
@@ -243,19 +290,10 @@ export function initSplashAnimation(container, { onComplete }) {
           duration: 0.55,
           ease: "power3.in",
         },
-        0.05
+        0.3
       )
-      .to(
-        ".splash-slogan-box",
-        {
-          opacity: 0,
-          scale: 0.9,
-          filter: "blur(12px)",
-          duration: 0.4,
-          ease: "power2.in",
-        },
-        0
-      )
+
+      // 4. Whole overlay fades last
       .to(
         ".splash-overlay",
         {
@@ -263,7 +301,7 @@ export function initSplashAnimation(container, { onComplete }) {
           duration: 0.5,
           ease: "power2.out",
         },
-        0.2
+        0.5
       );
   }
 
