@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import { Sparkles, ArrowRight, Check, Layout, Palette, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,6 +6,7 @@ import { resumeApi } from "../../api/resumeApi";
 import { TEMPLATES } from "../../constants/templates";
 import toast from "react-hot-toast";
 import FrogFace from "../FrogLogo";
+import { initSectionHeaderReveal, animateTemplateSwitch } from "../../animations";
 
 const colorOptions = [
   { name: "Emerald", value: "#10B981" },
@@ -23,6 +23,29 @@ const TemplateShowcase = () => {
   const [isCreating, setIsCreating] = useState(false);
   const { token, user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  const containerRef = useRef(null);
+  const previewRef = useRef(null);
+
+  useEffect(() => {
+    const cleanup = initSectionHeaderReveal(containerRef.current);
+    return cleanup;
+  }, []);
+
+  const handleTemplateChange = (tpl) => {
+    setSelectedTemplate(tpl);
+    setActiveColor(tpl.accent || "#10B981");
+    if (previewRef.current) {
+      animateTemplateSwitch(previewRef.current);
+    }
+  };
+
+  const handleColorChange = (color) => {
+    setActiveColor(color);
+    if (previewRef.current) {
+      animateTemplateSwitch(previewRef.current);
+    }
+  };
 
   const handleUseTemplate = async () => {
     const resumeTitle = user?.name ? `${user.name}'s Resume` : "My Resume";
@@ -61,46 +84,29 @@ const TemplateShowcase = () => {
   };
 
   return (
-    <section id="templates" className="py-28 bg-white relative overflow-hidden">
+    <section id="templates" ref={containerRef} className="py-28 bg-white relative overflow-hidden">
       {/* Background radiant orbs */}
       <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4"
-          >
+        <div className="section-header text-center max-w-3xl mx-auto mb-16">
+          <span className="section-badge inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
             <FrogFace size={15} />
             7 Battle-Tested ATS Formats
-          </motion.span>
+          </span>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight"
-          >
+          <h2 className="section-title text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
             Choose a Template Designed to{" "}
             <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
               Beat the ATS
             </span>
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-slate-600"
-          >
+          <p className="section-subtitle mt-4 text-base sm:text-lg text-slate-600">
             Switch templates with 1-click at any time. Your content seamlessly reformats.
-          </motion.p>
+          </p>
         </div>
 
         {/* TEMPLATE PICKER TABS */}
@@ -110,10 +116,7 @@ const TemplateShowcase = () => {
             return (
               <button
                 key={tpl.id}
-                onClick={() => {
-                  setSelectedTemplate(tpl);
-                  setActiveColor(tpl.accent || "#10B981");
-                }}
+                onClick={() => handleTemplateChange(tpl)}
                 className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer ${
                   isSelected
                     ? "bg-slate-950 text-white shadow-lg scale-105"
@@ -193,7 +196,7 @@ const TemplateShowcase = () => {
                 {colorOptions.map((c) => (
                   <button
                     key={c.value}
-                    onClick={() => setActiveColor(c.value)}
+                    onClick={() => handleColorChange(c.value)}
                     className="w-8 h-8 rounded-full shadow-sm flex items-center justify-center transition-all hover:scale-110 cursor-pointer ring-2"
                     style={{
                       backgroundColor: c.value,
@@ -231,108 +234,102 @@ const TemplateShowcase = () => {
 
           {/* RIGHT: REAL-TIME TEMPLATE SHEET PREVIEW */}
           <div className="lg:col-span-7 flex justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedTemplate.id + activeColor}
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.3 }}
-                className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden text-[13px] leading-snug"
+            <div
+              ref={previewRef}
+              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden text-[13px] leading-snug"
+            >
+              {/* Simulated Header */}
+              <div
+                className="p-6 text-white transition-colors duration-300"
+                style={{
+                  backgroundColor:
+                    selectedTemplate.id === "modern"
+                      ? activeColor
+                      : selectedTemplate.id === "executive"
+                      ? "#0f172a"
+                      : "#0f172a",
+                }}
               >
-                {/* Simulated Header */}
-                <div
-                  className="p-6 text-white transition-colors duration-300"
-                  style={{
-                    backgroundColor:
-                      selectedTemplate.id === "modern"
-                        ? activeColor
-                        : selectedTemplate.id === "executive"
-                        ? "#0f172a"
-                        : "#0f172a",
-                  }}
-                >
-                  <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-xl font-bold">Alex Morgan</h4>
+                    <p className="text-xs opacity-90 font-medium">Senior Software Engineer</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 bg-white/20 rounded font-mono">
+                    San Francisco, CA
+                  </span>
+                </div>
+              </div>
+
+              {/* Simulated Body */}
+              <div className="p-6 space-y-4">
+                {/* Summary */}
+                <div>
+                  <h5
+                    className="font-bold text-xs uppercase tracking-wider mb-1"
+                    style={{ color: activeColor }}
+                  >
+                    Professional Summary
+                  </h5>
+                  <p className="text-slate-600 text-xs leading-relaxed">
+                    Engineering lead with 6+ years driving distributed systems architecture, microservices scaling, and high-impact teams.
+                  </p>
+                </div>
+
+                {/* Experience */}
+                <div>
+                  <h5
+                    className="font-bold text-xs uppercase tracking-wider mb-2"
+                    style={{ color: activeColor }}
+                  >
+                    Experience
+                  </h5>
+                  <div className="space-y-2">
                     <div>
-                      <h4 className="text-xl font-bold">Alex Morgan</h4>
-                      <p className="text-xs opacity-90 font-medium">Senior Software Engineer</p>
+                      <div className="flex justify-between font-bold text-slate-800 text-xs">
+                        <span>Staff Engineer · Stripe</span>
+                        <span className="text-slate-400 font-normal">2022 – Present</span>
+                      </div>
+                      <p className="text-slate-500 text-[11px] mt-0.5">
+                        • Scaled payments engine throughput by 300% across international markets.
+                      </p>
                     </div>
-                    <span className="text-[10px] px-2 py-0.5 bg-white/20 rounded font-mono">
-                      San Francisco, CA
-                    </span>
                   </div>
                 </div>
 
-                {/* Simulated Body */}
-                <div className="p-6 space-y-4">
-                  {/* Summary */}
-                  <div>
-                    <h5
-                      className="font-bold text-xs uppercase tracking-wider mb-1"
-                      style={{ color: activeColor }}
-                    >
-                      Professional Summary
-                    </h5>
-                    <p className="text-slate-600 text-xs leading-relaxed">
-                      Engineering lead with 6+ years driving distributed systems architecture, microservices scaling, and high-impact teams.
-                    </p>
-                  </div>
-
-                  {/* Experience */}
-                  <div>
-                    <h5
-                      className="font-bold text-xs uppercase tracking-wider mb-2"
-                      style={{ color: activeColor }}
-                    >
-                      Experience
-                    </h5>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex justify-between font-bold text-slate-800 text-xs">
-                          <span>Staff Engineer · Stripe</span>
-                          <span className="text-slate-400 font-normal">2022 – Present</span>
-                        </div>
-                        <p className="text-slate-500 text-[11px] mt-0.5">
-                          • Scaled payments engine throughput by 300% across international markets.
-                        </p>
-                      </div>
+                {/* Skills */}
+                <div>
+                  <h5
+                    className="font-bold text-xs uppercase tracking-wider mb-2"
+                    style={{ color: activeColor }}
+                  >
+                    Skills
+                  </h5>
+                  {selectedTemplate.id === "skill-bullet" ? (
+                    <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-700">
+                      {["React / Next.js", "Node.js / Express", "TypeScript", "PostgreSQL", "AWS Cloud", "Docker & CI/CD"].map((s) => (
+                        <li key={s} className="flex items-center gap-1.5">
+                          <span className="size-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
+                          <span className="font-semibold">{s}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {["React", "Node.js", "TypeScript", "PostgreSQL", "AWS", "Docker"].map((s) => (
+                        <span
+                          key={s}
+                          className="px-2 py-0.5 rounded text-[11px] font-semibold"
+                          style={{ backgroundColor: `${activeColor}15`, color: activeColor }}
+                        >
+                          {s}
+                        </span>
+                      ))}
                     </div>
-                  </div>
-
-                  {/* Skills */}
-                  <div>
-                    <h5
-                      className="font-bold text-xs uppercase tracking-wider mb-2"
-                      style={{ color: activeColor }}
-                    >
-                      Skills
-                    </h5>
-                    {selectedTemplate.id === "skill-bullet" ? (
-                      <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-700">
-                        {["React / Next.js", "Node.js / Express", "TypeScript", "PostgreSQL", "AWS Cloud", "Docker & CI/CD"].map((s) => (
-                          <li key={s} className="flex items-center gap-1.5">
-                            <span className="size-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
-                            <span className="font-semibold">{s}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="flex flex-wrap gap-1.5">
-                        {["React", "Node.js", "TypeScript", "PostgreSQL", "AWS", "Docker"].map((s) => (
-                          <span
-                            key={s}
-                            className="px-2 py-0.5 rounded text-[11px] font-semibold"
-                            style={{ backgroundColor: `${activeColor}15`, color: activeColor }}
-                          >
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
-              </motion.div>
-            </AnimatePresence>
+              </div>
+            </div>
           </div>
 
         </div>

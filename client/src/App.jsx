@@ -15,6 +15,7 @@ const ResumeBuilder = lazy(() => import('./pages/ResumeBuilder'))
 const Preview = lazy(() => import('./pages/Preview'))
 const MyResumes = lazy(() => import('./pages/MyResumes'))
 const AtsChecker = lazy(() => import('./pages/AtsChecker'))
+const ApplicationTracker = lazy(() => import('./pages/ApplicationTracker'))
 const Login = lazy(() => import('./pages/Login'))
 const FaqPage = lazy(() => import('./pages/FaqPage'))
 const DonatePage = lazy(() => import('./pages/DonatePage'))
@@ -71,6 +72,7 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path='my-resumes' element={<MyResumes />} />
             <Route path='ats-checker' element={<AtsChecker />} />
+            <Route path='applications' element={<ApplicationTracker />} />
             <Route path='builder/:resumeId' element={<ResumeBuilder />} />
           </Route>
 

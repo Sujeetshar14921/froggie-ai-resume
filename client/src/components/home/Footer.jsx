@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import FeedbackModal from "./FeedbackModal";
-import FrogFace from "../FrogLogo";
+import FrogFace, { BrandIcon } from "../FrogLogo";
 import { TEMPLATES } from "../../constants/templates";
 
 const Footer = () => {
@@ -39,17 +39,13 @@ const Footer = () => {
           {/* BRAND COLUMN (4 cols on lg) */}
           <div className="lg:col-span-4 space-y-5">
             <div className="flex items-center gap-3">
-              <div className="size-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-400 p-[2px] shadow-lg shadow-emerald-950/50">
-                <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
-                  <FrogFace size={26} />
-                </div>
-              </div>
+              <BrandIcon size="md" />
               <div>
                 <span className="text-2xl font-black text-white tracking-tight flex items-center gap-1">
                   froggie<span className="text-emerald-400">.</span>
                 </span>
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block -mt-1">
-                  AI Resume & Career Suite
+                <span className="text-[10px] font-bold text-emerald-400 tracking-widest block">
+                  Smart Resume Studio
                 </span>
               </div>
             </div>
@@ -61,7 +57,7 @@ const Footer = () => {
             {/* STATUS BADGE */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-white">froggie v2.0</span>
+              <span className="font-semibold text-white">froggie v1.0</span>
               <span className="text-slate-500">|</span>
               <span className="text-emerald-400 font-medium flex items-center gap-1">
                 <ShieldCheck size={13} /> 100% ATS Ready

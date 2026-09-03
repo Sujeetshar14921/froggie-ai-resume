@@ -6,8 +6,15 @@ Allow: /
 Allow: /faq
 Allow: /login
 Allow: /view/
+Allow: /favicon*
+Allow: /*.png$
+Allow: /*.svg$
+Allow: /*.ico$
 Disallow: /app/
 Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /
 
 User-agent: Googlebot
 Allow: /

@@ -8,10 +8,12 @@ import {
   Loader2,
   Save,
   Share2Icon,
+  ShieldCheck,
 } from "lucide-react";
 
 const BuilderHeader = ({
   title,
+  resumeId,
   isPublic,
   isLoading,
   isSaving,
@@ -53,6 +55,17 @@ const BuilderHeader = ({
               <Share2Icon className="size-3.5" /> <span className="hidden sm:inline">Share</span>
             </button>
           )}
+
+          {/* ATS CHECKER BUTTON */}
+          <Link
+            to={resumeId ? `/app/ats-checker?resumeId=${resumeId}` : "/app/ats-checker"}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 hover:text-emerald-900 rounded-lg border border-emerald-400/50 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+            title="Scan and benchmark this resume in the ATS Checker"
+          >
+            <ShieldCheck className="size-3.5 text-emerald-600" />
+            <span className="hidden sm:inline">ATS Checker</span>
+            <span className="sm:hidden">ATS</span>
+          </Link>
 
           {/* PUBLIC / PRIVATE TOGGLE */}
           <button

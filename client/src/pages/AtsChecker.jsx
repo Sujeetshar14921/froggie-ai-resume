@@ -10,6 +10,8 @@ import {
   ShieldCheck,
   Share2,
   Download,
+  Target,
+  ArrowRight,
 } from "lucide-react";
 import {
   AtsScoreGauge,
@@ -21,6 +23,7 @@ import {
   AtsInputSection,
   AtsHistoryDrawer,
   AtsLoadingState,
+  AtsOptimizeSection,
 } from "../components/ats";
 import { resumeApi } from "../api/resumeApi";
 import { atsApi } from "../api/atsApi";
@@ -49,9 +52,81 @@ const AtsChecker = () => {
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [selectedResumeData, setSelectedResumeData] = useState(null);
+  const [isApplyingOptimizations, setIsApplyingOptimizations] = useState(false);
+  const [isOptimizedApplied, setIsOptimizedApplied] = useState(false);
+
   const [history, setHistory] = useState([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+
+  // Load detailed resume data for the selected resume
+  useEffect(() => {
+    if (!selectedResumeId || !token) {
+      setSelectedResumeData(null);
+      return;
+    }
+    const loadResumeDetails = async () => {
+      try {
+        const data = await resumeApi.getResumeById(selectedResumeId, token);
+        setSelectedResumeData(data.resume);
+      } catch (err) {
+        console.error("Failed to load selected resume details:", err);
+      }
+    };
+    loadResumeDetails();
+  }, [selectedResumeId, token]);
+
+  // Apply All Optimizations directly to selected resume and re-run ATS benchmark
+  const handleApplyOptimizations = async ({ tailoredSummary, skillsToAdd, targetRole }) => {
+    if (!selectedResumeId || !selectedResumeData) {
+      toast.error("Please select a valid resume to apply optimizations.");
+      return;
+    }
+
+    try {
+      setIsApplyingOptimizations(true);
+      const updatedResume = { ...selectedResumeData };
+      if (tailoredSummary) {
+        updatedResume.professional_summary = tailoredSummary;
+      }
+      if (Array.isArray(skillsToAdd) && skillsToAdd.length > 0) {
+        updatedResume.skills = Array.from(new Set([...(updatedResume.skills || []), ...skillsToAdd]));
+      }
+      if (targetRole) {
+        updatedResume.personal_info = {
+          ...(updatedResume.personal_info || {}),
+          profession: targetRole,
+        };
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", selectedResumeId);
+      formData.append("resumeData", JSON.stringify(updatedResume));
+      await resumeApi.updateResume(formData, token);
+
+      setSelectedResumeData(updatedResume);
+      setIsOptimizedApplied(true);
+      toast.success("Resume strengthened with JD optimizations! Re-benchmarking ATS score...");
+
+      // Automatically re-benchmark with the strengthened resume
+      if (jobDescription && jobDescription.trim().length >= 30) {
+        const payload = {
+          resumeId: selectedResumeId,
+          jobDescription: jobDescription.trim(),
+          customJobTitle: targetRole || customJobTitle.trim() || undefined,
+        };
+        const res = await atsApi.analyzeResume(payload, token);
+        setReport(res.report);
+        toast.success("ATS Compatibility Score upgraded!");
+      }
+    } catch (err) {
+      console.error("Failed to apply optimizations:", err);
+      toast.error("Could not save optimizations to resume.");
+    } finally {
+      setIsApplyingOptimizations(false);
+    }
+  };
 
   // Load user resumes on mount
   useEffect(() => {
@@ -113,6 +188,7 @@ const AtsChecker = () => {
 
     try {
       setIsLoading(true);
+      setIsOptimizedApplied(false);
 
       let payload;
       if (uploadedFile) {
@@ -268,6 +344,18 @@ const AtsChecker = () => {
         {!isLoading && report && (
           <div className="space-y-8 animate-in fade-in duration-300">
             
+            {/* AUTOMATED JD TAILORING & 1-CLICK OPTIMIZATION SUITE */}
+            <AtsOptimizeSection
+              report={report}
+              resumeData={selectedResumeData}
+              resumeId={selectedResumeId}
+              jobDescription={jobDescription}
+              targetRole={customJobTitle || report.jobTitle}
+              onApplyOptimizations={handleApplyOptimizations}
+              isApplying={isApplyingOptimizations}
+              isApplied={isOptimizedApplied}
+            />
+
             {/* 1. OVERALL SCORE GAUGE CARD */}
             <AtsScoreGauge
               score={report.overallScore}
@@ -307,13 +395,23 @@ const AtsChecker = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {selectedResumeData && (
+                  <Link
+                    to={`/app/builder/${selectedResumeId}`}
+                    className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>Open in Resume Builder</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                )}
+
                 <button
                   onClick={() => {
                     setReport(null);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2"
                 >
                   <RotateCcw size={14} />
                   <span>Modify & Re-Analyze</span>

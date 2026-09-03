@@ -9,7 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useResumeList } from "../hooks/useResumeList";
 import { ResumeCard } from "../components/resumes";
-import FrogFace from "../components/FrogLogo";
+import FrogFace, { BrandIcon } from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
 
 const MyResumes = () => {
@@ -96,10 +96,8 @@ const MyResumes = () => {
           </div>
         ) : filteredResumes.length === 0 ? (
           /* EMPTY STATE */
-          <div className="text-center py-20 px-4 bg-white rounded-3xl border border-dashed border-slate-200 shadow-xs">
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-5 shadow-inner">
-              <FrogFace size={36} />
-            </div>
+          <div className="text-center py-20 px-4 bg-white rounded-3xl border border-dashed border-slate-200 shadow-xs flex flex-col items-center">
+            <BrandIcon size="xl" className="mb-5 shadow-lg shadow-emerald-500/25" />
             <h3 className="text-xl font-bold text-slate-900">
               {searchQuery ? "No matching resumes found" : "No resumes created yet"}
             </h3>

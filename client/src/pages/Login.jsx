@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../app/features/authSlice";
 import { authApi } from "../api/authApi";
 import { resumeApi } from "../api/resumeApi";
 import toast from "react-hot-toast";
 import { Mail, Lock, User, Eye, EyeOff, Loader2, Sparkles, ArrowRight } from "lucide-react";
-import FrogFace from "../components/FrogLogo";
+import FrogFace, { BrandIcon } from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
 
 /* BRAND ICONS */
@@ -78,11 +78,22 @@ const Login = () => {
     password: "",
   });
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const tokenInUrl = searchParams.get("token");
+  const currentUser = useSelector((state) => state.auth?.user);
+
+  // If user is already authenticated and no incoming OAuth token, navigate to landing page
+  useEffect(() => {
+    if (currentUser && !tokenInUrl && !loading) {
+      navigate("/");
+    }
+  }, [currentUser, navigate, tokenInUrl, loading]);
+
   // Handle OAuth Redirect / Callback
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get("token");
     const provider = searchParams.get("provider");
+    const redirectParam = searchParams.get("redirect");
     const error = searchParams.get("error");
 
     if (error) {
@@ -101,12 +112,15 @@ const Login = () => {
     }
 
     if (token) {
+      // SECURITY: Immediately scrub token from address bar to prevent token leakage
+      window.history.replaceState({}, document.title, window.location.pathname);
+
       const processOAuthLogin = async () => {
         try {
           setLoading(true);
           localStorage.setItem("token", token);
           const data = await authApi.getUserData(token);
-          if (data.user) {
+          if (data?.user) {
             dispatch(login({ token, user: data.user }));
           }
 
@@ -116,7 +130,7 @@ const Login = () => {
             try {
               const { template, accent_color } = JSON.parse(pendingCreate);
               sessionStorage.removeItem("pending_resume_create");
-              const resumeTitle = data.user?.name ? `${data.user.name}'s Resume` : "My Resume";
+              const resumeTitle = data?.user?.name ? `${data.user.name}'s Resume` : "My Resume";
               const createRes = await resumeApi.createResume(
                 {
                   title: resumeTitle,
@@ -125,7 +139,7 @@ const Login = () => {
                 },
                 token
               );
-              toast.success(`Welcome ${data.user?.name || ""}! Opening your resume editor...`, { icon: "🐸" });
+              toast.success(`Welcome ${data?.user?.name || ""}! Opening your resume editor...`, { icon: "🐸" });
               navigate(`/app/builder/${createRes.resume._id}`);
               return;
             } catch (autoErr) {
@@ -134,11 +148,21 @@ const Login = () => {
           }
 
           toast.success(
-            `Welcome, ${data.user?.name || "Candidate"}! Logged in with ${
+            `Welcome, ${data?.user?.name || "Candidate"}! Logged in with ${
               provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : "Social Account"
             }.`,
             { icon: "🐸" }
           );
+
+          // Fast & direct redirect to landing page ('/') or requested target
+          if (redirectParam === "app" || redirectParam === "dashboard") {
+            navigate("/app");
+          } else if (redirectParam && redirectParam !== "/" && redirectParam !== "landing" && redirectParam !== "hero") {
+            navigate(redirectParam);
+          } else {
+            // Default: Landing Page
+            navigate("/");
+          }
         } catch {
           toast.error("Failed to complete social login. Please try again.");
         } finally {
@@ -152,7 +176,11 @@ const Login = () => {
 
   const handleSocialLogin = (provider) => {
     const baseUrl = import.meta.env.VITE_BASE_URL || "";
-    window.location.href = `${baseUrl}/api/users/auth/${provider}`;
+    const currentRedirect = query.get("redirect") || "/";
+    const clientHost = window.location.origin;
+    window.location.href = `${baseUrl}/api/users/auth/${provider}?redirect=${encodeURIComponent(
+      currentRedirect
+    )}&client_host=${encodeURIComponent(clientHost)}`;
   };
 
   const handleChange = (e) => {
@@ -204,7 +232,16 @@ const Login = () => {
       toast.success(
         data.message || (state === "login" ? "Logged in successfully!" : "Account created successfully!")
       );
-      navigate("/app");
+
+      const targetRedirect = query.get("redirect");
+      if (targetRedirect === "app" || targetRedirect === "dashboard") {
+        navigate("/app");
+      } else if (targetRedirect && targetRedirect !== "/" && targetRedirect !== "landing" && targetRedirect !== "hero") {
+        navigate(targetRedirect);
+      } else {
+        // Default: Landing Page ('/')
+        navigate("/");
+      }
     } catch (error) {
       const serverMsg = error?.response?.data?.message || error.message;
       if (typeof serverMsg === "string" && serverMsg.toLowerCase().includes("already exists")) {
@@ -223,6 +260,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+      {/* SECURE HIGH-SPEED AUTHENTICATION OVERLAY */}
+      {loading && tokenInUrl && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[9999] flex flex-col items-center justify-center space-y-3.5 select-none animate-in fade-in duration-200">
+          <BrandIcon size="md" />
+          <div className="size-9 rounded-full border-3 border-emerald-500/20 border-t-emerald-400 animate-spin" />
+          <div className="text-center space-y-1">
+            <h3 className="text-base font-black text-white tracking-tight">Authenticating Securely...</h3>
+            <p className="text-xs text-slate-400 font-medium">Redirecting you to froggie landing page...</p>
+          </div>
+        </div>
+      )}
+
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-300/15 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-300/15 rounded-full blur-[100px] pointer-events-none" />
@@ -232,11 +281,11 @@ const Login = () => {
         {/* LOGO & BRAND */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-3 group">
-            <div className="size-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-600 to-emerald-400 p-[2px] shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <FrogFace size={30} className="group-hover:rotate-6 transition-transform" />
-              </div>
-            </div>
+            <BrandIcon
+              size="lg"
+              className="group-hover:scale-105 transition-transform"
+              iconClassName="group-hover:rotate-6 transition-transform"
+            />
             <div className="leading-tight text-left">
               <span className="text-2xl font-black tracking-tight text-slate-900">
                 froggie<span className="text-emerald-500">.</span>

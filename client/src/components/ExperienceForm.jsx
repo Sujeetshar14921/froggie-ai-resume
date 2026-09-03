@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { aiApi } from '../api/aiApi'
 import toast from 'react-hot-toast'
 import FrogFace from './FrogLogo'
+import { BulletAiToolbar } from './builder'
 
 const ExperienceForm = ({ data, onChange }) => {
 
@@ -105,17 +106,25 @@ const updateExperience = (index, field, value)=>{
 
                     <div className="space-y-2">
                         <div className='flex items-center justify-between'>
-                            <label className='text-xs font-bold text-gray-700'>Job Description</label>
+                            <label className='text-xs font-bold text-gray-700'>Job Description & Achievements</label>
                             <button onClick={()=> generateDescription(index)} disabled={generatingIndex === index || !experience.position || !experience.company} className='flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold bg-emerald-50 text-emerald-800 rounded-lg hover:bg-emerald-100 transition-colors disabled:opacity-50 border border-emerald-200/80 cursor-pointer'>
                                 {generatingIndex === index ? (
                                     <Loader2 className="w-3 h-3 animate-spin text-emerald-600"/>
                                 ): (
                                     <FrogFace size={12}/>
                                 )}
-                                <span>Enhance with froggie</span>
+                                <span>Auto-Draft</span>
                             </button>
                         </div>
                         <textarea value={experience.description || ""} onChange={(e)=> updateExperience(index, "description", e.target.value)} rows={4} className="w-full text-sm px-3 py-2 rounded-lg resize-none border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none" placeholder="Describe your key responsibilities and achievements..."/>
+
+                        {/* AI QUICK OPTIMIZER TOOLBAR */}
+                        <BulletAiToolbar
+                          text={experience.description || ""}
+                          position={experience.position || "Professional"}
+                          company={experience.company || "Company"}
+                          onUpdate={(newText) => updateExperience(index, "description", newText)}
+                        />
                     </div>
                 </div>
             ))}

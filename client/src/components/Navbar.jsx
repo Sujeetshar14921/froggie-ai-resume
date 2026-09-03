@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../app/features/authSlice";
@@ -15,11 +15,13 @@ import {
   UserCheck,
   ShieldCheck,
   Coffee,
+  Briefcase,
 } from "lucide-react";
 import ProfileModal from "./ProfileModal";
-import FrogFace from "./FrogLogo";
+import FrogFace, { BrandIcon } from "./FrogLogo";
 import { NotificationBell } from "./notifications";
 import { useCopilot } from "../hooks/useCopilot";
+import { initNavbarAnimation, animateMobileMenu } from "../animations";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -32,11 +34,27 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const headerRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const isInitialMenuMount = useRef(true);
 
   const isLandingOrFaq =
     location.pathname === "/" ||
     location.pathname === "/faq" ||
     location.pathname === "/donate";
+
+  useEffect(() => {
+    const cleanup = initNavbarAnimation(headerRef.current);
+    return cleanup;
+  }, []);
+
+  useEffect(() => {
+    if (isInitialMenuMount.current) {
+      isInitialMenuMount.current = false;
+      return;
+    }
+    animateMobileMenu(mobileMenuRef.current, mobileMenuOpen);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,6 +82,7 @@ const Navbar = () => {
   return (
     <>
       <header
+        ref={headerRef}
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
             ? "bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-xs"
@@ -73,12 +92,12 @@ const Navbar = () => {
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
 
           {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
-          <Link to="/" className="flex items-center gap-3 group shrink-0">
-            <div className="size-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-600 to-emerald-400 p-[2px] shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-all group-hover:scale-105">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-white">
-                <FrogFace size={26} className="group-hover:rotate-6 transition-transform duration-300" />
-              </div>
-            </div>
+          <Link to="/" className="nav-brand flex items-center gap-3 group shrink-0">
+            <BrandIcon
+              size="md"
+              className="group-hover:shadow-emerald-500/40 transition-all group-hover:scale-105"
+              iconClassName="group-hover:rotate-6 transition-transform duration-300"
+            />
 
             <div className="leading-tight">
               <div className="flex items-center gap-1.5">
@@ -97,13 +116,13 @@ const Navbar = () => {
 
           {/* DESKTOP NAV LINKS */}
           {isLandingOrFaq && (
-            <nav className="hidden lg:flex items-center gap-1 bg-slate-100/80 px-3 py-1.5 rounded-full border border-slate-200/60 backdrop-blur-sm shadow-2xs">
+            <nav className="nav-links-pill hidden lg:flex items-center gap-1 bg-slate-100/80 px-3 py-1.5 rounded-full border border-slate-200/60 backdrop-blur-sm shadow-2xs">
               {navLinks.map((link) =>
                 link.isRoute ? (
                   <Link
                     key={link.name}
                     to={link.href}
-                    className={`text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
+                    className={`nav-link-item text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
                       location.pathname === link.href
                         ? "bg-emerald-600 text-white shadow-2xs"
                         : "text-slate-600 hover:text-emerald-700 hover:bg-white"
@@ -115,7 +134,7 @@ const Navbar = () => {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-white px-3.5 py-1.5 rounded-full transition-all"
+                    className="nav-link-item text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-white px-3.5 py-1.5 rounded-full transition-all"
                   >
                     {link.name}
                   </a>
@@ -125,7 +144,7 @@ const Navbar = () => {
           )}
 
           {/* RIGHT SIDE ACTIONS */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="nav-actions flex items-center gap-2 sm:gap-3">
             {/* NOTIFICATION BELL & DESKTOP ALERTS */}
             <NotificationBell />
 
@@ -255,6 +274,18 @@ const Navbar = () => {
                           <span>My Resumes</span>
                         </Link>
 
+                        {/* JOB APPLICATION CRM TRACKER */}
+                        <Link
+                          to="/app/applications"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
+                        >
+                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
+                            <Briefcase size={15} />
+                          </div>
+                          <span>Job Tracker CRM</span>
+                        </Link>
+
                         {/* ATS RESUME CHECKER (FEATURED LINK) */}
                         <Link
                           to="/app/ats-checker"
@@ -356,15 +387,19 @@ const Navbar = () => {
         </div>
 
         {/* MOBILE MENU DRAWER */}
-        {isLandingOrFaq && mobileMenuOpen && (
-          <div className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-2 animate-in slide-in-from-top-2">
+        {isLandingOrFaq && (
+          <div
+            ref={mobileMenuRef}
+            style={{ display: mobileMenuOpen ? "block" : "none", overflow: "hidden" }}
+            className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-2"
+          >
             {navLinks.map((link) =>
               link.isRoute ? (
                 <Link
                   key={link.name}
                   to={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                  className="mobile-nav-link block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -373,7 +408,7 @@ const Navbar = () => {
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                  className="mobile-nav-link block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                 >
                   {link.name}
                 </a>

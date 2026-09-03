@@ -22,8 +22,8 @@ export const USABLE_PAGE_HEIGHT_PX = A4_HEIGHT_PX - PAGE_PADDING_TOP_PX - PAGE_P
  * @param {Object} resumeData - Resume data object
  * @returns {Array<Object>} Array of page specifications
  */
-export const paginateSingleColumn = (container, resumeData) => {
-  if (!container || !resumeData) {
+export const paginateSingleColumn = (container, resumeData, autoFitSinglePage = false) => {
+  if (!container || !resumeData || autoFitSinglePage) {
     return [createDefaultSingleColumnPage(resumeData)];
   }
 
@@ -225,8 +225,8 @@ export const paginateSingleColumn = (container, resumeData) => {
  * @param {Object} resumeData - Resume data object
  * @returns {Array<Object>} Array of two-column page specifications
  */
-export const paginateTwoColumn = (container, resumeData) => {
-  if (!container || !resumeData) {
+export const paginateTwoColumn = (container, resumeData, autoFitSinglePage = false) => {
+  if (!container || !resumeData || autoFitSinglePage) {
     return [createDefaultTwoColumnPage(resumeData)];
   }
 

@@ -55,6 +55,20 @@ export const aiApi = {
     const { data } = await api.post("/api/ai/upload-resume", requestData, { headers });
     return data;
   },
+
+  /**
+   * Run Deep Gemini AI ATS X-Ray Audit
+   * @param {Object} resumeData
+   * @param {string} token
+   */
+  runXRayAudit: async (resumeData, token) => {
+    const { data } = await api.post(
+      "/api/ai/xray-audit",
+      { resumeData },
+      { headers: { Authorization: token } }
+    );
+    return data;
+  },
 };
 
 export default aiApi;

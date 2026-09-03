@@ -1,23 +1,23 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ArrowRight, CheckCircle2, Briefcase, Sparkles, Zap, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import FrogFace from "../FrogLogo";
+import FrogFace, { BrandIcon } from "../FrogLogo";
+import { initCtaAnimation } from "../../animations";
 
 const CallToAction = () => {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const cleanup = initCtaAnimation(containerRef.current);
+    return cleanup;
+  }, []);
 
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative">
+    <section ref={containerRef} className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative">
       <div className="max-w-8xl mx-auto">
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-[36px] bg-slate-950 p-8 sm:p-14 lg:p-20 text-white shadow-2xl border border-slate-800"
-        >
+        <div className="cta-banner relative overflow-hidden rounded-[36px] bg-slate-950 p-8 sm:p-14 lg:p-20 text-white shadow-2xl border border-slate-800">
 
           {/* Background Radiant Glows */}
           <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-emerald-600/20 blur-[140px] pointer-events-none" />
@@ -84,14 +84,9 @@ const CallToAction = () => {
             <div className="lg:col-span-5 relative flex justify-center">
 
               {/* Resume Approved Card */}
-              <motion.div
-                whileHover={{ scale: 1.03, rotate: 0 }}
-                className="bg-white rounded-3xl p-7 w-full max-w-[340px] shadow-2xl text-slate-900 border border-slate-200 rotate-[-3deg] transition-all"
-              >
+              <div className="cta-mockup-card bg-white rounded-3xl p-7 w-full max-w-[340px] shadow-2xl text-slate-900 border border-slate-200 rotate-[-3deg] transition-all hover:scale-105 hover:rotate-0 cursor-default">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                    <FrogFace size={28} />
-                  </div>
+                  <BrandIcon size="lg" />
 
                   <div>
                     <h3 className="font-bold text-slate-900 text-base">
@@ -113,10 +108,10 @@ const CallToAction = () => {
                   <span>Job: Staff Engineer</span>
                   <span className="text-emerald-700 font-bold">Ready to Apply</span>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Recruiter Notification Pill */}
-              <div className="absolute -bottom-4 -right-2 sm:-right-4 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-emerald-500/40 flex items-center gap-3">
+              <div className="cta-recruiter-pill absolute -bottom-4 -right-2 sm:-right-4 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-emerald-500/40 flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                   <Briefcase size={18} />
                 </div>
@@ -130,7 +125,7 @@ const CallToAction = () => {
 
           </div>
 
-        </motion.div>
+        </div>
 
       </div>
     </section>

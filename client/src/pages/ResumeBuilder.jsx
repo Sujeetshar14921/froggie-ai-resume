@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, Terminal, ShieldCheck, FileCheck } from "lucide-react";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ResumePreview from "../components/ResumePreview";
+import AtsXRayScanner from "../components/ats/AtsXRayScanner";
 import ProfessionalSummaryForm from "../components/ProfessionalSummaryForm";
 import ExperienceForm from "../components/ExperienceForm";
 import EducationForm from "../components/EducationForm";
@@ -46,6 +47,8 @@ const ResumeBuilder = () => {
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
+  const [previewMode, setPreviewMode] = useState("visual"); // "visual" | "xray"
+  const [autoFitSinglePage, setAutoFitSinglePage] = useState(false);
 
   // Sync active resume with Career Copilot
   React.useEffect(() => {
@@ -276,6 +279,7 @@ const ResumeBuilder = () => {
         onToggleVisibility={toggleVisibility}
         onShare={shareResume}
         onDownload={handleDownload}
+        resumeId={resumeId}
       />
 
       {/* MAIN 2-PANEL WORKSPACE */}
@@ -397,14 +401,69 @@ const ResumeBuilder = () => {
             </div>
           </section>
 
-          {/* RIGHT PANEL - LIVE PREVIEW WORKSPACE */}
+          {/* RIGHT PANEL - LIVE PREVIEW & ATS X-RAY WORKSPACE */}
           <section className="lg:col-span-7 h-full flex flex-col min-h-0 bg-slate-200/70 rounded-2xl border border-slate-200/90 p-2 sm:p-4 shadow-inner overflow-hidden max-lg:min-h-[600px]">
+            {/* WORKSPACE SWITCHER BAR */}
+            <div className="flex items-center justify-between pb-2.5 px-1 shrink-0 select-none gap-2 flex-wrap">
+              <div className="flex items-center bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-300/80 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode("visual")}
+                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    previewMode === "visual"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Eye size={13} />
+                  <span>Visual Preview</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode("xray")}
+                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                    previewMode === "xray"
+                      ? "bg-emerald-600 text-white shadow-xs"
+                      : "text-slate-600 hover:text-emerald-700"
+                  }`}
+                >
+                  <Terminal size={13} />
+                  <span>ATS X-Ray Scanner</span>
+                </button>
+              </div>
+
+              {/* AUTO-FIT 1-PAGE TOGGLE BUTTON */}
+              <button
+                type="button"
+                onClick={() => setAutoFitSinglePage((prev) => !prev)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                  autoFitSinglePage
+                    ? "bg-emerald-600 text-white border-emerald-500 shadow-xs"
+                    : "bg-white/95 hover:bg-white text-slate-700 border-slate-300/80 hover:border-emerald-300"
+                }`}
+                title="Automatically compress vertical spacing to guarantee everything fits on exactly 1 page"
+              >
+                <FileCheck size={13} className={autoFitSinglePage ? "text-white" : "text-emerald-600"} />
+                <span>Auto-Fit 1-Page</span>
+                {autoFitSinglePage && (
+                  <span className="size-1.5 rounded-full bg-white animate-pulse" />
+                )}
+              </button>
+            </div>
+
+            {/* MAIN PREVIEW / SCANNER VIEWPORT */}
             <div className="flex-1 min-h-0 overflow-y-auto rounded-xl no-scrollbar hide-scrollbar">
-              <ResumePreview
-                data={resumeData}
-                template={resumeData.template}
-                accentColor={resumeData.accent_color}
-              />
+              {previewMode === "visual" ? (
+                <ResumePreview
+                  data={resumeData}
+                  template={resumeData.template}
+                  accentColor={resumeData.accent_color}
+                  autoFitSinglePage={autoFitSinglePage}
+                />
+              ) : (
+                <AtsXRayScanner data={resumeData} />
+              )}
             </div>
           </section>
           </div>

@@ -12,7 +12,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
-          'ui-vendor': ['lucide-react', 'react-hot-toast', 'framer-motion', 'axios'],
+          'ui-vendor': ['lucide-react', 'react-hot-toast', 'gsap', 'axios'],
           'export-engine': ['jspdf', 'html2canvas'],
         },
       },

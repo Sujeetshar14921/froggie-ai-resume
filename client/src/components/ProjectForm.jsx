@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
-import React from 'react'
+import React from 'react';
+import { BulletAiToolbar } from './builder';
 
 const ProjectForm = ({ data, onChange }) => {
 
@@ -55,6 +56,13 @@ const updateProject = (index, field, value)=>{
 
                         <textarea rows={4} value={project.description || ""} onChange={(e)=>updateProject(index, "description", e.target.value)} placeholder="Describe your project..." className="w-full px-3 py-2 text-sm rounded-lg resize-none border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none"/>
             
+                        {/* AI QUICK OPTIMIZER TOOLBAR */}
+                        <BulletAiToolbar
+                          text={project.description || ""}
+                          position={project.name || "Project"}
+                          company={project.type || "Technical Project"}
+                          onUpdate={(newText) => updateProject(index, "description", newText)}
+                        />
                     </div>
 
 

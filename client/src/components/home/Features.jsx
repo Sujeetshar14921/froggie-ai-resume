@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Sparkles,
   Upload,
@@ -10,12 +10,19 @@ import {
   Globe2,
   CheckCircle,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import FrogFace from "../FrogLogo";
+import FrogFace, { BrandIcon } from "../FrogLogo";
+import { initFeaturesAnimation } from "../../animations";
 
 const Features = () => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const cleanup = initFeaturesAnimation(containerRef.current);
+    return cleanup;
+  }, []);
+
   return (
-    <section id="features" className="py-28 bg-slate-50/70 relative overflow-hidden">
+    <section id="features" ref={containerRef} className="py-28 bg-slate-50/70 relative overflow-hidden">
 
       {/* Decorative ambient lighting */}
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl pointer-events-none" />
@@ -24,60 +31,34 @@ const Features = () => {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4"
-          >
+        <div className="section-header text-center max-w-3xl mx-auto mb-20">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
             <Zap size={14} />
             Engineered For Success
-          </motion.span>
+          </span>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight"
-          >
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
             Everything You Need to Get{" "}
             <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
               Hired Faster
             </span>
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-slate-600"
-          >
+          <p className="mt-4 text-base sm:text-lg text-slate-600">
             Powerful froggie AI automation paired with precision ATS formatting and designer templates.
-          </motion.p>
+          </p>
         </div>
 
         {/* BENTO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-[auto]">
 
           {/* CARD 1: AI WRITER (Large Hero Bento Card) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            whileHover={{ y: -5 }}
-            className="md:col-span-2 lg:col-span-2 bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl border border-slate-800 flex flex-col justify-between"
-          >
+          <div className="bento-card md:col-span-2 lg:col-span-2 bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl border border-slate-800 flex flex-col justify-between">
             {/* Emerald glow */}
             <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-600/20 blur-[100px] pointer-events-none" />
 
             <div className="relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-emerald-400/30 flex items-center justify-center text-white mb-6">
-                <FrogFace size={30} />
-              </div>
+              <BrandIcon size="lg" className="mb-6" />
 
               <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-300">
                 froggie AI 2.0 Engine
@@ -102,17 +83,10 @@ const Features = () => {
                 "Spearheaded cloud architecture refactoring, reducing latency by 42% and driving 99.98% service reliability for 2M+ active users."
               </p>
             </div>
-          </motion.div>
+          </div>
 
           {/* CARD 2: ATS FRIENDLY SCORE */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            whileHover={{ y: -5 }}
-            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
-          >
+          <div className="bento-card bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6">
                 <ShieldCheck size={26} />
@@ -131,19 +105,12 @@ const Features = () => {
               <span className="text-3xl font-extrabold text-emerald-600">99.2%</span>
               <span className="text-xs text-slate-400 font-medium">Average ATS Score</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* CARD 3: PDF TO RESUME UPLOAD */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ y: -5 }}
-            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
-          >
+          <div className="bento-card bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-700/10 text-emerald-700 flex items-center justify-center mb-6">
                 <Upload size={26} />
               </div>
 
@@ -161,17 +128,10 @@ const Features = () => {
                 <Zap size={13} /> Auto-populate in 3 seconds
               </span>
             </div>
-          </motion.div>
+          </div>
 
           {/* CARD 4: ONE CLICK EXPORT (PDF + DOC) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            whileHover={{ y: -5 }}
-            className="bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-lg border border-slate-800 flex flex-col justify-between"
-          >
+          <div className="bento-card bg-slate-950 rounded-3xl p-8 text-white relative overflow-hidden shadow-lg border border-slate-800 flex flex-col justify-between">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center mb-6">
                 <Download size={26} />
@@ -190,17 +150,10 @@ const Features = () => {
               <span className="px-2.5 py-1 rounded-md bg-white/10">PDF</span>
               <span className="px-2.5 py-1 rounded-md bg-white/10">DOC</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* CARD 5: 6 DESIGNER TEMPLATES & ACCENTS */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            whileHover={{ y: -5 }}
-            className="md:col-span-2 lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
-          >
+          <div className="bento-card md:col-span-2 lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-6">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
@@ -229,17 +182,10 @@ const Features = () => {
                 />
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* CARD 6: SHAREABLE PUBLIC LINK */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            whileHover={{ y: -5 }}
-            className="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between"
-          >
+          <div className="bento-card bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-6">
                 <Globe2 size={26} />
@@ -257,7 +203,7 @@ const Features = () => {
             <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
               <FileCheck2 size={15} /> One-Click Link Copy
             </div>
-          </motion.div>
+          </div>
 
         </div>
 

@@ -7,3 +7,4 @@ export { default as AtsInsightsCard } from "./AtsInsightsCard";
 export { default as AtsInputSection } from "./AtsInputSection";
 export { default as AtsHistoryDrawer } from "./AtsHistoryDrawer";
 export { default as AtsLoadingState } from "./AtsLoadingState";
+export { default as AtsOptimizeSection } from "./AtsOptimizeSection";

@@ -134,6 +134,7 @@ export const sendMessage = async (req, res) => {
         userId,
         user,
         activeResumeId: currentResume?._id,
+        currentResume,
         aiClient: ai,
       });
     } else if (actionType) {
@@ -193,6 +194,7 @@ Active Job Context: ${chat.jobContext || "None specified"}`;
             userId,
             user,
             activeResumeId: currentResume?._id,
+            currentResume,
             aiClient: ai,
           });
 

@@ -23,7 +23,7 @@ const Banner = () => {
             <span className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-emerald-400 font-semibold text-[11px] tracking-wide">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               <Zap size={12} />
-              froggie AI 2.0
+              froggie AI 1.0
             </span>
 
             <span className="text-slate-300 font-medium flex items-center gap-1.5">

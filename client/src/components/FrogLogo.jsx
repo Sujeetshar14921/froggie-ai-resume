@@ -2,6 +2,7 @@ import React from "react";
 
 /**
  * Froggie brand frog face SVG component
+ * High-definition vector graphics with vibrant emerald skin and rosy blush
  */
 export const FrogFace = ({ size = 24, className = "" }) => {
   return (
@@ -14,30 +15,43 @@ export const FrogFace = ({ size = 24, className = "" }) => {
       className={`shrink-0 ${className}`}
     >
       <defs>
-        {/* Soft emerald/teal gradient for the frog skin */}
-        <linearGradient id="frogSkinGradient" x1="6" y1="4" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+        {/* Vibrant emerald/teal gradient for frog skin */}
+        <linearGradient
+          id="froggie_skin_gradient"
+          x1="6"
+          y1="4"
+          x2="42"
+          y2="44"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#34D399" />
-          <stop offset="0.6" stopColor="#10B981" />
+          <stop offset="0.5" stopColor="#10B981" />
           <stop offset="1" stopColor="#059669" />
         </linearGradient>
 
-        {/* Soft belly/cheek blush gradient */}
-        <linearGradient id="frogCheekGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop stopColor="#F472B6" stopOpacity="0.75" />
-          <stop offset="1" stopColor="#EC4899" stopOpacity="0.6" />
+        {/* Rosy cheek blush gradient */}
+        <linearGradient
+          id="froggie_cheek_gradient"
+          x1="0"
+          y1="0"
+          x2="1"
+          y2="1"
+        >
+          <stop stopColor="#F472B6" stopOpacity="0.8" />
+          <stop offset="1" stopColor="#EC4899" stopOpacity="0.65" />
         </linearGradient>
       </defs>
 
       {/* Main Frog Head / Body Base */}
       <path
         d="M8 26C8 16.5 15.5 13 24 13C32.5 13 40 16.5 40 26C40 35.5 33 41 24 41C15 41 8 35.5 8 26Z"
-        fill="url(#frogSkinGradient)"
+        fill="url(#froggie_skin_gradient)"
       />
 
       {/* Left Eye Bulb */}
-      <circle cx="15" cy="15" r="9" fill="url(#frogSkinGradient)" />
+      <circle cx="15" cy="15" r="9" fill="url(#froggie_skin_gradient)" />
       {/* Right Eye Bulb */}
-      <circle cx="33" cy="15" r="9" fill="url(#frogSkinGradient)" />
+      <circle cx="33" cy="15" r="9" fill="url(#froggie_skin_gradient)" />
 
       {/* Left Eye Outer White */}
       <circle cx="15" cy="15" r="6.5" fill="#FFFFFF" />
@@ -70,10 +84,47 @@ export const FrogFace = ({ size = 24, className = "" }) => {
       />
 
       {/* Left Rosy Cheek Blush */}
-      <ellipse cx="12.5" cy="29" rx="3" ry="1.8" fill="url(#frogCheekGradient)" />
+      <ellipse cx="12.5" cy="29" rx="3" ry="1.8" fill="url(#froggie_cheek_gradient)" />
       {/* Right Rosy Cheek Blush */}
-      <ellipse cx="35.5" cy="29" rx="3" ry="1.8" fill="url(#frogCheekGradient)" />
+      <ellipse cx="35.5" cy="29" rx="3" ry="1.8" fill="url(#froggie_cheek_gradient)" />
     </svg>
+  );
+};
+
+/**
+ * Standardized Froggie Brand Badge Icon
+ * Used across Navbar, Footer, Login, Splash Intro, Copilot, etc.
+ * Features:
+ * - Gradient metallic outer ring (Emerald -> Teal -> Emerald)
+ * - Deep slate-950 obsidian inner shield
+ * - Crisp scaled FrogFace mascot inside
+ */
+export const BrandIcon = ({
+  size = "md",
+  className = "",
+  iconClassName = "",
+}) => {
+  const sizeMap = {
+    xs: { box: "size-6 rounded-lg p-[1px]", inner: "rounded-[7px]", icon: 14 },
+    sm: { box: "size-8 rounded-xl p-[1.5px]", inner: "rounded-[10px]", icon: 19 },
+    md: { box: "size-10 rounded-2xl p-[2px]", inner: "rounded-[14px]", icon: 26 },
+    lg: { box: "size-12 rounded-2xl p-[2px]", inner: "rounded-[14px]", icon: 30 },
+    xl: { box: "size-16 rounded-3xl p-[2.5px]", inner: "rounded-[22px]", icon: 42 },
+    "2xl": { box: "size-28 sm:size-36 rounded-[28px] sm:rounded-[36px] p-1", inner: "rounded-[24px] sm:rounded-[32px]", icon: 96 },
+  };
+
+  const config = sizeMap[size] || sizeMap.md;
+
+  return (
+    <div
+      className={`shrink-0 bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-400 shadow-md shadow-emerald-500/20 ${config.box} ${className}`}
+    >
+      <div
+        className={`w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden ${config.inner}`}
+      >
+        <FrogFace size={config.icon} className={iconClassName} />
+      </div>
+    </div>
   );
 };
 

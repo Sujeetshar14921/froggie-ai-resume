@@ -8,7 +8,7 @@ import {
   VolumeX,
   CheckCheck,
 } from "lucide-react";
-import FrogFace from "../FrogLogo";
+import FrogFace, { BrandIcon } from "../FrogLogo";
 import {
   isSoundEnabled,
   setSoundEnabled,
@@ -205,10 +205,8 @@ export const NotificationBell = () => {
                 );
               })
             ) : (
-              <div className="py-7 text-center">
-                <div className="size-10 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center mb-2">
-                  <FrogFace size={24} />
-                </div>
+              <div className="py-7 text-center flex flex-col items-center">
+                <BrandIcon size="md" className="mb-2" />
                 <p className="text-xs font-bold text-slate-800 flex items-center justify-center gap-1">
                   <CheckCheck size={14} className="text-emerald-600" />
                   <span>All Clear!</span>

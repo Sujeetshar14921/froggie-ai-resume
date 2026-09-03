@@ -288,3 +288,18 @@ html {
 .animate-pulse-subtle {
   animation: pulseSubtle 2.5s ease-in-out infinite;
 }
+
+/* Hero Infinite Brand Logo Marquee */
+@keyframes heroMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-hero-marquee {
+  animation: heroMarquee 32s linear infinite;
+  will-change: transform;
+}

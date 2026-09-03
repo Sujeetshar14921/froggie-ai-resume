@@ -1,8 +1,8 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 import { LayoutTemplate, Sparkles, DownloadCloud, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import FrogFace from "../FrogLogo";
+import { initHowItWorksAnimation } from "../../animations";
 
 const steps = [
   {
@@ -39,9 +39,15 @@ const steps = [
 
 const HowItWorks = () => {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const cleanup = initHowItWorksAnimation(containerRef.current);
+    return cleanup;
+  }, []);
 
   return (
-    <section id="how-it-works" className="py-28 bg-white relative overflow-hidden">
+    <section id="how-it-works" ref={containerRef} className="py-28 bg-white relative overflow-hidden">
       {/* Background radiant orbs */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-teal-100/40 rounded-full blur-3xl pointer-events-none" />
@@ -49,58 +55,36 @@ const HowItWorks = () => {
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* SECTION HEADER */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4"
-          >
+        <div className="section-header text-center max-w-3xl mx-auto mb-20">
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
             <FrogFace size={15} />
             Simple 3-Step Process
-          </motion.span>
+          </span>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight"
-          >
+          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
             How to Build Your Resume in{" "}
             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
               Under 5 Minutes
             </span>
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-base sm:text-lg text-slate-600"
-          >
+          <p className="mt-4 text-base sm:text-lg text-slate-600">
             No complex formatting, no stress. Just pick, customize with froggie AI, and download.
-          </motion.p>
+          </p>
         </div>
 
         {/* STEP CARDS */}
         <div className="grid md:grid-cols-3 gap-8 relative">
 
           {/* Connecting line on desktop */}
-          <div className="hidden md:block absolute top-1/2 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-300 -translate-y-12 z-0" />
+          <div className="how-connecting-line hidden md:block absolute top-1/2 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-300 -translate-y-12 z-0" />
 
-          {steps.map((step, index) => {
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <motion.div
+              <div
                 key={step.number}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                whileHover={{ y: -8 }}
-                className="relative z-10 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-lg shadow-slate-100/80 hover:shadow-2xl hover:border-emerald-300 transition-all flex flex-col justify-between"
+                className="how-step-card relative z-10 bg-white rounded-3xl p-8 border border-slate-200/90 shadow-lg shadow-slate-100/80 hover:shadow-2xl hover:border-emerald-300 hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   {/* Top row */}
@@ -134,19 +118,13 @@ const HowItWorks = () => {
                     <ArrowRight size={14} />
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
         {/* BOTTOM CTA BANNER */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-16 text-center"
-        >
+        <div className="how-cta mt-16 text-center">
           <button
             onClick={() => {
               const el = document.getElementById("templates");
@@ -161,7 +139,7 @@ const HowItWorks = () => {
             <span>Start Step 1: Choose a Template</span>
             <ArrowRight size={16} className="text-emerald-400" />
           </button>
-        </motion.div>
+        </div>
 
       </div>
     </section>

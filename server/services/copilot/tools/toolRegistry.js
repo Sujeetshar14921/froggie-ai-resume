@@ -80,6 +80,7 @@ export const executeCopilotTool = async ({
   userId,
   user,
   activeResumeId = null,
+  currentResume = null,
   aiClient,
 }) => {
   if (!userId) {
@@ -100,6 +101,7 @@ export const executeCopilotTool = async ({
       user,
       args,
       activeResumeId,
+      currentResume,
       aiClient,
     });
     return result;

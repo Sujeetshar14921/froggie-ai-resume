@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import {
   ChevronDown,
@@ -20,6 +19,7 @@ import Footer from "../components/home/Footer";
 import { useCopilot } from "../hooks/useCopilot";
 import FrogFace from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
+import { animateAccordion } from "../animations";
 
 const FAQ_CATEGORIES = [
   { id: "all", label: "All Questions", icon: BookOpen },
@@ -76,6 +76,61 @@ const ALL_FAQS = [
     a: "Yes! You can create, edit, customize colors and templates, run ATS scans, chat with froggie Career Copilot, and export PDF/Word resumes.",
   },
 ];
+
+const FaqPageItem = ({ faq, isOpen, onToggle }) => {
+  const contentRef = useRef(null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    animateAccordion(contentRef.current, isOpen);
+  }, [isOpen]);
+
+  return (
+    <div
+      className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+        isOpen
+          ? "bg-white border-emerald-300 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/10"
+          : "bg-white border-slate-200/90 hover:border-slate-300 shadow-2xs"
+      }`}
+    >
+      <button
+        onClick={onToggle}
+        className="w-full px-6 py-5 flex items-center justify-between text-left gap-4 cursor-pointer"
+        aria-expanded={isOpen}
+      >
+        <span className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
+          {faq.q}
+        </span>
+        <div
+          className={`size-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
+            isOpen
+              ? "bg-emerald-600 text-white rotate-180"
+              : "bg-slate-100 text-slate-600"
+          }`}
+        >
+          <ChevronDown size={17} />
+        </div>
+      </button>
+
+      <div
+        ref={contentRef}
+        style={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+          overflow: "hidden",
+        }}
+      >
+        <div className="px-6 pb-6 pt-1 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100">
+          {faq.a}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FaqPage = () => {
   const { user } = useSelector((state) => state.auth);
@@ -223,57 +278,14 @@ const FaqPage = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {filteredFaqs.map((faq, index) => {
-                const isOpen = openIndex === index;
-
-                return (
-                  <motion.div
-                    key={faq.q}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, delay: index * 0.04 }}
-                    className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-                      isOpen
-                        ? "bg-white border-emerald-300 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/10"
-                        : "bg-white border-slate-200/90 hover:border-slate-300 shadow-2xs"
-                    }`}
-                  >
-                    <button
-                      onClick={() => toggleFaq(index)}
-                      className="w-full px-6 py-5 flex items-center justify-between text-left gap-4 cursor-pointer"
-                      aria-expanded={isOpen}
-                    >
-                      <span className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                        {faq.q}
-                      </span>
-                      <div
-                        className={`size-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                          isOpen
-                            ? "bg-emerald-600 text-white rotate-180"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        <ChevronDown size={17} />
-                      </div>
-                    </button>
-
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2, ease: "easeInOut" }}
-                        >
-                          <div className="px-6 pb-6 pt-1 text-slate-600 text-xs sm:text-sm leading-relaxed border-t border-slate-100">
-                            {faq.a}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
+              {filteredFaqs.map((faq, index) => (
+                <FaqPageItem
+                  key={faq.q}
+                  faq={faq}
+                  isOpen={openIndex === index}
+                  onToggle={() => toggleFaq(index)}
+                />
+              ))}
             </div>
           )}
 

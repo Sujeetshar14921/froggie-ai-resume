@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Zap,
   ArrowRight,
+  Briefcase,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -15,7 +16,7 @@ import { resumeApi } from "../api/resumeApi";
 import { aiApi } from "../api/aiApi";
 import { CreateResumeModal, UploadResumeModal } from "../components/dashboard";
 import toast from "react-hot-toast";
-import FrogFace from "../components/FrogLogo";
+import FrogFace, { BrandIcon } from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
 
 const Dashboard = () => {
@@ -91,13 +92,21 @@ const Dashboard = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+            <button
+              onClick={() => navigate("/app/applications")}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-400/40 text-emerald-800 font-bold shadow-2xs hover:bg-emerald-500/20 transition-all text-xs sm:text-sm cursor-pointer"
+            >
+              <Briefcase size={16} className="text-emerald-600" />
+              <span>Job Tracker CRM</span>
+            </button>
+
             <button
               onClick={() => navigate("/app/my-resumes")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold shadow-xs hover:bg-slate-50 hover:border-emerald-300 transition-all text-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-800 font-semibold shadow-xs hover:bg-slate-50 hover:border-emerald-300 transition-all text-xs sm:text-sm cursor-pointer"
             >
               <FileText size={16} className="text-slate-500" />
-              View Saved Resumes
+              <span>My Resumes</span>
             </button>
           </div>
         </div>
@@ -220,9 +229,7 @@ const Dashboard = () => {
 
           <div className="relative z-10 grid md:grid-cols-3 gap-8">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 shrink-0">
-                <FrogFace size={22} />
-              </div>
+              <BrandIcon size="md" />
               <div>
                 <h3 className="font-bold text-base text-white">froggie AI Enhancement</h3>
                 <p className="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">

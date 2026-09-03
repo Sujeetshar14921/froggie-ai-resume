@@ -21,32 +21,33 @@ export const isProviderConfigured = (provider) => {
 /**
  * Generate OAuth 2.0 consent screen redirect URL
  */
-export const getAuthorizationUrl = (provider, redirectUri) => {
+export const getAuthorizationUrl = (provider, redirectUri, state = "") => {
   const encRedirect = encodeURIComponent(redirectUri);
+  const stateQuery = state ? `&state=${encodeURIComponent(state)}` : "";
 
   switch (provider) {
     case "google": {
       const clientId = process.env.GOOGLE_CLIENT_ID;
       if (!clientId) throw new Error("GOOGLE_CLIENT_ID is not configured in .env");
-      return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encRedirect}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account`;
+      return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encRedirect}&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account${stateQuery}`;
     }
 
     case "github": {
       const clientId = process.env.GITHUB_CLIENT_ID;
       if (!clientId) throw new Error("GITHUB_CLIENT_ID is not configured in .env");
-      return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encRedirect}&scope=read:user%20user:email`;
+      return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encRedirect}&scope=read:user%20user:email${stateQuery}`;
     }
 
     case "linkedin": {
       const clientId = process.env.LINKEDIN_CLIENT_ID;
       if (!clientId) throw new Error("LINKEDIN_CLIENT_ID is not configured in .env");
-      return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encRedirect}&scope=openid%20profile%20email`;
+      return `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encRedirect}&scope=openid%20profile%20email${stateQuery}`;
     }
 
     case "facebook": {
       const appId = process.env.FACEBOOK_APP_ID;
       if (!appId) throw new Error("FACEBOOK_APP_ID is not configured in .env");
-      return `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${encRedirect}&scope=email,public_profile`;
+      return `https://www.facebook.com/v19.0/dialog/oauth?client_id=${appId}&redirect_uri=${encRedirect}&scope=email,public_profile${stateQuery}`;
     }
 
     default:

@@ -18,6 +18,7 @@ const ResumePreview = ({
   template = "classic",
   accentColor = "#3B82F6",
   classes = "",
+  autoFitSinglePage = false,
 }) => {
   const measurementRef = useRef(null);
   const isTwoColumn = template === "minimal-image";
@@ -59,17 +60,17 @@ const ResumePreview = ({
       if (!measurementRef.current) return;
 
       if (isTwoColumn) {
-        const paginatedPages = paginateTwoColumn(measurementRef.current, data);
+        const paginatedPages = paginateTwoColumn(measurementRef.current, data, autoFitSinglePage);
         setPages(paginatedPages);
       } else {
-        const paginatedPages = paginateSingleColumn(measurementRef.current, data);
+        const paginatedPages = paginateSingleColumn(measurementRef.current, data, autoFitSinglePage);
         setPages(paginatedPages);
       }
     };
 
     const timer = setTimeout(computePagination, 60);
     return () => clearTimeout(timer);
-  }, [data, template, accentColor, isTwoColumn]);
+  }, [data, template, accentColor, isTwoColumn, autoFitSinglePage]);
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -119,15 +120,21 @@ const ResumePreview = ({
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
             Live Preview • All Sections
           </span>
-          <span className="text-[10px] text-slate-400">Continuous Document Flow</span>
+          {autoFitSinglePage ? (
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
+              Auto-Fit 1-Page Active
+            </span>
+          ) : (
+            <span className="text-[10px] text-slate-400">Continuous Document Flow</span>
+          )}
         </div>
 
         {/* PRIMARY RESUME CONTAINER (ALL SECTIONS DISPLAYED NATURALLY WITHOUT A4 CUTOFF) */}
         <div
           id="resume-preview"
           className={`relative w-full max-w-[210mm] bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl mx-auto box-border transition-all ${
-            template === "minimal-image" ? "p-0" : "p-6 sm:p-9"
-          } ${classes}`}
+            template === "minimal-image" ? "p-0" : autoFitSinglePage ? "p-4 sm:p-6" : "p-6 sm:p-9"
+          } ${autoFitSinglePage ? "resume-auto-fit-page [transform:scale(0.98)] origin-top text-[0.95em]" : ""} ${classes}`}
           style={{
             width: "100%",
             maxWidth: "210mm",

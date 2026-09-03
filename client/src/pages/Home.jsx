@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Banner from "../components/home/Banner";
 import Hero from "../components/home/Hero";
@@ -11,6 +10,7 @@ import CallToAction from "../components/home/CallToAction";
 import Footer from "../components/home/Footer";
 import FrogSplashIntro from "../components/home/FrogSplashIntro";
 import { useSEO } from "../hooks/useSEO";
+import { initScrollProgressBar } from "../animations";
 
 const Home = () => {
   useSEO({
@@ -28,12 +28,12 @@ const Home = () => {
     return !sessionStorage.getItem("froggie_splash_seen");
   });
 
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  const progressBarRef = useRef(null);
+
+  useEffect(() => {
+    const cleanup = initScrollProgressBar(progressBarRef.current);
+    return cleanup;
+  }, []);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-emerald-500 selection:text-white relative">
@@ -43,9 +43,9 @@ const Home = () => {
       )}
 
       {/* Scroll Progress Bar at the top of the viewport */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 origin-left z-[100]"
-        style={{ scaleX }}
+      <div
+        ref={progressBarRef}
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 origin-left z-[100] pointer-events-none"
       />
 
       <Banner />

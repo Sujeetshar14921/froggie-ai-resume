@@ -123,6 +123,11 @@ const AtsScoreGauge = ({ score = 0, summary = {} }) => {
             <FrogFace size={13} />
             froggie Weighted ATS Engine
           </span>
+
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <Sparkles size={11} className="text-emerald-600" />
+            Google Gemini 3.5 Flash Audited
+          </span>
         </div>
 
         <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">

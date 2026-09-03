@@ -1,30 +1,7 @@
 import fs from "fs";
-import { createRequire } from "module";
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
-
-const require = createRequire(import.meta.url);
-const pdfParseModule = require("pdf-parse");
-
-/**
- * Universal PDF text extractor supporting both pdf-parse v1 (function) and v2 (PDFParse class)
- * @param {Buffer} dataBuffer
- * @returns {Promise<string>}
- */
-const extractPdfText = async (dataBuffer) => {
-  if (typeof pdfParseModule === "function") {
-    const data = await pdfParseModule(dataBuffer);
-    return data.text || "";
-  }
-
-  if (pdfParseModule?.PDFParse) {
-    const parser = new pdfParseModule.PDFParse({ data: dataBuffer });
-    const result = await parser.getText();
-    return result.text || "";
-  }
-
-  throw new Error("PDF text extraction engine is not available");
-};
+import { extractPdfText } from "../utils/pdfExtractor.js";
 
 /**
  * Controller for enhancing a resume's professional summary
@@ -224,5 +201,81 @@ Provide data in the following JSON format with no additional markdown wrapper or
         console.warn("Could not delete temp file:", unlinkErr);
       }
     }
+  }
+};
+
+/**
+ * Controller for Deep Gemini AI ATS X-Ray Audit
+ * POST: /api/ai/xray-audit
+ * Accepts: { resumeData }
+ */
+export const runAtsXRayAudit = async (req, res) => {
+  try {
+    const { resumeData } = req.body;
+
+    if (!resumeData || typeof resumeData !== "object") {
+      return res.status(400).json({ message: "Valid resume data is required for X-Ray audit" });
+    }
+
+    const systemPrompt = `You are an elite Enterprise ATS Engineering Architect and Silicon Valley Executive Technical Recruiter.
+You are running a deep-level "ATS X-Ray Scanner Audit" on a candidate's resume to assess parser compatibility (Workday, Taleo, Greenhouse, Lever), 6-second recruiter impression, bullet point strength (STAR metrics), and keyword density.
+
+Analyze the provided resume data thoroughly and output a strictly valid JSON object with the following schema:
+{
+  "geminiScore": <number between 40 and 99 reflecting ATS & recruiter strength>,
+  "recruiterImpression": "<2-sentence executive summary of how an executive recruiter perceives this resume in the first 6 seconds>",
+  "parserHealth": "<e.g. 100% Workday & Taleo Clean or 85% Notice>",
+  "strengths": [
+    "<highlight of strongest section or phrasing>",
+    "<highlight of quantified impact or architecture skill>"
+  ],
+  "criticalWarnings": [
+    "<critical weakness or missing metric warning>",
+    "<formatting or keyword density advisory>"
+  ],
+  "bulletRewrites": [
+    {
+      "original": "<an actual weak or unquantified bullet extracted from the candidate's resume>",
+      "optimized": "<a powerful, high-impact STAR rewrite of that bullet with quantifiable metrics and action verbs>",
+      "rationale": "<brief explanation of why this rewrite scores higher on ATS>"
+    }
+  ],
+  "recommendedKeywords": [
+    "<5 to 8 high-gravity industry skills and competencies recommended for this candidate's target role>"
+  ],
+  "actionVerbCoverage": "<percentage or assessment like High (92%)>"
+}
+
+Ensure all JSON strings are properly escaped. Do not output markdown codeblocks. Return ONLY valid JSON.`;
+
+    const userPrompt = `Candidate Resume Data:
+${JSON.stringify(resumeData, null, 2)}`;
+
+    const response = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    let rawOutput = response.choices[0]?.message?.content?.trim() || "{}";
+    if (rawOutput.startsWith("```")) {
+      rawOutput = rawOutput
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, "")
+        .trim();
+    }
+
+    const auditReport = JSON.parse(rawOutput);
+
+    return res.status(200).json({
+      success: true,
+      report: auditReport,
+    });
+  } catch (error) {
+    console.error("Gemini ATS X-Ray Audit Error:", error);
+    return res.status(500).json({ message: error.message || "Failed to complete Gemini ATS X-Ray Audit" });
   }
 };
