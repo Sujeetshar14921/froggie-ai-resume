@@ -227,6 +227,123 @@ export const generateResumeDocxBuffer = async (resume) => {
     });
   }
 
+  // Key Achievements
+  if (Array.isArray(resume.achievements) && resume.achievements.length > 0) {
+    addSectionTitle("Key Achievements");
+    resume.achievements.forEach((ach) => {
+      children.push(
+        new Paragraph({
+          bullet: { level: 0 },
+          spacing: { after: 40 },
+          children: [
+            new TextRun({ text: ach.title || "Achievement", bold: true, size: 21 }),
+            ach.date ? new TextRun({ text: ` (${ach.date})`, italics: true, size: 19, color: "6B7280" }) : new TextRun(""),
+            ach.description ? new TextRun({ text: ` — ${ach.description}`, size: 20, color: "4B5563" }) : new TextRun(""),
+          ],
+        })
+      );
+    });
+  }
+
+  // Languages
+  if (Array.isArray(resume.languages) && resume.languages.length > 0) {
+    addSectionTitle("Languages");
+    const langStr = resume.languages
+      .map((l) => `${l.language || l.name || "Language"}${l.proficiency ? ` (${l.proficiency})` : ""}`)
+      .join("  •  ");
+    children.push(
+      new Paragraph({
+        spacing: { after: 120 },
+        children: [
+          new TextRun({ text: langStr, size: 21, color: "1F2937" }),
+        ],
+      })
+    );
+  }
+
+  // Custom Sections
+  if (Array.isArray(resume.custom_sections) && resume.custom_sections.length > 0) {
+    resume.custom_sections.forEach((sec) => {
+      if (sec.title) {
+        addSectionTitle(sec.title);
+        (sec.items || []).forEach((item) => {
+          children.push(
+            new Paragraph({
+              spacing: { before: 80, after: 30 },
+              children: [
+                new TextRun({ text: item.title || "", bold: true, size: 21, color: "1F2937" }),
+                item.subtitle ? new TextRun({ text: ` — ${item.subtitle}`, size: 20, color: "059669" }) : new TextRun(""),
+                item.date ? new TextRun({ text: ` (${item.date})`, italics: true, size: 19, color: "6B7280" }) : new TextRun(""),
+              ],
+            })
+          );
+          if (item.description) {
+            children.push(
+              new Paragraph({
+                spacing: { after: 80 },
+                children: [
+                  new TextRun({ text: item.description, size: 20, color: "4B5563" }),
+                ],
+              })
+            );
+          }
+        });
+      }
+    });
+  }
+
+  // Personal Details
+  const pDetails = resume.personal_details || {};
+  const pDetailParts = [
+    pDetails.date_of_birth ? `DOB: ${pDetails.date_of_birth}` : null,
+    pDetails.gender ? `Gender: ${pDetails.gender}` : null,
+    pDetails.nationality ? `Nationality: ${pDetails.nationality}` : null,
+    pDetails.marital_status ? `Marital Status: ${pDetails.marital_status}` : null,
+    pDetails.passport_no ? `Passport: ${pDetails.passport_no}` : null,
+    pDetails.address ? `Address: ${pDetails.address}` : null,
+  ].filter(Boolean);
+
+  if (pDetailParts.length > 0) {
+    addSectionTitle("Personal Details");
+    children.push(
+      new Paragraph({
+        spacing: { after: 120 },
+        children: [
+          new TextRun({ text: pDetailParts.join("  |  "), size: 20, color: "4B5563" }),
+        ],
+      })
+    );
+  }
+
+  // Declaration
+  const declaration = resume.declaration || {};
+  if (declaration.statement || declaration.name) {
+    addSectionTitle("Declaration");
+    children.push(
+      new Paragraph({
+        spacing: { after: 120 },
+        children: [
+          new TextRun({
+            text: declaration.statement || "I hereby declare that the information provided above is true and correct to the best of my knowledge.",
+            italics: true,
+            size: 20,
+            color: "4B5563",
+          }),
+        ],
+      })
+    );
+    children.push(
+      new Paragraph({
+        spacing: { before: 80, after: 40 },
+        children: [
+          new TextRun({ text: `Place: ${declaration.place || ""}`, size: 20, color: "6B7280" }),
+          new TextRun({ text: `            Date: ${declaration.date || ""}`, size: 20, color: "6B7280" }),
+          new TextRun({ text: `            ${declaration.name || pInfo.full_name || ""}`, bold: true, size: 20, color: "111827" }),
+        ],
+      })
+    );
+  }
+
   const doc = new Document({
     sections: [
       {
