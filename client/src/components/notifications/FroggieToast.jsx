@@ -110,20 +110,21 @@ const FroggieToast = ({ toast }) => {
   const IconComponent = theme.Icon;
   const durationMs = toast.duration || 4000;
 
-  // Play sound & record to notification center once on mount
+  // Play soft sound on toast trigger
   useEffect(() => {
     if (toast.type === "loading") return;
 
     playNotificationSound(type);
 
-    if (messageText) {
+    // Only record to persistent history if toast is explicitly flagged as persistent/milestone
+    if (toast.persistent || toast.record) {
       recordNotification({
         title: theme.label.replace("FROGGIE • ", ""),
         message: messageText,
         type,
+        forceRecord: true,
       });
 
-      // Send native browser notification if user granted permission
       sendNativeNotification(theme.label.replace("FROGGIE • ", ""), {
         body: messageText,
       });

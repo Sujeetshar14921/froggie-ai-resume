@@ -67,7 +67,11 @@ const AtsScoreGauge = ({ score = 0, summary = {} }) => {
   const StatusIcon = theme.icon;
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm flex flex-col md:flex-row items-center gap-6 sm:gap-8 relative overflow-hidden">
+    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs flex flex-col md:flex-row items-center gap-6 sm:gap-8 relative overflow-hidden group">
+      {/* Half-circle colorful environment auras */}
+      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-115 transition-transform duration-700" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
+
       {/* Background soft orb */}
       <div
         className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"

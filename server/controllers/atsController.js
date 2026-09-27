@@ -1,7 +1,7 @@
 import fs from "fs";
 import Resume from "../models/Resume.js";
 import AtsReport from "../models/AtsReport.js";
-import { extractPdfText } from "../utils/pdfExtractor.js";
+import { extractDocumentText } from "../utils/documentExtractor.js";
 import {
   ATS_WEIGHTS,
   getMatchLabel,
@@ -54,17 +54,21 @@ export const analyzeResume = async (req, res) => {
       resumeTitle = resumeDoc.title || "My Resume";
       resumeText = formatResumeTextForAts(resumeDoc);
     } else if (req.file) {
-      // Parse uploaded PDF file
+      // Parse uploaded PDF / Word DOC / DOCX file
       const dataBuffer = fs.readFileSync(req.file.path);
-      resumeText = await extractPdfText(dataBuffer);
+      resumeText = await extractDocumentText(
+        dataBuffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
 
       if (!resumeText || resumeText.trim().length < 30) {
         return res.status(400).json({
-          message: "Could not extract readable text from the uploaded PDF resume.",
+          message: "Could not extract readable text from the uploaded resume document.",
         });
       }
 
-      resumeTitle = req.file.originalname.replace(/\.pdf$/i, "");
+      resumeTitle = req.file.originalname.replace(/\.(pdf|docx?|txt)$/i, "");
     } else if (req.body.resumeText) {
       resumeText = req.body.resumeText.trim();
       if (resumeText.length < 30) {
@@ -72,7 +76,7 @@ export const analyzeResume = async (req, res) => {
       }
     } else {
       return res.status(400).json({
-        message: "Please select a saved resume or upload a PDF resume file to analyze",
+        message: "Please select a saved resume or upload a PDF or Word DOC resume file to analyze",
       });
     }
 

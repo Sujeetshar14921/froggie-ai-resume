@@ -9,6 +9,7 @@ import {
   FileText,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   Menu,
   X,
   ChevronDown,
@@ -16,6 +17,7 @@ import {
   ShieldCheck,
   Coffee,
   Briefcase,
+  Users,
 } from "lucide-react";
 import ProfileModal from "./ProfileModal";
 import FrogFace, { BrandIcon } from "./FrogLogo";
@@ -36,12 +38,60 @@ const Navbar = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const headerRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const profileDropdownRef = useRef(null);
   const isInitialMenuMount = useRef(true);
 
+  const isTalentPage = location.pathname.startsWith("/talent");
   const isLandingOrFaq =
-    location.pathname === "/" ||
-    location.pathname === "/faq" ||
-    location.pathname === "/donate";
+    (location.pathname === "/" ||
+      location.pathname === "/faq" ||
+      location.pathname === "/donate") &&
+    !isTalentPage;
+
+  // Auto-close all dropdowns on route navigation
+  useEffect(() => {
+    setOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Auto-close on click-outside, Escape key, and scroll
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+
+    const handleScrollClose = () => {
+      if (open) {
+        setOpen(false);
+      }
+    };
+
+    if (open || mobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("scroll", handleScrollClose, { passive: true });
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleScrollClose);
+    };
+  }, [open, mobileMenuOpen]);
 
   useEffect(() => {
     const cleanup = initNavbarAnimation(headerRef.current);
@@ -72,11 +122,12 @@ const Navbar = () => {
   };
 
   const navLinks = [
+    { name: "Find Talent", href: "/talent", isRoute: true },
     { name: "Features", href: "/#features", isRoute: false },
-    { name: "How It Works", href: "/#how-it-works", isRoute: false },
     { name: "Templates", href: "/#templates", isRoute: false },
+    { name: "How It Works", href: "/#how-it-works", isRoute: false },
+    { name: "ATS Scanner", href: "/app/ats-checker", isRoute: true },
     { name: "FAQ", href: "/faq", isRoute: true },
-    { name: "Support Us ☕", href: "/donate", isRoute: true },
   ];
 
   return (
@@ -85,17 +136,18 @@ const Navbar = () => {
         ref={headerRef}
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/85 backdrop-blur-xl border-b border-slate-200/80 shadow-xs"
-            : "bg-white/70 backdrop-blur-md border-b border-slate-200/40"
+            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]"
+            : "bg-white/65 backdrop-blur-md border-b border-slate-200/40"
         }`}
       >
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
 
           {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
-          <Link to="/" className="nav-brand flex items-center gap-3 group shrink-0">
+          {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
+          <Link to="/" className="nav-brand flex items-center gap-2.5 group shrink-0">
             <BrandIcon
               size="md"
-              className="group-hover:shadow-emerald-500/40 transition-all group-hover:scale-105"
+              className="group-hover:shadow-emerald-500/30 transition-all group-hover:scale-105"
               iconClassName="group-hover:rotate-6 transition-transform duration-300"
             />
 
@@ -104,19 +156,33 @@ const Navbar = () => {
                 <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
                   froggie<span className="text-emerald-500">.</span>
                 </span>
-                <span className="px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/70 uppercase tracking-wider">
-                  AI ATS
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-black rounded-lg uppercase tracking-wider ${
+                    isTalentPage
+                      ? "bg-slate-950 text-white shadow-xs"
+                      : "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
+                  }`}
+                >
+                  {isTalentPage ? "Talent Hub 🌐" : "AI ATS"}
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 font-medium tracking-wide">
-                Smart Resume Studio
+                {isTalentPage ? "Verified Candidate Showcase" : "Smart Resume Studio"}
               </p>
             </div>
           </Link>
 
-          {/* DESKTOP NAV LINKS */}
+          {/* TALENT PAGE CENTER STATUS PILL */}
+          {isTalentPage && (
+            <div className="hidden lg:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/80 border border-slate-200/70 text-slate-700 text-xs font-bold shadow-2xs backdrop-blur-sm">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Public Candidate Showcase & Resume Directory</span>
+            </div>
+          )}
+
+          {/* DESKTOP NAV LINKS (VISIBLE ON LANDING / FAQ ONLY) */}
           {isLandingOrFaq && (
-            <nav className="nav-links-pill hidden lg:flex items-center gap-1 bg-slate-100/80 px-3 py-1.5 rounded-full border border-slate-200/60 backdrop-blur-sm shadow-2xs">
+            <nav className="nav-links-pill hidden lg:flex items-center gap-1 bg-slate-100/70 px-3 py-1.5 rounded-full border border-slate-200/60 backdrop-blur-sm shadow-2xs">
               {navLinks.map((link) =>
                 link.isRoute ? (
                   <Link
@@ -124,7 +190,7 @@ const Navbar = () => {
                     to={link.href}
                     className={`nav-link-item text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
                       location.pathname === link.href
-                        ? "bg-emerald-600 text-white shadow-2xs"
+                        ? "bg-slate-950 text-white shadow-2xs"
                         : "text-slate-600 hover:text-emerald-700 hover:bg-white"
                     }`}
                   >
@@ -145,12 +211,12 @@ const Navbar = () => {
 
           {/* RIGHT SIDE ACTIONS */}
           <div className="nav-actions flex items-center gap-2 sm:gap-3">
-            {/* NOTIFICATION BELL & DESKTOP ALERTS */}
-            <NotificationBell />
+            {/* NOTIFICATION BELL (Visible strictly only when user is logged in) */}
+            {user && <NotificationBell />}
 
             {user ? (
               /* AUTHENTICATED USER DROPDOWN */
-              <div className="relative">
+              <div ref={profileDropdownRef} className="relative">
                 <button
                   onClick={() => setOpen(!open)}
                   className="flex items-center gap-2.5 bg-white/90 backdrop-blur-md border border-slate-200/90 p-1.5 sm:pr-3 rounded-2xl shadow-xs hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-500/10 transition-all cursor-pointer group"
@@ -274,6 +340,18 @@ const Navbar = () => {
                           <span>My Resumes</span>
                         </Link>
 
+                        {/* TALENT POOL / CANDIDATE DIRECTORY */}
+                        <Link
+                          to="/talent"
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
+                        >
+                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
+                            <Users size={15} />
+                          </div>
+                          <span>Talent Pool</span>
+                        </Link>
+
                         {/* JOB APPLICATION CRM TRACKER */}
                         <Link
                           to="/app/applications"
@@ -353,8 +431,27 @@ const Navbar = () => {
                   </>
                 )}
               </div>
+            ) : isTalentPage ? (
+              /* TALENT PAGE DEDICATED GUEST ACTIONS */
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-950 hover:bg-slate-100 rounded-xl transition-all"
+                >
+                  <ArrowLeft size={13} />
+                  <span>Home</span>
+                </Link>
+
+                <Link
+                  to="/login?state=register"
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 text-xs font-extrabold bg-slate-950 hover:bg-slate-900 text-white rounded-xl shadow-md transition-all border border-emerald-500/40 hover:scale-102 active:scale-98"
+                >
+                  <Sparkles size={13} className="text-emerald-400" />
+                  <span>Post Your Resume</span>
+                </Link>
+              </div>
             ) : (
-              /* GUEST ACTIONS */
+              /* STANDARD GUEST ACTIONS */
               <div className="flex items-center gap-2.5">
                 <Link
                   to="/login"

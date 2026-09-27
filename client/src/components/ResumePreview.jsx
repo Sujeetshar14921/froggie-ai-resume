@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useSelector } from "react-redux";
 import ClassicTemplate from "./templates/ClassicTemplate";
 import ModernTemplate from "./templates/ModernTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
@@ -6,6 +7,9 @@ import MinimalImageTemplate from "./templates/MinimalImageTemplate";
 import ExecutiveTemplate from "./templates/ExecutiveTemplate";
 import BoardroomTemplate from "./templates/BoardroomTemplate";
 import SkillBulletTemplate from "./templates/SkillBulletTemplate";
+import IvyLeagueTemplate from "./templates/IvyLeagueTemplate";
+import NovaSidebarTemplate from "./templates/NovaSidebarTemplate";
+import ApexGridTemplate from "./templates/ApexGridTemplate";
 import {
   paginateSingleColumn,
   paginateTwoColumn,
@@ -20,29 +24,59 @@ const ResumePreview = ({
   classes = "",
   autoFitSinglePage = false,
 }) => {
+  const authUser = useSelector((state) => state.auth?.user);
+
+  // Fallback to user's account profile photo if resume personal_info.image is empty
+  const effectiveData = useMemo(() => {
+    if (!data) return data;
+    const existingImg = data.personal_info?.image;
+    if (existingImg && typeof existingImg === "string" && existingImg.trim()) {
+      return data;
+    }
+    const fallbackImage =
+      data.userId?.image ||
+      (authUser?.image && (data.userId === authUser._id || !data.userId) ? authUser.image : "");
+
+    if (!fallbackImage) return data;
+
+    return {
+      ...data,
+      personal_info: {
+        ...(data.personal_info || {}),
+        image: fallbackImage,
+      },
+    };
+  }, [data, authUser]);
+
   const measurementRef = useRef(null);
-  const isTwoColumn = template === "minimal-image";
+  const isTwoColumn = template === "minimal-image" || template === "nova-sidebar";
 
   const [pages, setPages] = useState(() => [
-    isTwoColumn ? createDefaultTwoColumnPage(data) : createDefaultSingleColumnPage(data),
+    isTwoColumn ? createDefaultTwoColumnPage(effectiveData) : createDefaultSingleColumnPage(effectiveData),
   ]);
 
   const renderTemplateContent = (pageContent = null) => {
     switch (template) {
       case "skill-bullet":
-        return <SkillBulletTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <SkillBulletTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       case "modern":
-        return <ModernTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <ModernTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       case "minimal":
-        return <MinimalTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <MinimalTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       case "minimal-image":
-        return <MinimalImageTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <MinimalImageTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       case "executive":
-        return <ExecutiveTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <ExecutiveTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       case "boardroom":
-        return <BoardroomTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <BoardroomTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
+      case "ivy-league":
+        return <IvyLeagueTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
+      case "nova-sidebar":
+        return <NovaSidebarTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
+      case "apex-grid":
+        return <ApexGridTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
       default:
-        return <ClassicTemplate data={data} accentColor={accentColor} pageContent={pageContent} />;
+        return <ClassicTemplate data={effectiveData} accentColor={accentColor} pageContent={pageContent} />;
     }
   };
 
@@ -60,17 +94,17 @@ const ResumePreview = ({
       if (!measurementRef.current) return;
 
       if (isTwoColumn) {
-        const paginatedPages = paginateTwoColumn(measurementRef.current, data, autoFitSinglePage);
+        const paginatedPages = paginateTwoColumn(measurementRef.current, effectiveData, autoFitSinglePage);
         setPages(paginatedPages);
       } else {
-        const paginatedPages = paginateSingleColumn(measurementRef.current, data, autoFitSinglePage);
+        const paginatedPages = paginateSingleColumn(measurementRef.current, effectiveData, autoFitSinglePage);
         setPages(paginatedPages);
       }
     };
 
     const timer = setTimeout(computePagination, 60);
     return () => clearTimeout(timer);
-  }, [data, template, accentColor, isTwoColumn, autoFitSinglePage]);
+  }, [effectiveData, template, accentColor, isTwoColumn, autoFitSinglePage]);
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -95,7 +129,7 @@ const ResumePreview = ({
             id={`resume-page-${pageIdx}`}
             data-page-index={pageIdx}
             className={`resume-page bg-white box-border ${
-              template === "minimal-image" ? "p-0 overflow-hidden" : "p-[36px]"
+              isTwoColumn ? "p-0 overflow-hidden" : "p-[36px]"
             }`}
             style={{
               width: "794px",
@@ -133,7 +167,7 @@ const ResumePreview = ({
         <div
           id="resume-preview"
           className={`relative w-full max-w-[210mm] bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl mx-auto box-border transition-all ${
-            template === "minimal-image" ? "p-0" : autoFitSinglePage ? "p-4 sm:p-6" : "p-6 sm:p-9"
+            isTwoColumn ? "p-0 overflow-hidden" : autoFitSinglePage ? "p-4 sm:p-6" : "p-6 sm:p-9"
           } ${autoFitSinglePage ? "resume-auto-fit-page [transform:scale(0.98)] origin-top text-[0.95em]" : ""} ${classes}`}
           style={{
             width: "100%",

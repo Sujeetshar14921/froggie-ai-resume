@@ -8,14 +8,15 @@ import {
   deleteChat,
   clearChatMessages,
 } from "../controllers/copilotController.js";
+import { aiLimiter } from "../middlewares/rateLimiter.js";
 
 const copilotRouter = express.Router();
 
-// Send message / action to Copilot
-copilotRouter.post("/message", protect, sendMessage);
+// Send message / action to Copilot with rate limiting
+copilotRouter.post("/message", protect, aiLimiter, sendMessage);
 
 // Direct execution of confirmed action
-copilotRouter.post("/action", protect, executeAction);
+copilotRouter.post("/action", protect, aiLimiter, executeAction);
 
 // Get list of past chat sessions
 copilotRouter.get("/chats", protect, getChats);

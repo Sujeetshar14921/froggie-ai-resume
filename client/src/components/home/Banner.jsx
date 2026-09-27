@@ -15,7 +15,7 @@ const Banner = () => {
       <div className="absolute left-1/4 -top-10 w-96 h-24 bg-emerald-500/15 blur-[60px] pointer-events-none" />
       <div className="absolute right-1/4 -top-10 w-96 h-24 bg-teal-500/15 blur-[60px] pointer-events-none" />
 
-      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 py-2.5">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
 
           {/* LEFT BADGE & TEXT */}
@@ -23,7 +23,7 @@ const Banner = () => {
             <span className="inline-flex items-center gap-1.5 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-emerald-400 font-semibold text-[11px] tracking-wide">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               <Zap size={12} />
-              froggie AI 1.0
+              froggie AI 3.0
             </span>
 
             <span className="text-slate-300 font-medium flex items-center gap-1.5">

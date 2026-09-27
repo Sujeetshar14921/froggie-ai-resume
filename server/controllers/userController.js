@@ -19,7 +19,11 @@ export const registerUser = async (req, res) => {
 
         // check if required fields are present
         if(!name || !email || !password){
-            return res.status(400).json({message: 'Missing required fields'})
+            return res.status(400).json({message: 'Please fill in all required fields'})
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({message: 'Password must be at least 6 characters long'})
         }
 
         const cleanEmail = email.trim().toLowerCase();
@@ -27,7 +31,12 @@ export const registerUser = async (req, res) => {
         // check if user already exists
         const user = await User.findOne({email: cleanEmail})
         if(user){
-            return res.status(400).json({message: 'User already exists'})
+            if (user.authProvider && user.authProvider !== 'local') {
+                return res.status(400).json({
+                    message: `An account with this email already exists via ${user.authProvider.toUpperCase()}. Please sign in with ${user.authProvider.toUpperCase()}.`
+                });
+            }
+            return res.status(400).json({message: 'Account already exists with this email. Please sign in.'})
         }
 
         // create new user
@@ -40,10 +49,10 @@ export const registerUser = async (req, res) => {
          const token = generateToken(newUser._id)
          newUser.password = undefined;
 
-         return res.status(201).json({message: 'User created successfully', token, user: newUser})
+         return res.status(201).json({message: 'Account created successfully', token, user: newUser})
 
     } catch (error) {
-        return res.status(400).json({message: error.message})
+        return res.status(400).json({message: error.message || 'Registration failed'})
     }
 }
 
@@ -54,7 +63,7 @@ export const loginUser = async (req, res) => {
         const { email, password} = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({message: 'Missing email or password'})
+            return res.status(400).json({message: 'Please provide both email and password'})
         }
 
         const cleanEmail = email.trim().toLowerCase();
@@ -63,6 +72,14 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({email: cleanEmail})
         if(!user){
             return res.status(400).json({message: 'Invalid email or password'})
+        }
+
+        // If user registered with Google/OAuth and has no password
+        if (user.authProvider && user.authProvider !== 'local' && !user.password) {
+            const providerName = user.authProvider.charAt(0).toUpperCase() + user.authProvider.slice(1);
+            return res.status(400).json({
+                message: `This account was registered using ${providerName}. Please use the "${providerName}" button below to sign in.`
+            });
         }
 
         // check if password is correct
@@ -77,7 +94,7 @@ export const loginUser = async (req, res) => {
          return res.status(200).json({message: 'Login successful', token, user})
 
     } catch (error) {
-        return res.status(400).json({message: error.message})
+        return res.status(400).json({message: error.message || 'Login failed'})
     }
 }
 
@@ -107,10 +124,25 @@ export const getUserById = async (req, res) => {
 export const getUserResumes = async (req, res) => {
     try {
         const userId = req.userId;
+        const user = await User.findById(userId).select('image').lean();
+        const userImage = user?.image || '';
 
-        // return user resumes
-        const resumes = await Resume.find({userId})
-        return res.status(200).json({resumes})
+        // return user resumes with profile photo fallback
+        const resumes = await Resume.find({userId}).lean();
+        const enrichedResumes = resumes.map((r) => {
+            if (!r.personal_info?.image && userImage) {
+                return {
+                    ...r,
+                    personal_info: {
+                        ...(r.personal_info || {}),
+                        image: userImage
+                    }
+                };
+            }
+            return r;
+        });
+
+        return res.status(200).json({resumes: enrichedResumes})
     } catch (error) {
         return res.status(400).json({message: error.message})
     }

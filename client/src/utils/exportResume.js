@@ -306,6 +306,48 @@ export const exportResumeAsDoc = (resumeData = {}) => {
     })
     .join("");
 
+  // Format Languages
+  const languagesHtml = (resumeData.languages || [])
+    .map((lang) => `${lang.language}${lang.proficiency ? ` (${lang.proficiency})` : ""}`)
+    .join("   •   ");
+
+  // Format Custom Sections
+  const customSectionsHtml = (resumeData.custom_sections || [])
+    .map((sec) => {
+      const itemsHtml = (sec.items || [])
+        .map((item) => {
+          return `
+            <div style="margin-bottom: 8pt; page-break-inside: avoid;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="font-weight: bold; font-size: 10pt; color: #0f172a; font-family: 'Calibri', 'Arial', sans-serif;">
+                    ${item.title || ""}
+                  </td>
+                  <td style="text-align: right; font-size: 9pt; color: #64748b; font-family: 'Calibri', 'Arial', sans-serif;">
+                    ${item.date || ""}
+                  </td>
+                </tr>
+              </table>
+              ${item.subtitle ? `<div style="font-size: 9pt; color: #475569; font-family: 'Calibri', 'Arial', sans-serif;">${item.subtitle}</div>` : ""}
+              ${
+                item.description
+                  ? `<div style="font-size: 9pt; color: #334155; margin-top: 2pt; font-family: 'Calibri', 'Arial', sans-serif;">
+                      ${item.description}
+                    </div>`
+                  : ""
+              }
+            </div>
+          `;
+        })
+        .join("");
+
+      return `
+        <div class="section-title">${sec.title || "Additional Section"}</div>
+        ${itemsHtml}
+      `;
+    })
+    .join("");
+
   // Format Skills
   const skillsHtml =
     (resumeData.skills || []).length > 0
@@ -313,6 +355,108 @@ export const exportResumeAsDoc = (resumeData = {}) => {
           ${resumeData.skills.join("   •   ")}
         </div>`
       : "";
+
+  const sectionHtmlMap = {
+    summary: resumeData.professional_summary
+      ? `
+        <div class="section-title">Professional Summary</div>
+        <p>${resumeData.professional_summary}</p>
+      `
+      : "",
+    experience: (resumeData.experience || []).length > 0
+      ? `
+        <div class="section-title">Work Experience</div>
+        ${experienceHtml}
+      `
+      : "",
+    projects: (resumeData.project || []).length > 0
+      ? `
+        <div class="section-title">Key Projects</div>
+        ${projectHtml}
+      `
+      : "",
+    education: (resumeData.education || []).length > 0
+      ? `
+        <div class="section-title">Education</div>
+        ${educationHtml}
+      `
+      : "",
+    certifications: (resumeData.certifications || []).length > 0
+      ? `
+        <div class="section-title">Certifications & Licenses</div>
+        ${certificationsHtml}
+      `
+      : "",
+    achievements: (resumeData.achievements || []).length > 0
+      ? `
+        <div class="section-title">Honors & Achievements</div>
+        ${achievementsHtml}
+      `
+      : "",
+    custom_sections: customSectionsHtml,
+    languages: (resumeData.languages || []).length > 0
+      ? `
+        <div class="section-title">Languages</div>
+        <div style="font-size: 9.5pt; color: #1e293b; line-height: 1.6; font-family: 'Calibri', 'Arial', sans-serif;">
+          ${languagesHtml}
+        </div>
+      `
+      : "",
+    skills: (resumeData.skills || []).length > 0
+      ? `
+        <div class="section-title">Core Competencies</div>
+        ${skillsHtml}
+      `
+      : "",
+    personal_details: resumeData.personal_details && (resumeData.personal_details.date_of_birth || resumeData.personal_details.gender || resumeData.personal_details.nationality || resumeData.personal_details.marital_status || resumeData.personal_details.passport_no || resumeData.personal_details.address)
+      ? `
+        <div class="section-title">Personal Details</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt; color: #334155; margin-bottom: 8pt;">
+          ${resumeData.personal_details.date_of_birth ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Date of Birth:</td><td>${resumeData.personal_details.date_of_birth}</td></tr>` : ""}
+          ${resumeData.personal_details.gender ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Gender:</td><td>${resumeData.personal_details.gender}</td></tr>` : ""}
+          ${resumeData.personal_details.nationality ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Nationality:</td><td>${resumeData.personal_details.nationality}</td></tr>` : ""}
+          ${resumeData.personal_details.marital_status ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Marital Status:</td><td>${resumeData.personal_details.marital_status}</td></tr>` : ""}
+          ${resumeData.personal_details.passport_no ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Passport / ID:</td><td>${resumeData.personal_details.passport_no}</td></tr>` : ""}
+          ${resumeData.personal_details.address ? `<tr><td style="font-weight: bold; width: 30%; padding: 2pt 0;">Address:</td><td>${resumeData.personal_details.address}</td></tr>` : ""}
+        </table>
+      `
+      : "",
+    declaration: resumeData.declaration && (resumeData.declaration.statement || resumeData.declaration.place || resumeData.declaration.date || resumeData.declaration.name)
+      ? `
+        <div class="section-title">Declaration</div>
+        ${resumeData.declaration.statement ? `<p style="font-size: 9.5pt; line-height: 1.5; color: #334155;">${resumeData.declaration.statement}</p>` : ""}
+        <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt; color: #334155; margin-top: 8pt;">
+          <tr>
+            <td style="width: 50%;">
+              ${resumeData.declaration.place ? `<div><strong>Place:</strong> ${resumeData.declaration.place}</div>` : ""}
+              ${resumeData.declaration.date ? `<div><strong>Date:</strong> ${resumeData.declaration.date}</div>` : ""}
+            </td>
+            <td style="text-align: right; width: 50%;">
+              <div style="font-weight: bold; color: #0f172a;">${resumeData.declaration.name || personalInfo.full_name || ""}</div>
+              <div style="font-size: 8.5pt; color: #94a3b8; text-transform: uppercase;">(Signature)</div>
+            </td>
+          </tr>
+        </table>
+      `
+      : "",
+  };
+
+  const defaultSectionOrder = [
+    "summary",
+    "experience",
+    "projects",
+    "education",
+    "certifications",
+    "achievements",
+    "skills",
+    "languages",
+    "personal_details",
+    "declaration",
+    "custom_sections",
+  ];
+  const userOrder = Array.isArray(resumeData.section_order) && resumeData.section_order.length > 0 ? resumeData.section_order : [];
+  const orderedSections = [...new Set([...userOrder, ...defaultSectionOrder])];
+  const renderedSectionsHtml = orderedSections.map((key) => sectionHtmlMap[key] || "").join("");
 
   const docHtml = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -396,68 +540,7 @@ export const exportResumeAsDoc = (resumeData = {}) => {
             : ""
         }
 
-        ${
-          resumeData.professional_summary
-            ? `
-          <div class="section-title">Professional Summary</div>
-          <p>${resumeData.professional_summary}</p>
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.experience || []).length > 0
-            ? `
-          <div class="section-title">Work Experience</div>
-          ${experienceHtml}
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.project || []).length > 0
-            ? `
-          <div class="section-title">Key Projects</div>
-          ${projectHtml}
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.education || []).length > 0
-            ? `
-          <div class="section-title">Education</div>
-          ${educationHtml}
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.certifications || []).length > 0
-            ? `
-          <div class="section-title">Certifications & Licenses</div>
-          ${certificationsHtml}
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.achievements || []).length > 0
-            ? `
-          <div class="section-title">Honors & Achievements</div>
-          ${achievementsHtml}
-        `
-            : ""
-        }
-
-        ${
-          (resumeData.skills || []).length > 0
-            ? `
-          <div class="section-title">Core Competencies</div>
-          ${skillsHtml}
-        `
-            : ""
-        }
+        ${renderedSectionsHtml}
       </body>
     </html>
   `;

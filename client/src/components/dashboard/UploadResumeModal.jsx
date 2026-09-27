@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { X, UploadCloud, FileUp, Loader2, Sparkles } from "lucide-react";
+import { X, UploadCloud, FileUp, Loader2, FileText, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 import FrogFace from "../FrogLogo";
+
+const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".doc", ".txt"];
 
 const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
   const [title, setTitle] = useState("");
@@ -16,10 +18,32 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
     onClose();
   };
 
+  const getCleanTitle = (fileName) => {
+    return fileName.replace(/\.(pdf|docx?|txt)$/i, "");
+  };
+
+  const isValidFile = (file) => {
+    if (!file) return false;
+    const name = file.name.toLowerCase();
+    return ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
+  };
+
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    if (!isValidFile(file)) {
+      toast.error("Please select a valid PDF or Word (.docx, .doc) file");
+      return;
+    }
+    setResumeFile(file);
+    if (!title) {
+      setTitle(getCleanTitle(file.name));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!resumeFile) {
-      toast.error("Please select a PDF resume file");
+      toast.error("Please select a PDF or Word DOC file");
       return;
     }
     if (!title.trim()) {
@@ -35,14 +59,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      if (!file.name.toLowerCase().endsWith(".pdf")) {
-        toast.error("Please drop a valid .pdf file");
-        return;
-      }
-      setResumeFile(file);
-      if (!title) {
-        setTitle(file.name.replace(/\.pdf$/i, ""));
-      }
+      handleFileSelect(file);
     }
   };
 
@@ -60,9 +77,9 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
           <UploadCloud size={24} />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-900">Upload & Import PDF</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Upload & Import Resume</h2>
         <p className="text-slate-500 text-sm mt-1 mb-6">
-          froggie backend AI will parse your PDF document and structure it automatically.
+          Upload any <strong>PDF</strong> or <strong>Word (.doc, .docx)</strong> resume. froggie AI extracts all details and loads them directly into the visual preview & editor.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,7 +90,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Imported Resume - 2026"
+              placeholder="e.g. Senior Engineer Resume"
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
               required
             />
@@ -81,7 +98,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Select PDF File
+              Select Resume File (PDF / DOC / DOCX)
             </label>
             <label
               htmlFor="resume-upload-input"
@@ -91,7 +108,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
               }}
               onDragLeave={() => setIsDragging(false)}
               onDrop={handleFileDrop}
-              className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
+              className={`border-2 border-dashed rounded-2xl p-7 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
                 isDragging
                   ? "border-emerald-500 bg-emerald-50"
                   : resumeFile
@@ -104,23 +121,23 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
                   resumeFile ? "bg-emerald-100 text-emerald-700" : "bg-emerald-50 text-emerald-600"
                 }`}
               >
-                <FileUp size={24} />
+                {resumeFile ? <CheckCircle2 size={24} /> : <FileUp size={24} />}
               </div>
 
               {resumeFile ? (
                 <div>
                   <p className="font-bold text-slate-900 text-sm">{resumeFile.name}</p>
                   <p className="text-xs text-emerald-600 font-semibold mt-1">
-                    ✓ Ready to upload ({(resumeFile.size / 1024).toFixed(1)} KB)
+                    ✓ File attached ({(resumeFile.size / 1024).toFixed(1)} KB) · Click to change
                   </p>
                 </div>
               ) : (
                 <div>
                   <p className="font-bold text-slate-900 text-sm">
-                    Click to browse or drag & drop PDF
+                    Click to browse or drag & drop Resume
                   </p>
                   <p className="text-xs text-slate-400 mt-1">
-                    Standard PDF document up to 10MB
+                    Supports PDF, Word (.docx, .doc), or TXT up to 10MB
                   </p>
                 </div>
               )}
@@ -130,14 +147,11 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
               id="resume-upload-input"
               hidden
               type="file"
-              accept=".pdf"
+              accept=".pdf,.docx,.doc,.txt"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  setResumeFile(file);
-                  if (!title) {
-                    setTitle(file.name.replace(/\.pdf$/i, ""));
-                  }
+                  handleFileSelect(file);
                 }
               }}
             />
@@ -153,7 +167,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
             ) : (
               <FrogFace size={18} />
             )}
-            <span>{isLoading ? "froggie AI Parsing Resume..." : "Parse & Open Builder"}</span>
+            <span>{isLoading ? "froggie AI Parsing & Loading..." : "Parse & Open in Visual Editor"}</span>
           </button>
         </form>
       </div>

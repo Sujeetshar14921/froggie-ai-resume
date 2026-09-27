@@ -41,8 +41,10 @@ const AtsOptimizeSection = ({
   // Already applied state
   if (isApplied) {
     return (
-      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white border border-emerald-500/50 shadow-xl relative overflow-hidden animate-in fade-in duration-300">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 text-white border border-emerald-500/50 shadow-xl relative overflow-hidden animate-in fade-in duration-300 group">
+        {/* Half circle decorations */}
+        <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/25 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+        <div className="absolute bottom-0 left-0 w-36 h-36 bg-gradient-to-tr from-blue-500/15 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
         
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5 relative z-10">
           <div className="space-y-2 text-left">
@@ -111,8 +113,10 @@ const AtsOptimizeSection = ({
   };
 
   return (
-    <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white border border-emerald-500/40 shadow-xl relative overflow-hidden space-y-6">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white border border-emerald-500/40 shadow-xl relative overflow-hidden space-y-6 group">
+      {/* Half circle colorful decorations */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+      <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/15 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
 
       {/* TOP HEADER & SCORE PROJECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 relative z-10">

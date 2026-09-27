@@ -10,8 +10,12 @@ const AtsSkillsMatch = ({ skills = {} }) => {
   const matchRate = totalSkills > 0 ? Math.round((matched.length / totalSkills) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="relative overflow-hidden bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-6 group text-left">
+      {/* Half circle ambient glows */}
+      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+      <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-tr-full pointer-events-none" />
+
+      <div className="relative z-10 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-slate-900">Skills Alignment</h3>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -27,7 +31,7 @@ const AtsSkillsMatch = ({ skills = {} }) => {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="relative z-10 grid md:grid-cols-2 gap-6">
         {/* MATCHED SKILLS */}
         <div className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-100 space-y-3">
           <div className="flex items-center justify-between">

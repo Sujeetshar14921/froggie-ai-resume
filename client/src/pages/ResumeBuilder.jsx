@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Loader2, Eye, Terminal, ShieldCheck, FileCheck } from "lucide-react";
+import { useSelector } from "react-redux";
+import { Loader2, Eye, Terminal, ShieldCheck, FileCheck, Layers } from "lucide-react";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ResumePreview from "../components/ResumePreview";
 import AtsXRayScanner from "../components/ats/AtsXRayScanner";
@@ -11,16 +12,25 @@ import ProjectForm from "../components/ProjectForm";
 import SkillsForm from "../components/SkillsForm";
 import CertificationForm from "../components/CertificationForm";
 import AchievementForm from "../components/AchievementForm";
+import LanguagesForm from "../components/LanguagesForm";
+import PersonalDetailsForm from "../components/PersonalDetailsForm";
+import DeclarationForm from "../components/DeclarationForm";
+import CustomSectionsForm from "../components/CustomSectionsForm";
 import { BuilderHeader, BuilderStepper, BuilderToolbar } from "../components/builder";
+import { UploadResumeModal } from "../components/dashboard";
+import { VersionHistoryModal } from "../components/resumes";
 import { useResume } from "../hooks/useResume";
 import { BUILDER_SECTIONS } from "../constants/sections";
 import { exportResumeAsPdf, exportResumeAsDoc } from "../utils/exportResume";
+import { resumeApi } from "../api/resumeApi";
 import { useCopilot } from "../hooks/useCopilot";
 import { useSEO } from "../hooks/useSEO";
+import { aiApi } from "../api/aiApi";
 import toast from "react-hot-toast";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
+  const { token } = useSelector((state) => state.auth);
   const {
     setActiveResumeId,
     setActiveResumeData,
@@ -49,6 +59,29 @@ const ResumeBuilder = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [previewMode, setPreviewMode] = useState("visual"); // "visual" | "xray"
   const [autoFitSinglePage, setAutoFitSinglePage] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Handle in-builder resume file import (PDF / DOC / DOCX)
+  const handleImportResume = async ({ file, title }, onSuccess) => {
+    try {
+      setIsUploading(true);
+      const data = await aiApi.uploadResumePdf({ file, title, resumeId }, token);
+      if (data && data.resume) {
+        setResumeData(data.resume);
+        setActiveResumeData(data.resume);
+        toast.success("Resume parsed! All details loaded into live visual preview.");
+      }
+      setShowUploadModal(false);
+      onSuccess?.();
+    } catch (error) {
+      console.error("Import resume error:", error);
+      toast.error(error?.response?.data?.message || "Failed to parse resume document");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Sync active resume with Career Copilot
   React.useEffect(() => {
@@ -130,14 +163,13 @@ const ResumeBuilder = () => {
       });
     });
 
-    // Direct multi-field updates (e.g. adding skills, new project, title, certs, awards)
+    // Direct multi-field updates
     registerDirectUpdateHandler((updates) => {
       if (!updates || typeof updates !== "object") return;
 
       setResumeData((prev) => {
         const next = { ...prev };
 
-        // 1. Personal Info
         if (updates.personal_info && typeof updates.personal_info === "object") {
           next.personal_info = { ...next.personal_info, ...updates.personal_info };
         }
@@ -166,14 +198,12 @@ const ResumeBuilder = () => {
           next.personal_info = { ...next.personal_info, website: updates.website };
         }
 
-        // 2. Summary
         if (updates.professional_summary !== undefined) {
           next.professional_summary = updates.professional_summary;
         } else if (updates.summary !== undefined) {
           next.professional_summary = updates.summary;
         }
 
-        // 3. Skills
         if (Array.isArray(updates.skills)) {
           next.skills = updates.skills;
         } else if (typeof updates.skills === "string") {
@@ -183,7 +213,6 @@ const ResumeBuilder = () => {
           next.skills = Array.from(new Set([...(prev.skills || []), ...updates.newSkills]));
         }
 
-        // 4. Experience
         if (Array.isArray(updates.experience)) {
           next.experience = updates.experience;
         } else if (updates.experience && typeof updates.experience === "object") {
@@ -192,7 +221,6 @@ const ResumeBuilder = () => {
           next.experience = [...(prev.experience || []), updates.newExperience];
         }
 
-        // 5. Projects
         if (Array.isArray(updates.project)) {
           next.project = updates.project;
         } else if (updates.project && typeof updates.project === "object") {
@@ -201,14 +229,12 @@ const ResumeBuilder = () => {
           next.project = [...(prev.project || []), updates.newProject];
         }
 
-        // 6. Education
         if (Array.isArray(updates.education)) {
           next.education = updates.education;
         } else if (updates.education && typeof updates.education === "object") {
           next.education = [...(prev.education || []), updates.education];
         }
 
-        // 7. Certifications
         if (Array.isArray(updates.certifications)) {
           next.certifications = updates.certifications;
         } else if (updates.certifications && typeof updates.certifications === "object") {
@@ -217,7 +243,6 @@ const ResumeBuilder = () => {
           next.certifications = [...(prev.certifications || []), updates.newCertification];
         }
 
-        // 8. Achievements
         if (Array.isArray(updates.achievements)) {
           next.achievements = updates.achievements;
         } else if (updates.achievements && typeof updates.achievements === "object") {
@@ -232,13 +257,93 @@ const ResumeBuilder = () => {
     });
   }, [registerApplyHandler, registerDirectUpdateHandler, setResumeData, setActiveResumeData]);
 
-  const activeSection = BUILDER_SECTIONS[activeSectionIndex];
+  // Derive active builder section tabs
+  const orderedBuilderSections = React.useMemo(() => {
+    const customSecList = Array.isArray(resumeData?.custom_sections) ? resumeData.custom_sections : [];
 
-  // Handle Export (PDF & Word DOC)
+    const dynamicCustomSections =
+      customSecList.length > 1
+        ? customSecList.map((sec, idx) => ({
+            id: `custom_${idx}`,
+            customIndex: idx,
+            name: sec.title || `Custom #${idx + 1}`,
+            icon: Layers,
+          }))
+        : [
+            {
+              id: "custom_sections",
+              customIndex: 0,
+              name: customSecList[0]?.title || "Custom Sections",
+              icon: Layers,
+            },
+          ];
+
+    const sectionMap = Object.fromEntries([
+      ...BUILDER_SECTIONS.map((s) => [s.id, s]),
+      ...dynamicCustomSections.map((s) => [s.id, s]),
+    ]);
+
+    const userOrder = Array.isArray(resumeData?.section_order) && resumeData.section_order.length > 0
+      ? resumeData.section_order
+      : [];
+
+    const baseOrder = userOrder.includes("personal") ? userOrder : ["personal", ...userOrder];
+
+    let expandedOrder = [];
+    baseOrder.forEach((id) => {
+      if (id === "custom_sections" && dynamicCustomSections.length > 1) {
+        expandedOrder.push(...dynamicCustomSections.map((s) => s.id));
+      } else {
+        expandedOrder.push(id);
+      }
+    });
+
+    const defaultIds = [
+      ...BUILDER_SECTIONS.filter((s) => s.id !== "custom_sections").map((s) => s.id),
+      ...dynamicCustomSections.map((s) => s.id),
+    ];
+
+    const fullOrder = [...new Set([...expandedOrder, ...defaultIds])];
+
+    return fullOrder.map((id) => sectionMap[id]).filter(Boolean);
+  }, [resumeData?.section_order, resumeData?.custom_sections]);
+
+  const activeSection = orderedBuilderSections[activeSectionIndex] || orderedBuilderSections[0] || BUILDER_SECTIONS[0];
+
+  const handleReorderSections = (newSections) => {
+    const currentActiveId = activeSection?.id;
+    const newSectionIds = newSections.map((s) => s.id);
+
+    const newActiveIndex = newSectionIds.indexOf(currentActiveId);
+    if (newActiveIndex !== -1) {
+      setActiveSectionIndex(newActiveIndex);
+    }
+
+    const updatedOrder = newSectionIds
+      .filter((id) => id !== "personal")
+      .map((id) => (id.startsWith("custom_") ? "custom_sections" : id));
+
+    const deduplicatedOrder = [...new Set(updatedOrder)];
+
+    setResumeData((prev) => ({
+      ...prev,
+      section_order: deduplicatedOrder,
+    }));
+    toast.success("Section reordered! Live preview updated.", { id: "sec-reorder", duration: 1200 });
+  };
+
+  // Handle Export (PDF, DOCX, & Legacy DOC)
   const handleDownload = async (type = "pdf") => {
     setIsExporting(true);
 
     try {
+      if (type === "docx") {
+        toast.loading("Generating ATS-clean Word (.docx)...", { id: "docx-toast" });
+        await resumeApi.exportDocx(resumeId, `${resumeData?.title || "Resume"}.docx`);
+        toast.success("Word (.docx) downloaded successfully! 📄", { id: "docx-toast" });
+        return;
+      }
+
       if (type === "doc") {
         exportResumeAsDoc(resumeData);
         toast.success("Word (.doc) file downloaded successfully");
@@ -279,6 +384,7 @@ const ResumeBuilder = () => {
         onToggleVisibility={toggleVisibility}
         onShare={shareResume}
         onDownload={handleDownload}
+        onOpenHistory={() => setShowHistoryModal(true)}
         resumeId={resumeId}
       />
 
@@ -290,10 +396,12 @@ const ResumeBuilder = () => {
             {/* LEFT PANEL - UI FORM EDITOR */}
             <section className="builder-form-panel no-print lg:col-span-5 h-full flex flex-col min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden relative">
               
-              {/* STEP PROGRESS & ICONS */}
+              {/* STEP PROGRESS & ICONS WITH DRAG-AND-DROP REORDERING */}
               <BuilderStepper
+                sections={orderedBuilderSections}
                 activeSectionIndex={activeSectionIndex}
                 onSelectSection={setActiveSectionIndex}
+                onReorderSections={handleReorderSections}
               />
 
             {/* SECTION TOOLBAR (TEMPLATES, COLORS, NAV) */}
@@ -301,12 +409,12 @@ const ResumeBuilder = () => {
               template={resumeData.template}
               accentColor={resumeData.accent_color}
               activeSectionIndex={activeSectionIndex}
-              totalSections={BUILDER_SECTIONS.length}
+              totalSections={orderedBuilderSections.length}
               onChangeTemplate={(template) => setResumeData((prev) => ({ ...prev, template }))}
               onChangeAccentColor={(accent_color) => setResumeData((prev) => ({ ...prev, accent_color }))}
               onPrevSection={() => setActiveSectionIndex((prev) => Math.max(prev - 1, 0))}
               onNextSection={() =>
-                setActiveSectionIndex((prev) => Math.min(prev + 1, BUILDER_SECTIONS.length - 1))
+                setActiveSectionIndex((prev) => Math.min(prev + 1, orderedBuilderSections.length - 1))
               }
             />
 
@@ -379,6 +487,36 @@ const ResumeBuilder = () => {
                       onChange={(data) => setResumeData((prev) => ({ ...prev, achievements: data }))}
                     />
                   )}
+
+                  {activeSection.id === "languages" && (
+                    <LanguagesForm
+                      data={resumeData.languages || []}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, languages: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "personal_details" && (
+                    <PersonalDetailsForm
+                      data={resumeData.personal_details || {}}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, personal_details: data }))}
+                    />
+                  )}
+
+                  {activeSection.id === "declaration" && (
+                    <DeclarationForm
+                      data={resumeData.declaration || {}}
+                      candidateName={resumeData?.personal_info?.full_name}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, declaration: data }))}
+                    />
+                  )}
+
+                  {(activeSection.id === "custom_sections" || (activeSection.id && activeSection.id.startsWith("custom_"))) && (
+                    <CustomSectionsForm
+                      data={resumeData.custom_sections || []}
+                      activeCustomIndex={activeSection.customIndex ?? 0}
+                      onChange={(data) => setResumeData((prev) => ({ ...prev, custom_sections: data }))}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -386,8 +524,8 @@ const ResumeBuilder = () => {
             {/* FIXED BOTTOM FOOTER OF FORM */}
             <div className="shrink-0 p-3 sm:px-5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between text-xs">
               <span className="text-slate-500 font-medium">
-                Step {activeSectionIndex + 1} of {BUILDER_SECTIONS.length}:{" "}
-                <strong className="text-slate-800">{activeSection.name}</strong>
+                Step {activeSectionIndex + 1} of {orderedBuilderSections.length}:{" "}
+                <strong className="text-slate-800">{activeSection?.name}</strong>
               </span>
 
               <button
@@ -469,6 +607,26 @@ const ResumeBuilder = () => {
           </div>
         </div>
       </main>
+
+      {/* UPLOAD / IMPORT RESUME MODAL */}
+      <UploadResumeModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onUpload={handleImportResume}
+        isLoading={isUploading}
+      />
+
+      {/* VERSION HISTORY & SNAPSHOT ROLLBACK MODAL */}
+      <VersionHistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        resumeId={resumeId}
+        token={token}
+        onRestored={(restoredResume) => {
+          setResumeData(restoredResume);
+          setActiveResumeData(restoredResume);
+        }}
+      />
     </div>
   );
 };

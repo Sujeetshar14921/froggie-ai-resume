@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Sparkles, User, Loader2, Copy, Check } from "lucide-react";
-import FrogFace, { BrandIcon } from "../FrogLogo";
+import { Copy, Check, User, Sparkles } from "lucide-react";
+import { BrandIcon } from "../FrogLogo";
 import { useCopilot } from "../../hooks/useCopilot";
 import CopilotQuickActions from "./CopilotQuickActions";
 import ResumeSuggestionCard from "./cards/ResumeSuggestionCard";
@@ -28,7 +28,7 @@ const FormattedMessageText = ({ text = "" }) => {
 
   let cleanText = typeof text === "string" ? text.trim() : "";
 
-  // 1. If text is a stringified JSON object, parse and extract human readable content
+  // If text is a stringified JSON object, parse and extract human readable content
   if (cleanText.startsWith("{") || cleanText.startsWith("[")) {
     try {
       const parsed = JSON.parse(cleanText);
@@ -49,10 +49,10 @@ const FormattedMessageText = ({ text = "" }) => {
   const lines = cleanText.split("\n");
 
   return (
-    <div className="space-y-2.5 text-xs sm:text-sm leading-relaxed text-slate-800 font-normal">
+    <div className="space-y-2 text-xs sm:text-[13px] leading-relaxed text-slate-800 font-normal">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
-        if (!trimmed) return <div key={idx} className="h-1.5" />;
+        if (!trimmed) return <div key={idx} className="h-1" />;
 
         // Skip raw JSON property lines
         if (
@@ -70,7 +70,7 @@ const FormattedMessageText = ({ text = "" }) => {
         // Header ###
         if (trimmed.startsWith("### ")) {
           return (
-            <h4 key={idx} className="font-extrabold text-xs sm:text-sm text-slate-900 pt-2 pb-1 border-b border-slate-100 flex items-center gap-1.5">
+            <h4 key={idx} className="font-extrabold text-xs sm:text-sm text-slate-950 pt-1.5 pb-0.5 border-b border-slate-100 flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-emerald-500" />
               <span>{trimmed.replace("### ", "")}</span>
             </h4>
@@ -78,7 +78,7 @@ const FormattedMessageText = ({ text = "" }) => {
         }
         if (trimmed.startsWith("## ")) {
           return (
-            <h3 key={idx} className="font-black text-sm sm:text-base text-slate-950 pt-2.5 pb-1">
+            <h3 key={idx} className="font-black text-sm text-slate-950 pt-2 pb-0.5">
               {trimmed.replace("## ", "")}
             </h3>
           );
@@ -88,8 +88,8 @@ const FormattedMessageText = ({ text = "" }) => {
         if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
           const bulletContent = trimmed.substring(2);
           return (
-            <div key={idx} className="flex items-start gap-2.5 pl-1 text-slate-700">
-              <span className="size-1.5 rounded-full bg-emerald-600 mt-2 shrink-0 shadow-xs" />
+            <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-700">
+              <span className="size-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
               <span className="flex-1 leading-relaxed">{renderBoldSpans(bulletContent)}</span>
             </div>
           );
@@ -99,8 +99,8 @@ const FormattedMessageText = ({ text = "" }) => {
         const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
         if (numMatch) {
           return (
-            <div key={idx} className="flex items-start gap-2.5 pl-1 text-slate-700">
-              <span className="size-5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-800 font-extrabold text-[11px] flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+            <div key={idx} className="flex items-start gap-2 pl-0.5 text-slate-700">
+              <span className="size-4 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
                 {numMatch[1]}
               </span>
               <span className="flex-1 leading-relaxed">{renderBoldSpans(numMatch[2])}</span>
@@ -186,7 +186,7 @@ const CopilotMessageList = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 no-scrollbar hide-scrollbar bg-gradient-to-b from-slate-50/60 via-slate-50/30 to-white">
+    <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-4 no-scrollbar hide-scrollbar bg-slate-50/40">
       {/* ZERO STATE: SHOW QUICK ACTIONS */}
       {messages.length === 0 && (
         <div className="animate-in fade-in duration-300">
@@ -201,24 +201,24 @@ const CopilotMessageList = () => {
         return (
           <div
             key={index}
-            className={`flex items-start gap-3 group ${
+            className={`flex items-start gap-2.5 group ${
               isUser ? "flex-row-reverse" : "flex-row"
             } animate-in fade-in duration-200`}
           >
             {/* AVATAR */}
             {isUser ? (
-              <div className="size-8 rounded-2xl bg-slate-950 text-white flex items-center justify-center shrink-0 text-xs font-black shadow-md shadow-slate-950/20 border border-slate-800 ring-2 ring-white">
-                {user?.name?.charAt(0)?.toUpperCase() || <User size={14} />}
+              <div className="size-7 rounded-xl bg-slate-950 text-white flex items-center justify-center shrink-0 text-[11px] font-bold shadow-xs border border-slate-800 ring-2 ring-white">
+                {user?.name?.charAt(0)?.toUpperCase() || <User size={13} />}
               </div>
             ) : (
-              <div className="relative shrink-0">
+              <div className="relative shrink-0 mt-0.5">
                 <BrandIcon size="sm" />
               </div>
             )}
 
             {/* CONTENT BUBBLE & CARDS */}
             <div
-              className={`max-w-[88%] sm:max-w-[85%] space-y-2.5 ${
+              className={`max-w-[88%] sm:max-w-[84%] space-y-2 ${
                 isUser ? "text-right" : "text-left"
               }`}
             >
@@ -226,14 +226,14 @@ const CopilotMessageList = () => {
               {msg.content && (
                 <div className="relative group/bubble">
                   <div
-                    className={`p-4 sm:p-5 rounded-3xl ${
+                    className={`p-3.5 sm:p-4 rounded-2xl ${
                       isUser
-                        ? "bg-slate-950 text-white font-medium rounded-tr-xs shadow-md shadow-slate-950/20 text-left border border-slate-800/90"
-                        : "bg-white text-slate-800 border border-slate-200/90 shadow-xs hover:shadow-sm transition-shadow rounded-tl-xs"
+                        ? "bg-slate-950 text-white font-medium rounded-tr-xs shadow-xs text-left border border-slate-800"
+                        : "bg-white text-slate-800 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-shadow rounded-tl-xs"
                     }`}
                   >
                     {isUser ? (
-                      <p className="whitespace-pre-line text-xs sm:text-sm leading-relaxed">{msg.content}</p>
+                      <p className="whitespace-pre-line text-xs sm:text-[13px] leading-relaxed">{msg.content}</p>
                     ) : (
                       <FormattedMessageText text={msg.content} />
                     )}
@@ -244,17 +244,17 @@ const CopilotMessageList = () => {
                     <div className="flex items-center gap-1 mt-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleCopy(msg.content, index)}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-slate-700 bg-white border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-semibold text-slate-400 hover:text-slate-700 bg-white border border-slate-200/80 shadow-2xs hover:bg-slate-50 transition-all cursor-pointer"
                         title="Copy text"
                       >
                         {copiedIndex === index ? (
                           <>
-                            <Check size={11} className="text-emerald-600" />
-                            <span className="text-emerald-600">Copied</span>
+                            <Check size={10} className="text-emerald-600" />
+                            <span className="text-emerald-600 font-bold">Copied</span>
                           </>
                         ) : (
                           <>
-                            <Copy size={11} />
+                            <Copy size={10} />
                             <span>Copy</span>
                           </>
                         )}
@@ -277,18 +277,18 @@ const CopilotMessageList = () => {
 
       {/* AI TYPING INDICATOR */}
       {isTyping && (
-        <div className="flex items-start gap-3 animate-in fade-in duration-150">
-          <div className="relative shrink-0">
+        <div className="flex items-start gap-2.5 animate-in fade-in duration-150">
+          <div className="relative shrink-0 mt-0.5">
             <BrandIcon size="sm" />
           </div>
 
-          <div className="p-3.5 sm:p-4 rounded-3xl bg-white border border-emerald-200/80 shadow-xs rounded-tl-xs flex items-center gap-3 text-xs text-slate-600 font-semibold">
+          <div className="px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200/80 shadow-2xs rounded-tl-xs flex items-center gap-2 text-xs text-slate-600 font-medium">
             <div className="flex items-center gap-1">
-              <span className="size-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="size-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="size-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-slate-600 font-medium">froggie is analyzing & generating recommendation...</span>
+            <span className="text-slate-500 text-[11px]">froggie is thinking...</span>
           </div>
         </div>
       )}

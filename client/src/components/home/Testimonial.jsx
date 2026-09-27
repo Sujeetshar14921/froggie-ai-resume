@@ -117,31 +117,31 @@ const Testimonial = () => {
       <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-teal-100/30 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* SECTION HEADER */}
         <div className="section-header text-center max-w-3xl mx-auto mb-16">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">
             <FrogFace size={14} />
-            Loved by 50,000+ Job Seekers
+            Community & User Voice
           </span>
 
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
-            Real Stories from People Who{" "}
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight">
+            What Professionals Say About{" "}
             <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-              Landed Dream Jobs
+              Froggie Resume
             </span>
           </h2>
 
-          <p className="mt-4 text-base sm:text-lg text-slate-600">
-            See how professionals worldwide accelerated their careers with froggie AI.
+          <p className="mt-4 text-base sm:text-lg text-slate-600 font-normal">
+            Real feedback and suggestions from job seekers building resumes on the platform.
           </p>
 
           {/* SHARE YOUR EXPERIENCE CTA BUTTON */}
           <div className="mt-6 flex justify-center">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white hover:bg-emerald-50/60 text-emerald-800 font-extrabold text-xs sm:text-sm border border-emerald-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-emerald-50/60 text-emerald-800 font-bold text-xs sm:text-sm border border-emerald-200/90 shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
               <MessageSquarePlus size={16} className="text-emerald-600" />
               <span>Share Your Feedback</span>

@@ -7,8 +7,12 @@ const AtsKeywordsCard = ({ keywords = {} }) => {
   const important = keywords.important || [];
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
-      <div>
+    <div className="relative overflow-hidden bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs space-y-5 group text-left">
+      {/* Half circle ambient glows */}
+      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+      <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-tr-full pointer-events-none" />
+
+      <div className="relative z-10">
         <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
           <Tag size={18} className="text-emerald-600" />
           ATS Keyword Coverage

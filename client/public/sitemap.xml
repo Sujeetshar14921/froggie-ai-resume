@@ -4,9 +4,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <!-- Homepage -->
   <url>
     <loc>https://froggie.site/</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -19,28 +20,55 @@
       <image:title>froggie Mascot Brand Logo</image:title>
     </image:image>
   </url>
+
+  <!-- Public Talent Discovery & Candidate Directory -->
+  <url>
+    <loc>https://froggie.site/talent</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://froggie.site/og-image.png</image:loc>
+      <image:title>froggie Public Talent Discovery &amp; Verified Resume Directory</image:title>
+      <image:caption>Discover verified candidate profiles, developer portfolios, and ATS-optimized resumes</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ATS Resume Score Checker -->
+  <url>
+    <loc>https://froggie.site/app/ats-checker</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Frequently Asked Questions -->
   <url>
     <loc>https://froggie.site/faq</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- Support & Donations -->
+  <url>
+    <loc>https://froggie.site/donate</loc>
+    <lastmod>2026-09-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Auth Portal -->
   <url>
     <loc>https://froggie.site/login</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://froggie.site/login?state=register</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://froggie.site/donate</loc>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
   </url>
 </urlset>

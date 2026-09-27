@@ -91,15 +91,22 @@ const FaqPageItem = ({ faq, isOpen, onToggle }) => {
 
   return (
     <div
-      className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+      className={`relative overflow-hidden rounded-2xl border transition-all duration-200 group/faq ${
         isOpen
           ? "bg-white border-emerald-300 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/10"
           : "bg-white border-slate-200/90 hover:border-slate-300 shadow-2xs"
       }`}
     >
+      {/* Corner subtle half-circle aura */}
+      <div
+        className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none transition-all duration-500 ${
+          isOpen ? "opacity-100 scale-125" : "opacity-0 group-hover/faq:opacity-100"
+        }`}
+      />
+
       <button
         onClick={onToggle}
-        className="w-full px-6 py-5 flex items-center justify-between text-left gap-4 cursor-pointer"
+        className="relative z-10 w-full px-6 py-5 flex items-center justify-between text-left gap-4 cursor-pointer"
         aria-expanded={isOpen}
       >
         <span className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
@@ -118,6 +125,7 @@ const FaqPageItem = ({ faq, isOpen, onToggle }) => {
 
       <div
         ref={contentRef}
+        className="relative z-10"
         style={{
           height: isOpen ? "auto" : 0,
           opacity: isOpen ? 1 : 0,
@@ -194,11 +202,13 @@ const FaqPage = () => {
         <Navbar />
 
         {/* HERO HEADER */}
-        <section className="relative py-16 sm:py-24 bg-white border-b border-slate-200/80 overflow-hidden">
-          {/* Ambient Glow */}
+        <section className="relative py-16 sm:py-24 bg-white border-b border-slate-200/80 overflow-hidden group">
+          {/* Ambient Glows & Half-circle environment auras */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
             <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider">
               <FrogFace size={14} />
               Help & Knowledge Base
@@ -224,8 +234,39 @@ const FaqPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search questions (e.g., ATS, export, copilot, pdf)..."
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all placeholder:text-slate-400 shadow-2xs"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-medium"
                 />
+              </div>
+            </div>
+
+            {/* 4 MINI STAT CARDS WITH COLORFUL HALF CIRCLES */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left pt-3 max-w-3xl mx-auto">
+              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/20 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ATS Pass Rate</span>
+                <span className="text-lg font-black text-slate-950">99%+</span>
+                <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">Parser Standard</span>
+              </div>
+
+              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-blue-500/20 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Copilot</span>
+                <span className="text-lg font-black text-blue-600">Gemini 2.5</span>
+                <span className="text-[10px] text-slate-500 font-medium block mt-0.5">Flash powered</span>
+              </div>
+
+              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-purple-500/20 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Export Type</span>
+                <span className="text-lg font-black text-purple-600">PDF & DOC</span>
+                <span className="text-[10px] text-slate-500 font-medium block mt-0.5">High resolution</span>
+              </div>
+
+              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/20 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cost</span>
+                <span className="text-lg font-black text-amber-600">100% Free</span>
+                <span className="text-[10px] text-slate-500 font-medium block mt-0.5">Zero paywalls</span>
               </div>
             </div>
 
@@ -258,7 +299,7 @@ const FaqPage = () => {
         </section>
 
         {/* FAQ ACCORDION LIST */}
-        <section className="py-16 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {filteredFaqs.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-3xl border border-slate-200/90 p-8 space-y-3">
               <HelpCircle size={36} className="mx-auto text-slate-300" />
@@ -290,8 +331,12 @@ const FaqPage = () => {
           )}
 
           {/* ASK CAREER COPILOT BANNER */}
-          <div className="mt-16 p-8 rounded-3xl bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800">
-            <div className="space-y-1.5 text-center sm:text-left">
+          <div className="relative overflow-hidden mt-16 p-8 rounded-3xl bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800 group">
+            {/* Half-circle colorful environment auras */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none" />
+
+            <div className="relative z-10 space-y-1.5 text-center sm:text-left">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
                 <FrogFace size={14} />
                 Need Personalized Career Help?
@@ -304,7 +349,7 @@ const FaqPage = () => {
 
             <button
               onClick={handleAskCopilot}
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+              className="relative z-10 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
             >
               <span>Ask froggie Now</span>
               <ArrowRight size={14} />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, MapPin, Linkedin, Globe, GraduationCap, Sparkles, Briefcase, FolderGit2, Github, Award, Trophy } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Globe, GraduationCap, Sparkles, Briefcase, FolderGit2, Github, Award, Trophy, Languages, Layers, UserCheck, ScrollText } from "lucide-react";
 import { formatDate } from "../../utils/formatters";
 
 const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = null }) => {
@@ -66,6 +66,354 @@ const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = nul
     ? mainContent.showProjectsTitle || mainContent.showProjectsContinuationTitle
     : true;
   const isProjContinuation = mainContent ? mainContent.showProjectsContinuationTitle : false;
+
+  const showCert = mainContent
+    ? mainContent.certificationIndices && mainContent.certificationIndices.length > 0
+    : Boolean(data?.certifications && data.certifications.length > 0);
+  const visibleCertIndices = mainContent?.certificationIndices ?? (data?.certifications || []).map((_, i) => i);
+  const showCertTitle = mainContent ? mainContent.showCertificationsTitle : true;
+
+  const showAchieve = mainContent
+    ? mainContent.achievementIndices && mainContent.achievementIndices.length > 0
+    : Boolean(data?.achievements && data.achievements.length > 0);
+  const visibleAchieveIndices = mainContent?.achievementIndices ?? (data?.achievements || []).map((_, i) => i);
+  const showAchieveTitle = mainContent ? mainContent.showAchievementsTitle : true;
+
+  const defaultSectionOrder = ["summary", "experience", "projects", "certifications", "achievements", "personal_details", "declaration", "custom_sections"];
+  const userOrder = Array.isArray(data?.section_order) && data.section_order.length > 0 ? data.section_order : [];
+  const orderedMainSections = [...new Set([...userOrder, ...defaultSectionOrder])];
+
+  const renderMainSection = (secKey) => {
+    switch (secKey) {
+      case "summary":
+        return showSummary && data?.professional_summary ? (
+          <section key="summary" data-resume-main="summary" className="break-inside-avoid">
+            <h2
+              className="text-xs font-bold uppercase tracking-[0.16em] mb-2 pb-1 border-b"
+              style={{ color: accentColor, borderColor: `${accentColor}30` }}
+            >
+              Professional Summary
+            </h2>
+            <p className="text-slate-700 leading-relaxed text-justify text-xs sm:text-sm">
+              {data.professional_summary}
+            </p>
+          </section>
+        ) : null;
+
+      case "experience":
+        return showExp ? (
+          <section key="experience">
+            {showExpTitle && (
+              <h2
+                data-resume-main="experience-title"
+                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+                style={{ color: accentColor, borderColor: `${accentColor}30` }}
+              >
+                <Briefcase size={13} />
+                <span>Work Experience</span>
+                {isExpContinuation && <span className="text-[10px] lowercase font-normal text-slate-400">(cont.)</span>}
+              </h2>
+            )}
+
+            <div className="space-y-4">
+              {visibleExpIndices.map((origIdx) => {
+                const exp = data?.experience?.[origIdx];
+                if (!exp) return null;
+                return (
+                  <div key={origIdx} data-resume-main-item="experience" className="break-inside-avoid">
+                    <div className="flex flex-wrap justify-between items-baseline gap-x-3">
+                      <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{exp.position}</h3>
+                      <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        {formatDate(exp.start_date)} — {exp.is_current ? "Present" : formatDate(exp.end_date)}
+                      </span>
+                    </div>
+
+                    <p className="text-xs font-semibold mb-1" style={{ color: accentColor }}>
+                      {exp.company}
+                    </p>
+
+                    {exp.description && (
+                      <ul className="space-y-1 text-slate-700 leading-relaxed text-xs pl-4 list-disc">
+                        {exp.description.split("\n").filter(Boolean).map((line, i) => (
+                          <li key={i} className="pl-0.5">
+                            <span>{line.replace(/^[•*–-]\s*/, "")}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null;
+
+      case "projects":
+        return showProj ? (
+          <section key="projects">
+            {showProjTitle && (
+              <h2
+                data-resume-main="projects-title"
+                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+                style={{ color: accentColor, borderColor: `${accentColor}30` }}
+              >
+                <FolderGit2 size={13} />
+                <span>Key Projects</span>
+                {isProjContinuation && <span className="text-[10px] lowercase font-normal text-slate-400">(cont.)</span>}
+              </h2>
+            )}
+
+            <div className="space-y-3">
+              {visibleProjIndices.map((origIdx) => {
+                const proj = data?.project?.[origIdx];
+                if (!proj) return null;
+                return (
+                  <div key={origIdx} data-resume-main-item="project" className="break-inside-avoid">
+                    <div className="flex justify-between items-baseline gap-2 flex-wrap">
+                      <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{proj.name}</h3>
+                      {proj.type && (
+                        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                          {proj.type}
+                        </span>
+                      )}
+                    </div>
+
+                    {proj.description && (
+                      <p className="text-slate-700 leading-relaxed mt-0.5 text-xs">
+                        {proj.description}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null;
+
+      case "certifications":
+        return showCert ? (
+          <section key="certifications">
+            {showCertTitle && (
+              <h2
+                data-resume-main="certifications-title"
+                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+                style={{ color: accentColor, borderColor: `${accentColor}30` }}
+              >
+                <Award size={13} />
+                <span>Certifications</span>
+              </h2>
+            )}
+
+            <div className="space-y-2.5">
+              {visibleCertIndices.map((origIdx) => {
+                const cert = data?.certifications?.[origIdx];
+                if (!cert) return null;
+                return (
+                  <div key={origIdx} data-resume-main-item="certification" className="flex justify-between items-start gap-2 break-inside-avoid">
+                    <div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{cert.name}</h3>
+                        {cert.url && (
+                          <a
+                            href={cert.url.startsWith("http") ? cert.url : `https://${cert.url}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[10px] font-semibold hover:underline"
+                            style={{ color: accentColor }}
+                          >
+                            [Verify]
+                          </a>
+                        )}
+                      </div>
+                      {cert.issuer && <p className="text-xs text-slate-600">{cert.issuer}</p>}
+                    </div>
+                    {cert.date && (
+                      <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                        {formatDate(cert.date)}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null;
+
+      case "achievements":
+        return showAchieve ? (
+          <section key="achievements">
+            {showAchieveTitle && (
+              <h2
+                data-resume-main="achievements-title"
+                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+                style={{ color: accentColor, borderColor: `${accentColor}30` }}
+              >
+                <Trophy size={13} />
+                <span>Honors & Achievements</span>
+              </h2>
+            )}
+
+            <div className="space-y-2.5">
+              {visibleAchieveIndices.map((origIdx) => {
+                const item = data?.achievements?.[origIdx];
+                if (!item) return null;
+                return (
+                  <div key={origIdx} data-resume-main-item="achievement" className="break-inside-avoid">
+                    <div className="flex justify-between items-baseline gap-2">
+                      <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{item.title}</h3>
+                      {item.date && (
+                        <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                          {formatDate(item.date)}
+                        </span>
+                      )}
+                    </div>
+                    {item.description && (
+                      <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ) : null;
+
+      case "custom_sections":
+        return data?.custom_sections && data.custom_sections.length > 0 ? (
+          <React.Fragment key="custom_sections">
+            {data.custom_sections.map((sec, sIdx) => {
+              if (!sec.title && (!sec.items || sec.items.length === 0)) return null;
+              return (
+                <section key={sIdx}>
+                  <h2
+                    data-resume-main="custom-section-title"
+                    className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+                    style={{ color: accentColor, borderColor: `${accentColor}30` }}
+                  >
+                    <Layers size={13} />
+                    <span>{sec.title || "Additional Information"}</span>
+                  </h2>
+
+                  <div className="space-y-3">
+                    {(sec.items || []).map((item, iIdx) => (
+                      <div key={iIdx} data-resume-main-item="custom-item" className="break-inside-avoid">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{item.title}</h3>
+                          {item.date && (
+                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
+                              {item.date}
+                            </span>
+                          )}
+                        </div>
+                        {item.subtitle && <p className="text-xs text-slate-600 font-medium italic">{item.subtitle}</p>}
+                        {item.description && (
+                          <p className="text-xs text-slate-700 mt-1 leading-relaxed whitespace-pre-line">
+                            {item.description}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </React.Fragment>
+        ) : null;
+
+      case "personal_details": {
+        const pd = data?.personal_details;
+        const hasDetails = pd && (pd.date_of_birth || pd.gender || pd.nationality || pd.marital_status || pd.passport_no || pd.address);
+        if (!hasDetails) return null;
+        return (
+          <section key="personal_details" data-resume-main="personal_details" className="break-inside-avoid">
+            <h2
+              className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+              style={{ color: accentColor, borderColor: `${accentColor}30` }}
+            >
+              <UserCheck size={13} />
+              <span>Personal Details</span>
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs text-slate-700">
+              {pd.date_of_birth && (
+                <div>
+                  <span className="font-semibold text-slate-900">Date of Birth: </span>
+                  <span>{formatDate(pd.date_of_birth)}</span>
+                </div>
+              )}
+              {pd.gender && (
+                <div>
+                  <span className="font-semibold text-slate-900">Gender: </span>
+                  <span>{pd.gender}</span>
+                </div>
+              )}
+              {pd.nationality && (
+                <div>
+                  <span className="font-semibold text-slate-900">Nationality: </span>
+                  <span>{pd.nationality}</span>
+                </div>
+              )}
+              {pd.marital_status && (
+                <div>
+                  <span className="font-semibold text-slate-900">Marital Status: </span>
+                  <span>{pd.marital_status}</span>
+                </div>
+              )}
+              {pd.passport_no && (
+                <div>
+                  <span className="font-semibold text-slate-900">Passport / ID: </span>
+                  <span>{pd.passport_no}</span>
+                </div>
+              )}
+              {pd.address && (
+                <div className="col-span-2 sm:col-span-3">
+                  <span className="font-semibold text-slate-900">Permanent Address: </span>
+                  <span>{pd.address}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      }
+
+      case "declaration": {
+        const dec = data?.declaration;
+        const hasDec = dec && (dec.statement || dec.place || dec.date || dec.name);
+        if (!hasDec) return null;
+        return (
+          <section key="declaration" data-resume-main="declaration" className="break-inside-avoid">
+            <h2
+              className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
+              style={{ color: accentColor, borderColor: `${accentColor}30` }}
+            >
+              <ScrollText size={13} />
+              <span>Declaration</span>
+            </h2>
+            {dec.statement && (
+              <p className="text-slate-700 leading-relaxed text-xs text-justify mb-3">
+                {dec.statement}
+              </p>
+            )}
+            <div className="flex justify-between items-end text-xs text-slate-700 pt-1">
+              <div className="space-y-0.5">
+                {dec.place && <div><span className="font-semibold text-slate-900">Place:</span> {dec.place}</div>}
+                {dec.date && <div><span className="font-semibold text-slate-900">Date:</span> {formatDate(dec.date)}</div>}
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-slate-900 text-xs sm:text-sm">
+                  {dec.name || data?.personal_info?.full_name || ""}
+                </div>
+                <div className="text-[10px] text-slate-400 uppercase tracking-wider">(Signature)</div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="w-full bg-white text-slate-800 font-sans text-xs sm:text-sm leading-relaxed">
@@ -198,7 +546,7 @@ const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = nul
             </section>
           )}
 
-          {/* SKILLS IN SIDEBAR */}
+          {/* SKILLS IN SIDEBAR - Clean bulleted list */}
           {showSkills && data?.skills && data.skills.length > 0 && (
             <section data-resume-sidebar="skills" className="break-inside-avoid">
               <h2
@@ -209,16 +557,42 @@ const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = nul
                 <span>Skills</span>
               </h2>
 
-              <div className="flex flex-wrap gap-1">
+              <ul className="space-y-1.5 text-xs text-slate-700 list-none pl-0">
                 {data.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-0.5 bg-white text-slate-800 rounded border border-slate-200 text-[11px] font-medium shadow-2xs"
-                  >
-                    {skill}
-                  </span>
+                  <li key={index} className="flex items-center gap-2 text-[11.5px]">
+                    <span
+                      className="size-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: accentColor }}
+                    />
+                    <span className="font-semibold text-slate-800">{skill}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
+            </section>
+          )}
+
+          {/* LANGUAGES IN SIDEBAR */}
+          {data?.languages && data.languages.length > 0 && (
+            <section data-resume-sidebar="languages" className="break-inside-avoid">
+              <h2
+                data-resume-sidebar="languages-title"
+                className="text-xs font-bold uppercase tracking-[0.16em] pb-1 mb-2.5 border-b flex items-center gap-1.5"
+                style={{ color: accentColor, borderColor: `${accentColor}30` }}
+              >
+                <Languages size={13} />
+                <span>Languages</span>
+              </h2>
+
+              <ul className="space-y-1.5 text-xs text-slate-700 list-none pl-0">
+                {data.languages.map((lang, index) => (
+                  <li key={index} className="flex flex-col text-[11.5px]">
+                    <span className="font-semibold text-slate-800">{lang.language}</span>
+                    {lang.proficiency && (
+                      <span className="text-slate-400 text-[10px]">{lang.proficiency}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
         </aside>
@@ -242,187 +616,8 @@ const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = nul
             </header>
           )}
 
-          {/* PROFESSIONAL SUMMARY */}
-          {showSummary && data?.professional_summary && (
-            <section data-resume-main="summary" className="break-inside-avoid">
-              <h2
-                className="text-xs font-bold uppercase tracking-[0.16em] mb-2 pb-1 border-b"
-                style={{ color: accentColor, borderColor: `${accentColor}30` }}
-              >
-                Professional Summary
-              </h2>
-              <p className="text-slate-700 leading-relaxed text-justify text-xs sm:text-sm">
-                {data.professional_summary}
-              </p>
-            </section>
-          )}
-
-          {/* EXPERIENCE */}
-          {showExp && (
-            <section>
-              {showExpTitle && (
-                <h2
-                  data-resume-main="experience-title"
-                  className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
-                  style={{ color: accentColor, borderColor: `${accentColor}30` }}
-                >
-                  <Briefcase size={13} />
-                  <span>Work Experience</span>
-                  {isExpContinuation && <span className="text-[10px] lowercase font-normal text-slate-400">(cont.)</span>}
-                </h2>
-              )}
-
-              <div className="space-y-4">
-                {visibleExpIndices.map((origIdx) => {
-                  const exp = data?.experience?.[origIdx];
-                  if (!exp) return null;
-                  return (
-                    <div key={origIdx} data-resume-main-item="experience" className="break-inside-avoid">
-                      <div className="flex flex-wrap justify-between items-baseline gap-x-3">
-                        <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{exp.position}</h3>
-                        <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
-                          {formatDate(exp.start_date)} — {exp.is_current ? "Present" : formatDate(exp.end_date)}
-                        </span>
-                      </div>
-
-                      <p className="text-xs font-semibold mb-1" style={{ color: accentColor }}>
-                        {exp.company}
-                      </p>
-
-                      {exp.description && (
-                        <ul className="space-y-1 text-slate-700 leading-relaxed text-xs pl-4 list-disc">
-                          {exp.description.split("\n").filter(Boolean).map((line, i) => (
-                            <li key={i} className="pl-0.5">
-                              <span>{line.replace(/^[•*–-]\s*/, "")}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* PROJECTS */}
-          {showProj && (
-            <section>
-              {showProjTitle && (
-                <h2
-                  data-resume-main="projects-title"
-                  className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
-                  style={{ color: accentColor, borderColor: `${accentColor}30` }}
-                >
-                  <FolderGit2 size={13} />
-                  <span>Key Projects</span>
-                  {isProjContinuation && <span className="text-[10px] lowercase font-normal text-slate-400">(cont.)</span>}
-                </h2>
-              )}
-
-              <div className="space-y-3">
-                {visibleProjIndices.map((origIdx) => {
-                  const proj = data?.project?.[origIdx];
-                  if (!proj) return null;
-                  return (
-                    <div key={origIdx} data-resume-main-item="project" className="break-inside-avoid">
-                      <div className="flex justify-between items-baseline gap-2 flex-wrap">
-                        <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{proj.name}</h3>
-                        {proj.type && (
-                          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
-                            {proj.type}
-                          </span>
-                        )}
-                      </div>
-
-                      {proj.description && (
-                        <p className="text-slate-700 leading-relaxed mt-0.5 text-xs">
-                          {proj.description}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* CERTIFICATIONS */}
-          {data?.certifications && data.certifications.length > 0 && (
-            <section>
-              <h2
-                data-resume-main="certifications-title"
-                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
-                style={{ color: accentColor, borderColor: `${accentColor}30` }}
-              >
-                <Award size={13} />
-                <span>Certifications</span>
-              </h2>
-
-              <div className="space-y-2.5">
-                {data.certifications.map((cert, idx) => (
-                  <div key={idx} data-resume-main-item="certification" className="flex justify-between items-start gap-2 break-inside-avoid">
-                    <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{cert.name}</h3>
-                        {cert.url && (
-                          <a
-                            href={cert.url.startsWith("http") ? cert.url : `https://${cert.url}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[10px] font-semibold hover:underline"
-                            style={{ color: accentColor }}
-                          >
-                            [Verify]
-                          </a>
-                        )}
-                      </div>
-                      {cert.issuer && <p className="text-xs text-slate-600">{cert.issuer}</p>}
-                    </div>
-                    {cert.date && (
-                      <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                        {formatDate(cert.date)}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* KEY ACHIEVEMENTS */}
-          {data?.achievements && data.achievements.length > 0 && (
-            <section>
-              <h2
-                data-resume-main="achievements-title"
-                className="text-xs font-bold uppercase tracking-[0.16em] mb-3 pb-1 border-b flex items-center gap-1.5"
-                style={{ color: accentColor, borderColor: `${accentColor}30` }}
-              >
-                <Trophy size={13} />
-                <span>Honors & Achievements</span>
-              </h2>
-
-              <div className="space-y-2.5">
-                {data.achievements.map((item, idx) => (
-                  <div key={idx} data-resume-main-item="achievement" className="break-inside-avoid">
-                    <div className="flex justify-between items-baseline gap-2">
-                      <h3 className="font-bold text-slate-900 text-xs sm:text-sm">{item.title}</h3>
-                      {item.date && (
-                        <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                          {formatDate(item.date)}
-                        </span>
-                      )}
-                    </div>
-                    {item.description && (
-                      <p className="text-xs text-slate-700 mt-0.5 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+          {/* RENDER DYNAMIC ORDERED MAIN SECTIONS */}
+          {orderedMainSections.map((secKey) => renderMainSection(secKey))}
         </main>
       </div>
     </div>

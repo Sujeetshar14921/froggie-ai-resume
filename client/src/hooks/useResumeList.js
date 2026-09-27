@@ -57,6 +57,24 @@ export const useResumeList = () => {
     }
   };
 
+  const toggleVisibility = async (id, currentStatus) => {
+    const nextStatus = !currentStatus;
+    try {
+      await resumeApi.toggleVisibility(id, nextStatus, token);
+      setResumes((prev) =>
+        prev.map((r) => (r._id === id ? { ...r, public: nextStatus } : r))
+      );
+      toast.success(
+        nextStatus
+          ? "Resume published to Talent Pool! 🌐"
+          : "Resume is now private 🔒"
+      );
+    } catch (error) {
+      console.error("Toggle visibility error:", error);
+      toast.error(error?.response?.data?.message || "Failed to update visibility");
+    }
+  };
+
   const filteredResumes = useMemo(() => {
     if (!searchQuery.trim()) return resumes;
     const q = searchQuery.toLowerCase();
@@ -71,6 +89,7 @@ export const useResumeList = () => {
     setSearchQuery,
     deletingId,
     deleteResume,
+    toggleVisibility,
     refreshResumes: loadResumes,
   };
 };

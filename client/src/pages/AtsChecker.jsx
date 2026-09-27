@@ -6,7 +6,6 @@ import {
   History,
   RotateCcw,
   FileCheck,
-  LayoutDashboard,
   ShieldCheck,
   Share2,
   Download,
@@ -29,6 +28,10 @@ import { resumeApi } from "../api/resumeApi";
 import { atsApi } from "../api/atsApi";
 import toast from "react-hot-toast";
 import { useSEO } from "../hooks/useSEO";
+import {
+  sendMilestoneNotification,
+  NOTIFICATION_CATEGORIES,
+} from "../utils/browserNotification";
 
 const AtsChecker = () => {
   useSEO({
@@ -119,6 +122,15 @@ const AtsChecker = () => {
         const res = await atsApi.analyzeResume(payload, token);
         setReport(res.report);
         toast.success("ATS Compatibility Score upgraded!");
+
+        const upgradedScore = res.report?.overallScore || 0;
+        sendMilestoneNotification({
+          title: `ATS Optimized: ${upgradedScore}% 🚀`,
+          message: `Your resume was upgraded with keywords and tailored content!`,
+          category: NOTIFICATION_CATEGORIES.ATS_AI,
+          actionLink: `/app/ats-checker?resumeId=${selectedResumeId || ""}`,
+          actionLabel: "View Report",
+        });
       }
     } catch (err) {
       console.error("Failed to apply optimizations:", err);
@@ -208,6 +220,18 @@ const AtsChecker = () => {
       const res = await atsApi.analyzeResume(payload, token);
       setReport(res.report);
       toast.success("ATS Analysis completed successfully!");
+
+      const score = res.report?.overallScore || 0;
+      if (score >= 70) {
+        sendMilestoneNotification({
+          title: `ATS Score: ${score}% Match! 🎯`,
+          message: `Your resume scored ${score}% compatibility against ${res.report?.targetJobTitle || "job description"}.`,
+          category: NOTIFICATION_CATEGORIES.ATS_AI,
+          actionLink: `/app/ats-checker?resumeId=${selectedResumeId || ""}`,
+          actionLabel: "View Report",
+        });
+      }
+
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("ATS Analysis error:", err);
@@ -248,17 +272,9 @@ const AtsChecker = () => {
       
       {/* TOP HERO / HEADER BAR */}
       <div className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           
           <div className="flex items-center gap-3">
-            <Link
-              to="/app"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/70 rounded-xl transition-all"
-            >
-              <LayoutDashboard size={14} />
-              <span>Dashboard</span>
-            </Link>
-
             <div>
               <h1 className="text-base sm:text-xl font-extrabold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="size-5 sm:size-6 text-emerald-600" />
@@ -277,7 +293,7 @@ const AtsChecker = () => {
                 setIsHistoryOpen(true);
                 loadHistory();
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer hover:scale-102"
             >
               <History size={14} className="text-emerald-600" />
               <span>Scan History</span>
@@ -289,7 +305,7 @@ const AtsChecker = () => {
                   setReport(null);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer hover:scale-102"
               >
                 <RotateCcw size={14} />
                 <span>Re-Analyze</span>
@@ -300,8 +316,123 @@ const AtsChecker = () => {
       </div>
 
       {/* MAIN CONTAINER */}
-      <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 space-y-6">
         
+        {/* TOP COMMAND HERO CARD */}
+        <div className="relative overflow-hidden bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-2xs group text-left">
+          {/* Half-circle colorful environment auras */}
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+          <div className="absolute bottom-0 left-0 w-36 h-36 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
+
+          <div className="relative z-10 max-w-3xl space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+              <Sparkles size={13} className="text-emerald-600" />
+              <span>Live ATS Compatibility Auditor</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+              Benchmark Your Resume Against Any Job
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+              Discover exact keyword gaps, missing technical skills, recruiter score predictions, and 1-click ATS formatting fixes before applying.
+            </p>
+          </div>
+        </div>
+
+        {/* 4 MINI TELEMETRY STAT CARDS WITH COLORFUL HALF CIRCLES */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-left">
+          {/* Card 1: Parser Accuracy */}
+          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/15 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Parser Standard
+              </span>
+              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                <ShieldCheck size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-slate-950">
+                99.8%
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">read rate</span>
+            </div>
+            <p className="text-[10px] text-emerald-700 font-bold mt-0.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              Standard ATS compliant
+            </p>
+          </div>
+
+          {/* Card 2: Semantic Match */}
+          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-500/15 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Keyword Matching
+              </span>
+              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+                <Target size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-blue-600">
+                Real-time
+              </span>
+              <span className="text-[10px] font-bold text-blue-400">JD gap check</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              Hard & soft skills scan
+            </p>
+          </div>
+
+          {/* Card 3: Formatting Health */}
+          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/15 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Formatting Audit
+              </span>
+              <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
+                <FileCheck size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-purple-600">
+                0 Traps
+              </span>
+              <span className="text-[10px] font-bold text-purple-400">safe layout</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+              No table / header glitches
+            </p>
+          </div>
+
+          {/* Card 4: 1-Click AI Fix */}
+          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/15 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Auto-Optimize
+              </span>
+              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
+                <Sparkles size={14} />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl sm:text-2xl font-black text-amber-600">
+                1-Click
+              </span>
+              <span className="text-[10px] font-bold text-amber-400">JD sync</span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              Direct resume upgrade
+            </p>
+          </div>
+        </div>
+
         {/* LOADING STATE */}
         {isLoading && (
           <div className="py-8">
@@ -311,19 +442,7 @@ const AtsChecker = () => {
 
         {/* INPUT MODE (WHEN NO ACTIVE REPORT OR EDITING) */}
         {!isLoading && !report && (
-          <div className="space-y-8">
-            <div className="max-w-3xl space-y-2">
-              <span className="text-xs font-extrabold text-emerald-800 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/80">
-                Live ATS Compatibility Audit
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Benchmark Your Resume Against Any Job
-              </h2>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Discover exact keyword gaps, missed technical skills, and ATS formatting flags before applying.
-              </p>
-            </div>
-
+          <div className="space-y-6">
             <AtsInputSection
               userResumes={userResumes}
               selectedResumeId={selectedResumeId}

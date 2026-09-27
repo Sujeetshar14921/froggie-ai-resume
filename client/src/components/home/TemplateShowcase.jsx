@@ -85,16 +85,20 @@ const TemplateShowcase = () => {
 
   return (
     <section id="templates" ref={containerRef} className="py-28 bg-white relative overflow-hidden">
+      {/* VIBRANT HALF-CIRCLE AMBIENT GLOWS */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none blur-2xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/15 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none blur-2xl" />
+
       {/* Background radiant orbs */}
       <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* SECTION HEADER */}
         <div className="section-header text-center max-w-3xl mx-auto mb-16">
           <span className="section-badge inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
             <FrogFace size={15} />
-            7 Battle-Tested ATS Formats
+            10 Battle-Tested ATS Formats
           </span>
 
           <h2 className="section-title text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
@@ -303,29 +307,43 @@ const TemplateShowcase = () => {
                     className="font-bold text-xs uppercase tracking-wider mb-2"
                     style={{ color: activeColor }}
                   >
-                    Skills
+                    Skills & Competencies
                   </h5>
-                  {selectedTemplate.id === "skill-bullet" ? (
-                    <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-700">
-                      {["React / Next.js", "Node.js / Express", "TypeScript", "PostgreSQL", "AWS Cloud", "Docker & CI/CD"].map((s) => (
-                        <li key={s} className="flex items-center gap-1.5">
-                          <span className="size-1.5 rounded-full" style={{ backgroundColor: activeColor }} />
-                          <span className="font-semibold">{s}</span>
-                        </li>
+                  {selectedTemplate.id === "executive" ? (
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                      {["Distributed Systems", "Cloud Infrastructure", "Engineering Leadership", "High-Scale APIs"].map((s) => (
+                        <div key={s} className="flex items-center border-l-2 pl-2 py-0.5" style={{ borderColor: `${activeColor}80` }}>
+                          <span className="font-semibold text-slate-800 text-[11px]">{s}</span>
+                        </div>
                       ))}
-                    </ul>
-                  ) : (
-                    <div className="flex flex-wrap gap-1.5">
-                      {["React", "Node.js", "TypeScript", "PostgreSQL", "AWS", "Docker"].map((s) => (
-                        <span
-                          key={s}
-                          className="px-2 py-0.5 rounded text-[11px] font-semibold"
-                          style={{ backgroundColor: `${activeColor}15`, color: activeColor }}
-                        >
-                          {s}
+                    </div>
+                  ) : selectedTemplate.id === "boardroom" ? (
+                    <div className="flex flex-wrap items-center gap-y-1.5 text-xs text-slate-800">
+                      {["Node.js", "TypeScript", "PostgreSQL", "Docker", "Kubernetes", "AWS"].map((s, idx) => (
+                        <span key={s} className="inline-flex items-center">
+                          {idx > 0 && <span className="mx-2 font-mono text-slate-300 font-bold select-none">|</span>}
+                          <span className="font-mono text-[11px] font-semibold text-slate-800">{s}</span>
                         </span>
                       ))}
                     </div>
+                  ) : selectedTemplate.id === "minimal" || selectedTemplate.id === "classic" ? (
+                    <div className="flex flex-wrap items-center gap-y-1 text-xs text-slate-800">
+                      {["Full-Stack Architecture", "Next.js", "GraphQL", "CI/CD Pipelines", "System Design"].map((s, idx) => (
+                        <span key={s} className="inline-flex items-center">
+                          {idx > 0 && <span className="mx-2 text-slate-300 font-bold select-none">•</span>}
+                          <span className="font-semibold text-slate-800 text-[11px]">{s}</span>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-700 list-none pl-0">
+                      {["React / Next.js", "Node.js / Express", "TypeScript", "PostgreSQL", "AWS Cloud", "Docker & CI/CD"].map((s) => (
+                        <li key={s} className="flex items-center gap-1.5">
+                          <span className="size-1.5 rounded-full shrink-0" style={{ backgroundColor: activeColor }} />
+                          <span className="font-semibold text-slate-800 text-[11px]">{s}</span>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
               </div>

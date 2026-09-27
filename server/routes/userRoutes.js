@@ -3,11 +3,12 @@ import { getUserById, getUserResumes, loginUser, registerUser, updateUserProfile
 import { initiateOAuth, handleOAuthCallback } from "../controllers/oauthController.js";
 import protect from "../middlewares/authMiddleware.js";
 import upload from "../configs/multer.js";
+import { authLimiter } from "../middlewares/rateLimiter.js";
 
 const userRouter = express.Router();
 
-userRouter.post('/register', registerUser);
-userRouter.post('/login', loginUser);
+userRouter.post('/register', authLimiter, registerUser);
+userRouter.post('/login', authLimiter, loginUser);
 userRouter.get('/data', protect, getUserById);
 userRouter.get('/resumes', protect, getUserResumes);
 userRouter.put('/profile', upload.single('image'), protect, updateUserProfile);
@@ -16,4 +17,4 @@ userRouter.put('/profile', upload.single('image'), protect, updateUserProfile);
 userRouter.get('/auth/:provider', initiateOAuth);
 userRouter.get('/auth/:provider/callback', handleOAuthCallback);
 
-export default userRouter;
+export default userRouter;

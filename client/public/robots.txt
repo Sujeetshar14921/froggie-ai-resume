@@ -1,11 +1,15 @@
-# froggie AI Resume Builder robots.txt
+# froggie AI Resume Builder & Talent Directory robots.txt
 # https://froggie.site
 
 User-agent: *
 Allow: /
+Allow: /talent
+Allow: /talent/*
 Allow: /faq
 Allow: /login
+Allow: /donate
 Allow: /view/
+Allow: /view/*
 Allow: /favicon*
 Allow: /*.png$
 Allow: /*.svg$
@@ -13,22 +17,36 @@ Allow: /*.ico$
 Disallow: /app/
 Disallow: /api/
 
-User-agent: Googlebot-Image
-Allow: /
-
 User-agent: Googlebot
 Allow: /
+Allow: /talent
+Allow: /talent/*
 Allow: /faq
 Allow: /login
+Allow: /donate
 Allow: /view/
+Allow: /view/*
 Disallow: /app/
 Disallow: /api/
 
+User-agent: Googlebot-Image
+Allow: /
+Allow: /talent
+Allow: /*.png$
+Allow: /*.svg$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.webp$
+
 User-agent: Bingbot
 Allow: /
+Allow: /talent
+Allow: /talent/*
 Allow: /faq
 Allow: /login
+Allow: /donate
 Allow: /view/
+Allow: /view/*
 Disallow: /app/
 Disallow: /api/
 

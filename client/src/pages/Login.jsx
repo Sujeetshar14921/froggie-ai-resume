@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { login } from "../app/features/authSlice";
 import { authApi } from "../api/authApi";
 import { resumeApi } from "../api/resumeApi";
+import { API_BASE_URL } from "../configs/api";
 import toast from "react-hot-toast";
 import { Mail, Lock, User, Eye, EyeOff, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import FrogFace, { BrandIcon } from "../components/FrogLogo";
@@ -83,6 +84,7 @@ const Login = () => {
     const provider = searchParams.get("provider");
     const redirectParam = searchParams.get("redirect");
     const error = searchParams.get("error");
+    const errorDescription = searchParams.get("error_description");
 
     if (error) {
       if (error === "not_configured") {
@@ -90,9 +92,14 @@ const Login = () => {
           duration: 5000,
         });
       } else if (error === "access_denied" || error === "cancelled") {
-        toast.error("Social login was cancelled.", { icon: "ℹ️" });
+        toast.error(errorDescription || "Google login was cancelled or access denied.", { icon: "ℹ️" });
       } else {
-        toast.error(`Login with ${provider || "social account"} failed. Please try again or use email/password.`);
+        toast.error(
+          errorDescription
+            ? `Google login failed: ${errorDescription}`
+            : `Login with ${provider || "social account"} failed. Please try again or use email/password.`,
+          { duration: 6000 }
+        );
       }
       // Clean query params from address bar
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -163,7 +170,7 @@ const Login = () => {
   }, [dispatch, navigate]);
 
   const handleSocialLogin = (provider) => {
-    const baseUrl = import.meta.env.VITE_BASE_URL || "";
+    const baseUrl = API_BASE_URL || window.location.origin;
     const currentRedirect = query.get("redirect") || "/";
     const clientHost = window.location.origin;
     window.location.href = `${baseUrl}/api/users/auth/${provider}?redirect=${encodeURIComponent(

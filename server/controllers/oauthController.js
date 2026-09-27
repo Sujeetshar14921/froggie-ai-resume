@@ -100,7 +100,7 @@ export const handleOAuthCallback = async (req, res) => {
   if (error) {
     console.warn(`OAuth error from ${provider}:`, error, error_description);
     return res.redirect(
-      `${destinationHost}/login?error=access_denied&provider=${provider}`
+      `${destinationHost}/login?error=${encodeURIComponent(error)}&provider=${provider}&error_description=${encodeURIComponent(error_description || "")}`
     );
   }
 
@@ -163,7 +163,7 @@ export const handleOAuthCallback = async (req, res) => {
   } catch (err) {
     console.error(`OAuth callback failure for ${provider}:`, err.message);
     return res.redirect(
-      `${destinationHost}/login?error=auth_failed&provider=${provider}`
+      `${destinationHost}/login?error=auth_failed&provider=${provider}&error_description=${encodeURIComponent(err.message)}`
     );
   }
 };

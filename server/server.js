@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
+import helmet from "helmet";
+import compression from "compression";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
 import resumeRouter from "./routes/resumeRoutes.js";
@@ -9,15 +11,25 @@ import aiRouter from "./routes/aiRoutes.js";
 import atsRouter from "./routes/atsRoutes.js";
 import copilotRouter from "./routes/copilotRoutes.js";
 import testimonialRouter from "./routes/testimonialRoutes.js";
+import { generalLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// Security & Production Performance Middlewares
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+app.use(compression());
+app.use(express.json({ limit: "15mb" }));
+app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 app.use(cors());
 
 // Health & Database status endpoint
-app.get("/", (req, res) => res.send("ResumeForge Server is live..."));
+app.get("/", (req, res) => res.send("Froggie AI Resume Server is live & hardened 🚀"));
 app.get("/api/health", (req, res) => {
   const stateMap = {
     0: "disconnected",
@@ -35,6 +47,9 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Apply General Rate Limiter to API routes
+app.use("/api", generalLimiter);
+
 // Database connectivity middleware for API routes
 app.use("/api", async (req, res, next) => {
   if (req.path === "/health") {
@@ -45,7 +60,7 @@ app.use("/api", async (req, res, next) => {
       await connectDB();
     } catch (err) {
       return res.status(503).json({
-        message: "Database connection unavailable. Please check MongoDB connection and Atlas IP Whitelist (0.0.0.0/0).",
+        message: "Database connection unavailable. Please check MongoDB connection.",
         error: err.message,
       });
     }
@@ -69,5 +84,5 @@ try {
 }
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`🚀 Froggie Server is running on port ${PORT}`);
 });

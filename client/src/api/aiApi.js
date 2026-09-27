@@ -34,8 +34,8 @@ export const aiApi = {
   },
 
   /**
-   * Upload PDF resume file to backend for server-side parsing
-   * @param {Object|FormData} payload - { file, title } or FormData
+   * Upload PDF / Word DOC / DOCX resume file to backend for server-side parsing
+   * @param {Object|FormData} payload - { file, title, resumeId } or FormData
    * @param {string} token
    */
   uploadResumePdf: async (payload, token) => {
@@ -48,12 +48,22 @@ export const aiApi = {
       if (payload.title) {
         formData.append("title", payload.title);
       }
+      if (payload.resumeId) {
+        formData.append("resumeId", payload.resumeId);
+      }
       requestData = formData;
       headers["Content-Type"] = "multipart/form-data";
     }
 
     const { data } = await api.post("/api/ai/upload-resume", requestData, { headers });
     return data;
+  },
+
+  /**
+   * Universal upload document alias
+   */
+  uploadResume: async (payload, token) => {
+    return aiApi.uploadResumePdf(payload, token);
   },
 
   /**

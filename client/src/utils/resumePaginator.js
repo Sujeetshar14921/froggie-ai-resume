@@ -194,7 +194,97 @@ export const paginateSingleColumn = (container, resumeData, autoFitSinglePage = 
     });
   }
 
-  // 6. Measure Skills
+  // 6. Measure Certifications
+  const certList = resumeData.certifications || [];
+  if (certList.length > 0) {
+    const certTitleEl = container.querySelector('[data-resume-section="certifications-title"]');
+    const certTitleHeight = certTitleEl ? getElementHeightWithMargin(certTitleEl) : 38;
+
+    const certItemEls = Array.from(
+      container.querySelectorAll('[data-resume-item="certification"]')
+    );
+
+    let isCertStarted = false;
+
+    certList.forEach((cert, idx) => {
+      const itemEl = certItemEls[idx];
+      const itemHeight = itemEl ? getElementHeightWithMargin(itemEl) : 45;
+
+      if (!isCertStarted) {
+        if (currentHeight + certTitleHeight + itemHeight <= maxPageHeight) {
+          currentPage.showCertificationsTitle = true;
+          currentPage.certificationIndices.push(idx);
+          currentHeight += certTitleHeight + itemHeight;
+          isCertStarted = true;
+        } else {
+          pages.push(currentPage);
+          currentPage = createEmptySingleColumnPage();
+          currentPage.showCertificationsTitle = true;
+          currentPage.certificationIndices.push(idx);
+          currentHeight = certTitleHeight + itemHeight;
+          isCertStarted = true;
+        }
+      } else {
+        if (currentHeight + itemHeight <= maxPageHeight) {
+          currentPage.certificationIndices.push(idx);
+          currentHeight += itemHeight;
+        } else {
+          pages.push(currentPage);
+          currentPage = createEmptySingleColumnPage();
+          currentPage.showCertificationsTitle = true;
+          currentPage.certificationIndices.push(idx);
+          currentHeight = itemHeight + 24;
+        }
+      }
+    });
+  }
+
+  // 7. Measure Achievements
+  const achieveList = resumeData.achievements || [];
+  if (achieveList.length > 0) {
+    const achieveTitleEl = container.querySelector('[data-resume-section="achievements-title"]');
+    const achieveTitleHeight = achieveTitleEl ? getElementHeightWithMargin(achieveTitleEl) : 38;
+
+    const achieveItemEls = Array.from(
+      container.querySelectorAll('[data-resume-item="achievement"]')
+    );
+
+    let isAchieveStarted = false;
+
+    achieveList.forEach((achieve, idx) => {
+      const itemEl = achieveItemEls[idx];
+      const itemHeight = itemEl ? getElementHeightWithMargin(itemEl) : 45;
+
+      if (!isAchieveStarted) {
+        if (currentHeight + achieveTitleHeight + itemHeight <= maxPageHeight) {
+          currentPage.showAchievementsTitle = true;
+          currentPage.achievementIndices.push(idx);
+          currentHeight += achieveTitleHeight + itemHeight;
+          isAchieveStarted = true;
+        } else {
+          pages.push(currentPage);
+          currentPage = createEmptySingleColumnPage();
+          currentPage.showAchievementsTitle = true;
+          currentPage.achievementIndices.push(idx);
+          currentHeight = achieveTitleHeight + itemHeight;
+          isAchieveStarted = true;
+        }
+      } else {
+        if (currentHeight + itemHeight <= maxPageHeight) {
+          currentPage.achievementIndices.push(idx);
+          currentHeight += itemHeight;
+        } else {
+          pages.push(currentPage);
+          currentPage = createEmptySingleColumnPage();
+          currentPage.showAchievementsTitle = true;
+          currentPage.achievementIndices.push(idx);
+          currentHeight = itemHeight + 24;
+        }
+      }
+    });
+  }
+
+  // 8. Measure Skills
   const skillsList = resumeData.skills || [];
   if (skillsList.length > 0) {
     const skillsEl = container.querySelector('[data-resume-section="skills"]');
@@ -465,6 +555,10 @@ export const createEmptySingleColumnPage = () => ({
   showEducationTitle: false,
   showEducationContinuationTitle: false,
   educationIndices: [],
+  showCertificationsTitle: false,
+  certificationIndices: [],
+  showAchievementsTitle: false,
+  achievementIndices: [],
   showSkills: false,
 });
 
@@ -480,6 +574,10 @@ export const createDefaultSingleColumnPage = (resumeData = {}) => ({
   showEducationTitle: (resumeData.education || []).length > 0,
   showEducationContinuationTitle: false,
   educationIndices: (resumeData.education || []).map((_, i) => i),
+  showCertificationsTitle: (resumeData.certifications || []).length > 0,
+  certificationIndices: (resumeData.certifications || []).map((_, i) => i),
+  showAchievementsTitle: (resumeData.achievements || []).length > 0,
+  achievementIndices: (resumeData.achievements || []).map((_, i) => i),
   showSkills: (resumeData.skills || []).length > 0,
 });
 
@@ -500,6 +598,10 @@ export const createEmptyMainPage = () => ({
   showProjectsTitle: false,
   showProjectsContinuationTitle: false,
   projectIndices: [],
+  showCertificationsTitle: false,
+  certificationIndices: [],
+  showAchievementsTitle: false,
+  achievementIndices: [],
 });
 
 export const createDefaultTwoColumnPage = (resumeData = {}) => ({
@@ -520,6 +622,10 @@ export const createDefaultTwoColumnPage = (resumeData = {}) => ({
     showProjectsTitle: (resumeData.project || []).length > 0,
     showProjectsContinuationTitle: false,
     projectIndices: (resumeData.project || []).map((_, i) => i),
+    showCertificationsTitle: (resumeData.certifications || []).length > 0,
+    certificationIndices: (resumeData.certifications || []).map((_, i) => i),
+    showAchievementsTitle: (resumeData.achievements || []).length > 0,
+    achievementIndices: (resumeData.achievements || []).map((_, i) => i),
   },
 });
 

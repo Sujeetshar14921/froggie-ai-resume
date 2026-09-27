@@ -24,8 +24,29 @@ export const useResume = (resumeId) => {
       setIsLoading(true);
       const data = await resumeApi.getResumeById(resumeId, token);
       if (data.resume) {
-        setResumeData(data.resume);
-        document.title = data.resume.title ? `${data.resume.title} | ResumeForge` : "Resume Builder";
+        const fullResume = {
+          ...INITIAL_RESUME_STATE,
+          ...data.resume,
+          personal_info: {
+            ...INITIAL_RESUME_STATE.personal_info,
+            ...(data.resume.personal_info || {}),
+          },
+          personal_details: {
+            ...INITIAL_RESUME_STATE.personal_details,
+            ...(data.resume.personal_details || {}),
+          },
+          declaration: {
+            ...INITIAL_RESUME_STATE.declaration,
+            ...(data.resume.declaration || {}),
+          },
+          languages: Array.isArray(data.resume.languages) ? data.resume.languages : [],
+          custom_sections: Array.isArray(data.resume.custom_sections) ? data.resume.custom_sections : [],
+          section_order: Array.isArray(data.resume.section_order) && data.resume.section_order.length > 0
+            ? [...new Set([...data.resume.section_order, ...INITIAL_RESUME_STATE.section_order])]
+            : INITIAL_RESUME_STATE.section_order,
+        };
+        setResumeData(fullResume);
+        document.title = fullResume.title ? `${fullResume.title} | froggie Resume Editor` : "Resume Builder";
       }
     } catch (error) {
       console.error("Load resume error:", error);

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, Suspense, lazy } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { authApi } from './api/authApi'
 import { login, setLoading } from './app/features/authSlice'
@@ -19,6 +19,7 @@ const ApplicationTracker = lazy(() => import('./pages/ApplicationTracker'))
 const Login = lazy(() => import('./pages/Login'))
 const FaqPage = lazy(() => import('./pages/FaqPage'))
 const DonatePage = lazy(() => import('./pages/DonatePage'))
+const TalentPage = lazy(() => import('./pages/TalentPage'))
 
 // Minimalist fallback loader
 const PageLoader = () => (
@@ -67,6 +68,9 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/faq' element={<FaqPage />} />
           <Route path='/donate' element={<DonatePage />} />
+          <Route path='/talent' element={<TalentPage />} />
+          <Route path='/talent/:resumeId' element={<Preview />} />
+          <Route path='/ats-checker' element={<Navigate to='/app/ats-checker' replace />} />
 
           <Route path='app' element={<Layout />}>
             <Route index element={<Dashboard />} />

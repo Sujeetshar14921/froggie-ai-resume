@@ -62,11 +62,14 @@ const AtsInputSection = ({
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-7">
-      
+    <div className="relative overflow-hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-7 group text-left">
+      {/* Half circle ambient glows */}
+      <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+      <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
+
       {/* 1. RESUME SELECTION / UPLOAD SECTION */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="relative z-10 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
               <FileCheck size={20} className="text-emerald-600" />
@@ -78,14 +81,14 @@ const AtsInputSection = ({
           </div>
 
           {/* TAB TOGGLE */}
-          <div className="flex p-1 bg-slate-100 rounded-xl border border-slate-200/60">
+          <div className="flex p-1 bg-slate-100 rounded-xl border border-slate-200/60 self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setInputTab("saved")}
               disabled={userResumes.length === 0}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 inputTab === "saved"
-                  ? "bg-white text-emerald-700 shadow-xs"
+                  ? "bg-white text-emerald-700 shadow-2xs"
                   : "text-slate-500 hover:text-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
@@ -96,7 +99,7 @@ const AtsInputSection = ({
               onClick={() => setInputTab("upload")}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 inputTab === "upload"
-                  ? "bg-white text-emerald-700 shadow-xs"
+                  ? "bg-white text-emerald-700 shadow-2xs"
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -124,12 +127,15 @@ const AtsInputSection = ({
                         onSelectResumeId(res._id);
                         onSetUploadedFile(null);
                       }}
-                      className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 ${
+                      className={`relative overflow-hidden p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 group/item ${
                         isSelected
-                          ? "border-emerald-600 bg-emerald-50/50 shadow-xs"
+                          ? "border-emerald-600 bg-emerald-50/50 shadow-2xs scale-101"
                           : "border-slate-200/80 hover:border-emerald-300 hover:bg-slate-50/50"
                       }`}
                     >
+                      {/* Corner subtle glow on selected or hover */}
+                      <div className="absolute top-0 right-0 w-12 h-12 bg-gradient-to-bl from-emerald-500/20 to-transparent rounded-bl-full pointer-events-none opacity-0 group-hover/item:opacity-100 transition-opacity" />
+
                       <div
                         className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
                           isSelected
@@ -191,16 +197,16 @@ const AtsInputSection = ({
                 <div>
                   <p className="text-xs font-bold text-slate-900">{uploadedFile.name}</p>
                   <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
-                    ✓ PDF file loaded ({(uploadedFile.size / 1024).toFixed(1)} KB)
+                    ✓ Resume file loaded ({(uploadedFile.size / 1024).toFixed(1)} KB)
                   </p>
                 </div>
               ) : (
                 <div>
                   <p className="text-xs font-bold text-slate-900">
-                    Click to browse or drag & drop PDF resume
+                    Click to browse or drag & drop PDF or Word DOC resume
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Supported: Standard text-based PDF documents up to 10MB
+                    Supported: PDF, Word (.docx, .doc), or TXT documents up to 10MB
                   </p>
                 </div>
               )}
@@ -209,7 +215,7 @@ const AtsInputSection = ({
             <input
               id="ats-pdf-upload"
               type="file"
-              accept=".pdf"
+              accept=".pdf,.docx,.doc,.txt"
               hidden
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -222,11 +228,11 @@ const AtsInputSection = ({
         )}
       </div>
 
-      <hr className="border-slate-100" />
+      <hr className="relative z-10 border-slate-100" />
 
       {/* 2. JOB DESCRIPTION INPUT */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="relative z-10 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
               <Sparkles size={20} className="text-emerald-600" />
@@ -237,23 +243,23 @@ const AtsInputSection = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               type="button"
               onClick={handlePasteJd}
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-colors cursor-pointer"
             >
               <Clipboard size={13} />
-              <span className="hidden sm:inline">Paste</span>
+              <span>Paste JD</span>
             </button>
             {charCount > 0 && (
               <button
                 type="button"
                 onClick={handleClearJd}
-                className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
               >
                 <Trash2 size={13} />
-                <span className="hidden sm:inline">Clear</span>
+                <span>Clear</span>
               </button>
             )}
           </div>
@@ -266,7 +272,7 @@ const AtsInputSection = ({
             value={customJobTitle}
             onChange={(e) => onChangeCustomJobTitle(e.target.value)}
             placeholder="Target Job Title (Optional, e.g. Senior Frontend Engineer)"
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all font-medium"
           />
         </div>
 
@@ -298,7 +304,7 @@ const AtsInputSection = ({
       </div>
 
       {/* 3. ANALYZE BUTTON */}
-      <div>
+      <div className="relative z-10">
         <button
           type="button"
           onClick={onAnalyze}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Banner from "../components/home/Banner";
 import Hero from "../components/home/Hero";
@@ -8,24 +8,16 @@ import TemplateShowcase from "../components/home/TemplateShowcase";
 import Testimonial from "../components/home/Testimonial";
 import CallToAction from "../components/home/CallToAction";
 import Footer from "../components/home/Footer";
-import FrogSplashIntro from "../components/home/FrogSplashIntro";
 import { useSEO } from "../hooks/useSEO";
 import { initScrollProgressBar } from "../animations";
 
 const Home = () => {
   useSEO({
-    title: "froggie — #1 Free AI Resume Builder & ATS Score Checker | 100% ATS-Friendly",
-    description: "Build 100% ATS-compliant resumes in minutes with froggie AI. Features real-time ATS scoring, AI career copilot, 6+ modern designer templates, instant PDF and Word export. Free forever.",
-    keywords: "froggie, froggie resume, AI resume builder, ATS resume builder, free resume maker, ATS score checker, ATS resume scanner, professional resume templates, CV maker, job resume generator, ATS friendly resume, resume editor, download resume PDF, career copilot, resume optimizer, best resume builder 2026",
+    title: "froggie 3.0 — #1 Free AI Resume Builder & ATS Score Checker | 100% ATS-Friendly",
+    description: "Build 100% ATS-compliant resumes in minutes with froggie 3.0 AI Studio. Features real-time ATS scoring, AI career copilot, 6+ modern designer templates, instant PDF and Word export. Free forever.",
+    keywords: "froggie, froggie 3.0, froggie resume, AI resume builder, ATS resume builder, free resume maker, ATS score checker, ATS resume scanner, professional resume templates, CV maker, job resume generator, ATS friendly resume, resume editor, download resume PDF, career copilot, resume optimizer, best resume builder 2026",
     canonical: "https://froggie.site/",
     ogImage: "https://froggie.site/og-image.png",
-  });
-
-  const [showSplash, setShowSplash] = useState(() => {
-    // Plays when user opens browser/session or tests with ?intro=true
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("intro") === "true") return true;
-    return !sessionStorage.getItem("froggie_splash_seen");
   });
 
   const progressBarRef = useRef(null);
@@ -37,11 +29,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 selection:bg-emerald-500 selection:text-white relative">
-      {/* CINEMATIC FROG JUMP SPLASH INTRO */}
-      {showSplash && (
-        <FrogSplashIntro onComplete={() => setShowSplash(false)} />
-      )}
-
       {/* Scroll Progress Bar at the top of the viewport */}
       <div
         ref={progressBarRef}

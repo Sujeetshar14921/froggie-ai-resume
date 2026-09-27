@@ -9,6 +9,7 @@ import {
   Save,
   Share2Icon,
   ShieldCheck,
+  History,
 } from "lucide-react";
 
 const BuilderHeader = ({
@@ -22,6 +23,7 @@ const BuilderHeader = ({
   onToggleVisibility,
   onShare,
   onDownload,
+  onOpenHistory,
 }) => {
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
 
@@ -46,6 +48,15 @@ const BuilderHeader = ({
 
         {/* RIGHT: ACTIONS */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* VERSION HISTORY ROLLBACK BUTTON */}
+          <button
+            onClick={onOpenHistory}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200/90 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+            title="View revision snapshots and rollback changes"
+          >
+            <History className="size-3.5 text-slate-600" />
+            <span className="hidden sm:inline">History</span>
+          </button>
 
           {isPublic && (
             <button
@@ -94,7 +105,7 @@ const BuilderHeader = ({
             {isExportMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setIsExportMenuOpen(false)} />
-                <div className="absolute right-0 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
                   <button
                     onClick={() => {
                       setIsExportMenuOpen(false);
@@ -110,12 +121,24 @@ const BuilderHeader = ({
                   <button
                     onClick={() => {
                       setIsExportMenuOpen(false);
-                      onDownload("doc");
+                      onDownload("docx");
                     }}
                     className="flex items-center justify-between w-full px-4 py-2.5 text-left text-xs font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors border-t border-slate-100 cursor-pointer"
                   >
-                    <span>Download Word</span>
+                    <span>Download Word (.docx)</span>
                     <span className="text-[10px] uppercase font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
+                      DOCX
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsExportMenuOpen(false);
+                      onDownload("doc");
+                    }}
+                    className="flex items-center justify-between w-full px-4 py-2 text-left text-[11px] font-medium text-slate-500 hover:bg-slate-50 transition-colors border-t border-slate-100 cursor-pointer"
+                  >
+                    <span>Legacy Word (.doc)</span>
+                    <span className="text-[9px] uppercase font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                       DOC
                     </span>
                   </button>

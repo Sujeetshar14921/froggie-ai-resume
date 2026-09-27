@@ -148,25 +148,73 @@ export const sendNativeNotification = (title, options = {}) => {
 };
 
 /**
- * Add a notification item to persistent local history
+ * Notification Categories for persistent High-Value alerts
  */
-export const recordNotification = ({ title, message, type = "success" }) => {
+export const NOTIFICATION_CATEGORIES = {
+  ALL: "all",
+  TRACKER: "tracker", // Interviews, job reminders, status updates
+  ATS_AI: "ats_ai", // ATS score milestones, AI deliverables
+  MILESTONE: "milestone", // Account milestones, public resume shares
+};
+
+// Filter out mundane toast keywords from entering persistent dropdown history
+const TRIVIAL_KEYWORDS = [
+  "copied to clipboard",
+  "copied",
+  "saving...",
+  "saved",
+  "save changes",
+  "reordered",
+  "logged in",
+  "muted",
+  "enabled",
+  "switched",
+  "downloaded",
+  "listening...",
+  "please enter",
+];
+
+/**
+ * Add a notification item to persistent local history (Strictly High-Value Only)
+ */
+export const recordNotification = ({
+  title,
+  message,
+  type = "success",
+  category = NOTIFICATION_CATEGORIES.MILESTONE,
+  actionLink = null,
+  actionLabel = null,
+  forceRecord = false,
+}) => {
   // Do NOT record errors, warnings, or alerts in the notification dropdown
   if (type === "error" || type === "warning" || type === "alert") {
     return null;
+  }
+
+  const msgText = typeof message === "string" ? message.toLowerCase() : "";
+
+  // Unless forceRecord is true, filter out trivial routine actions
+  if (!forceRecord) {
+    const isTrivial = TRIVIAL_KEYWORDS.some((kw) => msgText.includes(kw));
+    if (isTrivial) {
+      return null;
+    }
   }
 
   try {
     const existing = getNotificationHistory();
     const item = {
       id: "notif_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-      title: title || (type === "ai" ? "AI Assistant" : "Success"),
+      title: title || (category === NOTIFICATION_CATEGORIES.ATS_AI ? "AI & ATS Insight" : "Career Milestone"),
       message: typeof message === "string" ? message : "Notification from Froggie",
       type,
+      category,
+      actionLink,
+      actionLabel,
       timestamp: Date.now(),
       read: false,
     };
-    const updated = [item, ...existing].slice(0, 20); // keep last 20
+    const updated = [item, ...existing].slice(0, 30); // keep last 30 high-value alerts
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updated));
     // Dispatch custom event so listeners like NotificationBell can re-render
     window.dispatchEvent(new CustomEvent("froggie_notifications_updated"));
@@ -177,6 +225,42 @@ export const recordNotification = ({ title, message, type = "success" }) => {
 };
 
 /**
+ * Trigger a High-Value Milestone Notification (Saved in Dropdown + Sound + Native OS Notification)
+ */
+export const sendMilestoneNotification = ({
+  title,
+  message,
+  category = NOTIFICATION_CATEGORIES.MILESTONE,
+  actionLink = null,
+  actionLabel = null,
+}) => {
+  playNotificationSound("ai");
+
+  // Save to persistent notification dropdown
+  const record = recordNotification({
+    title,
+    message,
+    type: "ai",
+    category,
+    actionLink,
+    actionLabel,
+    forceRecord: true,
+  });
+
+  // Also send native browser notification if user granted permission
+  sendNativeNotification(title, {
+    body: message,
+    onClick: () => {
+      if (actionLink && typeof window !== "undefined") {
+        window.location.href = actionLink;
+      }
+    },
+  });
+
+  return record;
+};
+
+/**
  * Retrieve notification history from localStorage
  */
 export const getNotificationHistory = () => {
@@ -184,7 +268,6 @@ export const getNotificationHistory = () => {
     const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
     if (!stored) return [];
     const parsed = JSON.parse(stored);
-    // Filter out any errors, warnings, or alerts from dropdown
     return Array.isArray(parsed)
       ? parsed.filter((n) => n.type !== "error" && n.type !== "warning" && n.type !== "alert")
       : [];
@@ -204,4 +287,5 @@ export const clearNotificationHistory = () => {
     // Storage unavailable
   }
 };
+
 

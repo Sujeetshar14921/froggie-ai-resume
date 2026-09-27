@@ -6,13 +6,16 @@ import {
   enhanceProfessionalSummary,
   uploadResume,
   runAtsXRayAudit,
+  streamAiSuggestions,
 } from "../controllers/aiController.js";
+import { aiLimiter } from "../middlewares/rateLimiter.js";
 
 const aiRouter = express.Router();
 
-aiRouter.post("/enhance-pro-sum", protect, enhanceProfessionalSummary);
-aiRouter.post("/enhance-job-desc", protect, enhanceJobDescription);
+aiRouter.post("/enhance-pro-sum", protect, aiLimiter, enhanceProfessionalSummary);
+aiRouter.post("/enhance-job-desc", protect, aiLimiter, enhanceJobDescription);
 aiRouter.post("/upload-resume", protect, upload.single("resume"), uploadResume);
-aiRouter.post("/xray-audit", runAtsXRayAudit);
+aiRouter.post("/xray-audit", aiLimiter, runAtsXRayAudit);
+aiRouter.post("/stream-suggest", protect, aiLimiter, streamAiSuggestions);
 
 export default aiRouter;

@@ -1,7 +1,59 @@
 import fs from "fs";
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
-import { extractPdfText } from "../utils/pdfExtractor.js";
+import { extractDocumentText } from "../utils/documentExtractor.js";
+
+/**
+ * Controller for real-time streaming AI suggestions (Server-Sent Events)
+ * POST: /api/ai/stream-suggest
+ * Accepts: { prompt, type: "summary" | "bullet" | "skills" }
+ */
+export const streamAiSuggestions = async (req, res) => {
+  try {
+    const { prompt, type = "summary" } = req.body;
+    if (!prompt || !prompt.trim()) {
+      return res.status(400).json({ message: "Prompt is required" });
+    }
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    let systemPrompt = "You are an expert resume writer. Craft a high-impact, ATS-optimized 2-3 sentence professional summary based on the input.";
+    if (type === "bullet") {
+      systemPrompt = "You are an ATS resume editor. Enhance the provided experience or project into strong, metric-driven STAR bullet points with action verbs. Output directly without conversational preamble.";
+    } else if (type === "skills") {
+      systemPrompt = "You are a technical recruiter. Suggest the top 10 in-demand technical and soft skills for the provided role or domain as a comma-separated list.";
+    }
+
+    const stream = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gemini-3.5-flash-lite",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt.trim() },
+      ],
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || "";
+      if (content) {
+        res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      }
+    }
+
+    res.write("data: [DONE]\n\n");
+    res.end();
+  } catch (error) {
+    console.error("AI Stream Error:", error);
+    if (!res.headersSent) {
+      return res.status(500).json({ message: error.message });
+    }
+    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+    res.end();
+  }
+};
 
 /**
  * Controller for enhancing a resume's professional summary
@@ -84,9 +136,9 @@ export const enhanceJobDescription = async (req, res) => {
 };
 
 /**
- * Controller for parsing an uploaded PDF resume and saving to MongoDB
+ * Controller for parsing an uploaded PDF/DOC/DOCX resume and saving/updating in MongoDB
  * POST: /api/ai/upload-resume
- * Accepts: Multipart PDF file (req.file) OR JSON { resumeText, title }
+ * Accepts: Multipart file (req.file) OR JSON { resumeText, title, resumeId }
  */
 export const uploadResume = async (req, res) => {
   let tempFilePath = req.file?.path;
@@ -94,68 +146,126 @@ export const uploadResume = async (req, res) => {
   try {
     const userId = req.userId;
     let title = req.body.title || "Imported Resume";
+    const existingResumeId = req.body.resumeId;
     let extractedResumeText = req.body.resumeText || "";
 
-    // If PDF file was uploaded via multipart/form-data
+    // If file was uploaded via multipart/form-data (PDF, DOC, DOCX, TXT)
     if (req.file) {
       const dataBuffer = fs.readFileSync(req.file.path);
-      extractedResumeText = await extractPdfText(dataBuffer);
+      extractedResumeText = await extractDocumentText(
+        dataBuffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
 
       if (!req.body.title && req.file.originalname) {
-        title = req.file.originalname.replace(/\.pdf$/i, "");
+        title = req.file.originalname.replace(/\.(pdf|docx?|txt)$/i, "");
       }
     }
 
     if (!extractedResumeText || extractedResumeText.trim().length < 20) {
       return res.status(400).json({
-        message: "Could not extract text from the resume. Please ensure the PDF has selectable text.",
+        message: "Could not extract readable text from the document. Please ensure the file has selectable text.",
       });
     }
 
     const systemPrompt =
-      "You are an expert AI resume data extractor. Parse the provided resume text and structure all sections into clean, valid JSON matching the exact schema requested.";
+      "You are an expert AI resume data extractor and layout analysis specialist. Parse the provided resume text and structure ALL information into clean, valid JSON matching the exact schema requested. Extract EVERY SINGLE DETAIL with zero data loss. CRITICAL: Preserve the exact heading sequence / section order of the original resume in 'section_order' (e.g. ['summary', 'skills', 'experience', 'education', ...]). If the resume contains extra sections like languages, volunteer experience, publications, organizations, honors, summary highlights, or interests, capture them completely in 'languages' or 'custom_sections'. Also detect the most appropriate visual template from ['classic', 'modern', 'minimal', 'executive', 'minimal-image', 'boardroom', 'skill-bullet', 'ivy-league', 'nova-sidebar', 'apex-grid'].";
 
-    const userPrompt = `Extract structured data from this resume:
+    const userPrompt = `Extract structured data from this resume text with 100% completeness:
 ${extractedResumeText}
 
 Provide data in the following JSON format with no additional markdown wrapper or conversational text:
 {
-  "professional_summary": "Extracted summary or empty string",
-  "skills": ["Skill 1", "Skill 2"],
+  "template": "classic | modern | minimal | executive | minimal-image | boardroom | skill-bullet | ivy-league | nova-sidebar | apex-grid",
+  "section_order": [
+    "Order of sections exactly as they appear in the original uploaded document from top to bottom. Valid keys: 'summary', 'experience', 'projects', 'education', 'skills', 'certifications', 'achievements', 'languages', 'personal_details', 'declaration', 'custom_sections'"
+  ],
+  "professional_summary": "Extracted professional summary or career profile",
+  "skills": ["Skill 1", "Skill 2", "Skill 3"],
   "personal_info": {
     "image": "",
     "full_name": "Full Name",
-    "profession": "Profession",
-    "email": "Email",
-    "phone": "Phone",
-    "location": "Location",
+    "profession": "Job Title / Professional Headline",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "location": "City, State / Country",
     "linkedin": "LinkedIn URL",
-    "website": "Website URL"
+    "github": "GitHub URL",
+    "website": "Portfolio / Personal Website URL"
   },
   "experience": [
     {
       "company": "Company Name",
-      "position": "Job Title",
+      "position": "Job Position / Title",
       "start_date": "YYYY-MM",
       "end_date": "YYYY-MM or Present",
-      "description": "Responsibilities and accomplishments",
+      "description": "Responsibilities and accomplishments (bullet points or clean sentences)",
       "is_current": false
     }
   ],
   "project": [
     {
       "name": "Project Name",
-      "type": "Project Category/Type",
-      "description": "Project details"
+      "type": "Project Category / Tech Stack",
+      "description": "Project details and outcomes"
     }
   ],
   "education": [
     {
-      "institution": "Institution Name",
-      "degree": "Degree",
-      "field": "Field of Study",
+      "institution": "University / College / School Name",
+      "degree": "Degree / Qualification (e.g. Bachelor of Science)",
+      "field": "Major / Field of Study",
       "graduation_date": "YYYY-MM",
-      "gpa": "GPA"
+      "gpa": "GPA / Grade"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certification Title",
+      "issuer": "Issuing Organization",
+      "date": "YYYY-MM",
+      "url": "Verification URL if mentioned"
+    }
+  ],
+  "achievements": [
+    {
+      "title": "Achievement Title / Honor",
+      "date": "YYYY-MM",
+      "description": "Details about the honor or milestone"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Language Name (e.g. English, Spanish, Hindi)",
+      "proficiency": "Proficiency Level (e.g. Native, Fluent, Intermediate, Professional Working)"
+    }
+  ],
+  "personal_details": {
+    "date_of_birth": "YYYY-MM-DD or Date string if present",
+    "gender": "Gender if present",
+    "nationality": "Nationality if present",
+    "marital_status": "Marital status if present",
+    "passport_no": "Passport or ID number if present",
+    "address": "Permanent or Residential address if present"
+  },
+  "declaration": {
+    "statement": "Declaration statement text if present in resume",
+    "place": "Place / City mentioned in declaration",
+    "date": "Date mentioned in declaration",
+    "name": "Signatory candidate name"
+  },
+  "custom_sections": [
+    {
+      "title": "Section Title (e.g. Volunteer Experience, Publications, Leadership & Activities, Interests)",
+      "items": [
+        {
+          "title": "Item Title / Role / Publication Name",
+          "subtitle": "Organization / Venue / Additional context",
+          "date": "Date or Date Range",
+          "description": "Full details, bullet points, or description"
+        }
+      ]
     }
   ]
 }`;
@@ -176,24 +286,96 @@ Provide data in the following JSON format with no additional markdown wrapper or
         .replace(/\s*```$/, "")
         .trim();
     }
-    const parsedData = JSON.parse(extractedData);
+    
+    const firstBrace = extractedData.indexOf("{");
+    const lastBrace = extractedData.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      extractedData = extractedData.slice(firstBrace, lastBrace + 1);
+    }
 
-    const newResume = await Resume.create({
-      userId,
-      title: title.trim(),
-      ...parsedData,
-    });
+    let parsedData = {};
+    try {
+      parsedData = JSON.parse(extractedData);
+    } catch (parseErr) {
+      const sanitized = extractedData.replace(/,\s*([\]}])/g, "$1");
+      parsedData = JSON.parse(sanitized);
+    }
+
+    const normalized = {
+      template: parsedData.template || "classic",
+      section_order: Array.isArray(parsedData.section_order) ? parsedData.section_order : [],
+      personal_info: {
+        image: parsedData.personal_info?.image || "",
+        full_name: parsedData.personal_info?.full_name || parsedData.personal_info?.name || "",
+        profession: parsedData.personal_info?.profession || parsedData.personal_info?.title || parsedData.personal_info?.headline || "",
+        email: parsedData.personal_info?.email || "",
+        phone: parsedData.personal_info?.phone || "",
+        location: parsedData.personal_info?.location || parsedData.personal_info?.address || "",
+        linkedin: parsedData.personal_info?.linkedin || "",
+        github: parsedData.personal_info?.github || "",
+        website: parsedData.personal_info?.website || parsedData.personal_info?.portfolio || "",
+      },
+      professional_summary: parsedData.professional_summary || parsedData.summary || parsedData.profile || "",
+      skills: Array.isArray(parsedData.skills)
+        ? parsedData.skills.map((s) => (typeof s === "object" ? (s.name || s.skill || JSON.stringify(s)) : String(s))).filter(Boolean)
+        : [],
+      experience: Array.isArray(parsedData.experience)
+        ? parsedData.experience
+        : (Array.isArray(parsedData.work_experience) ? parsedData.work_experience : []),
+      education: Array.isArray(parsedData.education) ? parsedData.education : [],
+      project: Array.isArray(parsedData.project)
+        ? parsedData.project
+        : (Array.isArray(parsedData.projects) ? parsedData.projects : []),
+      certifications: Array.isArray(parsedData.certifications) ? parsedData.certifications : [],
+      achievements: Array.isArray(parsedData.achievements) ? parsedData.achievements : [],
+      languages: Array.isArray(parsedData.languages) ? parsedData.languages : [],
+      personal_details: {
+        date_of_birth: parsedData.personal_details?.date_of_birth || parsedData.personal_details?.dob || "",
+        gender: parsedData.personal_details?.gender || "",
+        nationality: parsedData.personal_details?.nationality || "",
+        marital_status: parsedData.personal_details?.marital_status || "",
+        passport_no: parsedData.personal_details?.passport_no || parsedData.personal_details?.passport || "",
+        address: parsedData.personal_details?.address || "",
+      },
+      declaration: {
+        statement: parsedData.declaration?.statement || parsedData.declaration?.text || "",
+        place: parsedData.declaration?.place || "",
+        date: parsedData.declaration?.date || "",
+        name: parsedData.declaration?.name || "",
+      },
+      custom_sections: Array.isArray(parsedData.custom_sections) ? parsedData.custom_sections : [],
+    };
+
+    let targetResume;
+
+    if (existingResumeId) {
+      targetResume = await Resume.findOneAndUpdate(
+        { _id: existingResumeId, userId },
+        {
+          ...(title ? { title: title.trim() } : {}),
+          ...normalized,
+        },
+        { new: true }
+      );
+    }
+
+    if (!targetResume) {
+      targetResume = await Resume.create({
+        userId,
+        title: title.trim(),
+        ...normalized,
+      });
+    }
 
     return res.status(200).json({
       message: "Resume imported and parsed successfully",
-      resumeId: newResume._id,
-      resume: newResume,
+      resumeId: targetResume._id,
+      resume: targetResume,
     });
   } catch (error) {
     console.error("AI Upload Resume Error:", error);
-    return res.status(400).json({ message: error.message || "Failed to parse resume" });
+    return res.status(400).json({ message: error.message || "Failed to parse resume document" });
   } finally {
-    // Clean up temporary uploaded file
     if (tempFilePath && fs.existsSync(tempFilePath)) {
       try {
         fs.unlinkSync(tempFilePath);
