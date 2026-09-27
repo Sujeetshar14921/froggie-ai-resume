@@ -22,8 +22,10 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({message: 'Missing required fields'})
         }
 
+        const cleanEmail = email.trim().toLowerCase();
+
         // check if user already exists
-        const user = await User.findOne({email})
+        const user = await User.findOne({email: cleanEmail})
         if(user){
             return res.status(400).json({message: 'User already exists'})
         }
@@ -31,7 +33,7 @@ export const registerUser = async (req, res) => {
         // create new user
          const hashedPassword = await bcrypt.hash(password, 10)
          const newUser = await User.create({
-            name, email, password: hashedPassword
+            name: name.trim(), email: cleanEmail, password: hashedPassword
          })
 
          // return success message
@@ -51,8 +53,14 @@ export const loginUser = async (req, res) => {
     try {
         const { email, password} = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({message: 'Missing email or password'})
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+
         // check if user exists
-        const user = await User.findOne({email})
+        const user = await User.findOne({email: cleanEmail})
         if(!user){
             return res.status(400).json({message: 'Invalid email or password'})
         }

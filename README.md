@@ -25,11 +25,40 @@
 
 ---
 
+## 📚 Table of Contents
+
+- [Overview](#-overview)
+- [What Froggie Does](#-what-froggie-does)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack-architecture)
+- [Project Structure](#-directory-structure)
+- [API Reference](#-api-reference)
+- [Local Development](#-getting-started-local-development)
+- [Environment Variables](#-environment-variables-summary)
+- [Available Scripts](#-available-scripts)
+- [Deployment](#-deployment-guidelines)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
+
 ## 📌 Overview
 
 **Froggie** is a next-generation, full-stack AI-powered career platform that empowers job seekers to build, audit, and export job-winning resumes tailored to bypass Applicant Tracking Systems (ATS). 
 
 Unlike conventional resume makers that lock features behind expensive paywalls, Froggie is built to be fast, free, and recruiter-focused. It pairs an intuitive real-time dual-pane editor with state-of-the-art **Google Gemini AI**, offering intelligent content rewriting, an automated PDF resume importer, a 7-factor ATS compatibility scanner, and a persistent **AI Career Copilot** for interview prep and personalized cover letters.
+
+### 🎯 What Froggie Does
+
+Froggie is designed around one complete job-application workflow:
+
+1. Create a resume from scratch or import an existing PDF.
+2. Improve summaries and experience bullets with AI-assisted rewriting.
+3. Compare the resume with a target job description using the ATS checker.
+4. Fix missing keywords and weak sections using the generated report.
+5. Export the final resume as PDF, DOCX, JSON, or plain text.
+6. Use the Career Copilot for interview preparation, cover letters, LinkedIn content, and career coaching.
+
+The application has two independently deployable parts: a Vite-powered React client and an Express/MongoDB API server.
 
 ---
 
@@ -51,7 +80,7 @@ Unlike conventional resume makers that lock features behind expensive paywalls, 
 ---
 
 ### 🤖 2. AI Content Enhancement Engine
-Powered by **Google Gemini** through an OpenAI-compatible interface:
+Powered by **Google Gemini**, with optional OpenAI-compatible configuration:
 - **AI Summary Generator**: Transforms rough career notes into crisp, high-impact 2–3 sentence executive statements emphasizing quantifiable results.
 - **AI Bullet Point Polish**: Enhances job experience descriptions using strong action verbs, quantifiable metrics (Google's XYZ formula), and ATS-friendly keywords.
 - **Smart PDF Resume Importer**: Upload an existing PDF resume; Froggie's intelligent parser automatically extracts the text, maps it against a structured JSON schema, and populates the builder in seconds.
@@ -327,7 +356,7 @@ Make sure you have the following installed on your system:
 ### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/Sujeetshar14921/froggie-ai-resume.git
-cd froggie
+cd froggie-ai-resume
 ```
 
 ---
@@ -340,35 +369,39 @@ cd froggie
    npm install
    ```
 
-2. Create a `.env` file from `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
+2. Create `server/.env`. A server `.env.example` is not currently committed, so create the file manually using the template below.
 
 3. Configure the environment variables in `server/.env`:
    ```env
    PORT=3000
-   MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/froggie-aiResume
-   JWT_SECRET=your_super_secret_jwt_key
+   MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/froggie-ai-resume
+   JWT_SECRET=replace_with_a_long_random_secret
 
    # Frontend Client URL
    CLIENT_URL=http://localhost:5173
    SERVER_URL=http://localhost:3000
 
    # AI Provider (Google Gemini via OpenAI-compatible endpoint)
-   OPENAI_API_KEY=your_gemini_api_key_here
-   OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
-   OPENAI_MODEL=gemini-2.5-flash
+   GEMINI_API_KEY=your_gemini_api_key_here
+   GEMINI_MODEL=gemini-2.5-flash
+
+   # Optional OpenAI-compatible configuration
+   # OPENAI_API_KEY=your_api_key_here
+   # OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+   # OPENAI_MODEL=gemini-2.5-flash
 
    # ImageKit Credentials (for profile pictures)
    IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-   IMAGEKIT_URL_ENDPOINT=your_imagekit_endpoint_url
 
    # Social OAuth (Optional for local testing)
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret
    GITHUB_CLIENT_ID=your_github_client_id
    GITHUB_CLIENT_SECRET=your_github_client_secret
+   # LINKEDIN_CLIENT_ID=your_linkedin_client_id
+   # LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+   # FACEBOOK_APP_ID=your_facebook_app_id
+   # FACEBOOK_APP_SECRET=your_facebook_app_secret
    ```
 
 4. Start the backend development server:
@@ -387,10 +420,12 @@ cd froggie
    npm install
    ```
 
-2. Create a `.env` file from `.env.example`:
+2. Create a `.env` file from the committed example:
    ```bash
-   cp .env.example .env
+   copy .env.example .env
    ```
+
+   On macOS/Linux, use `cp .env.example .env` instead.
 
 3. Set your backend URL:
    ```env
@@ -415,20 +450,71 @@ cd froggie
 | `JWT_SECRET` | Secret string for signing auth tokens | **Yes** | `random_long_secret_hash` |
 | `CLIENT_URL` | URL of the frontend for CORS and OAuth redirects | **Yes** | `http://localhost:5173` |
 | `SERVER_URL` | Public server URL | No | `http://localhost:3000` |
-| `OPENAI_API_KEY` | Google Gemini or OpenAI API Key | **Yes** | `AIzaSy...` |
-| `OPENAI_BASE_URL`| Base URL for Gemini OpenAI compatibility layer | **Yes** | `https://generativelanguage.googleapis.com/v1beta/openai/` |
-| `OPENAI_MODEL` | LLM model identifier | No | `gemini-2.5-flash` |
+| `GEMINI_API_KEY` | Google Gemini API key used by the native AI client | **Yes** for AI features | `AIzaSy...` |
+| `GEMINI_MODEL` | Default Gemini model | No | `gemini-2.5-flash` |
+| `OPENAI_API_KEY` | Optional OpenAI-compatible provider key | No | `sk-...` |
+| `OPENAI_BASE_URL` | Optional OpenAI-compatible API base URL | No | `https://generativelanguage.googleapis.com/v1beta/openai/` |
+| `OPENAI_MODEL` | Optional model override | No | `gemini-2.5-flash` |
 | `IMAGEKIT_PRIVATE_KEY` | Private key for ImageKit CDN | Optional | `private_...` |
-| `IMAGEKIT_URL_ENDPOINT`| ImageKit upload endpoint | Optional | `https://ik.imagekit.io/...` |
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID | Optional | `442...apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | Optional | `GOCSPX-...` |
 | `GITHUB_CLIENT_ID` | GitHub OAuth App Client ID | Optional | `Ov23li...` |
 | `GITHUB_CLIENT_SECRET` | GitHub OAuth App Client Secret | Optional | `09bb92...` |
+| `LINKEDIN_CLIENT_ID` | LinkedIn OAuth Client ID | Optional | `...` |
+| `LINKEDIN_CLIENT_SECRET` | LinkedIn OAuth Client Secret | Optional | `...` |
+| `FACEBOOK_APP_ID` | Facebook OAuth App ID | Optional | `...` |
+| `FACEBOOK_APP_SECRET` | Facebook OAuth App Secret | Optional | `...` |
 
 ### Client Environment Variables (`client/.env`)
 | Variable | Description | Required | Example |
 | :--- | :--- | :---: | :--- |
 | `VITE_BASE_URL` | Backend server URL for API requests | **Yes** | `http://localhost:3000` |
+
+---
+
+## 🧰 Available Scripts
+
+Run these commands from the directory shown in each subsection.
+
+### Client scripts
+
+| Command | Purpose |
+| :--- | :--- |
+| `npm run dev` | Start the Vite development server with hot reload |
+| `npm run build` | Create a production build in `client/dist` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run ESLint across the client source |
+
+### Server scripts
+
+| Command | Purpose |
+| :--- | :--- |
+| `npm start` | Start the Express API with Node.js |
+| `npm run server` | Start the API with Nodemon during development |
+
+### Recommended local workflow
+
+Open two terminals:
+
+```bash
+# Terminal 1
+cd server
+npm run server
+
+# Terminal 2
+cd client
+npm run dev
+```
+
+The client runs at `http://localhost:5173`, the API runs at `http://localhost:3000`, and the API health endpoint is available at `http://localhost:3000/api/health`.
+
+### 🔒 Security Notes
+
+- Never commit `client/.env` or `server/.env`.
+- Use a long, unique `JWT_SECRET` in every environment.
+- Keep Gemini, OAuth, and ImageKit secrets on the server only; do not expose them as `VITE_*` variables.
+- Configure OAuth callback URLs for the exact environment, for example `http://localhost:3000/api/users/auth/google/callback` during local development.
+- Restrict production CORS and use HTTPS for both the client and API.
 
 ---
 
@@ -449,6 +535,32 @@ cd froggie
 4. Set **Start Command**: `npm start`
 5. Add all production environment variables from `server/.env` (including MongoDB URI, Gemini Key, and production `CLIENT_URL`).
 6. Deploy and copy your production backend URL.
+
+After deployment, verify the API with `GET /api/health`, then set the frontend `VITE_BASE_URL` to the deployed backend URL and redeploy the client if necessary.
+
+---
+
+## 🩺 Troubleshooting
+
+### The client shows network errors
+
+Confirm that the API is running and that `client/.env` contains the correct `VITE_BASE_URL`. Vite reads environment variables when the dev server starts, so restart `npm run dev` after changing the file.
+
+### AI features are unavailable
+
+Check that `GEMINI_API_KEY` is present in `server/.env`. The API key is loaded by the server and must not be placed in the client environment. Also verify that the selected model is available for the configured Google AI account.
+
+### Authentication fails after login
+
+Check `JWT_SECRET`, `CLIENT_URL`, and `SERVER_URL`. For OAuth, confirm that the provider callback URL exactly matches the URL registered with Google, GitHub, LinkedIn, or Facebook.
+
+### MongoDB is disconnected
+
+Verify `MONGODB_URI`, database network access rules, credentials, and whether special characters in the password are URL-encoded. The current server still starts when the initial connection fails and reports the connection state through `/api/health`.
+
+### PDF import or profile image upload fails
+
+Confirm that the request reaches the authenticated API and that the relevant server credentials are configured. PDF parsing does not require ImageKit; ImageKit is used for profile image uploads.
 
 ---
 

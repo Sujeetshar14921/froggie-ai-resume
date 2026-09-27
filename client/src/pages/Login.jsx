@@ -31,12 +31,6 @@ const GoogleIcon = ({ className = "size-4" }) => (
   </svg>
 );
 
-const LinkedInIcon = ({ className = "size-4" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.64a1.64 1.64 0 1 0 0 3.28 1.64 1.64 0 0 0 0-3.28z" />
-  </svg>
-);
-
 const GitHubIcon = ({ className = "size-4" }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path
@@ -47,17 +41,11 @@ const GitHubIcon = ({ className = "size-4" }) => (
   </svg>
 );
 
-const FacebookIcon = ({ className = "size-4" }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-  </svg>
-);
-
 const Login = () => {
   useSEO({
     title: "Sign In or Create Account | froggie AI Resume Builder",
-    description: "Sign in or create a free account on froggie with Google, LinkedIn, GitHub, or Facebook to build ATS-compliant resumes with AI coaching.",
-    keywords: "froggie login, google login resume, linkedin login resume, github login resume, free resume account, ATS resume sign in",
+    description: "Sign in or create a free account on froggie with Google or GitHub to build ATS-compliant resumes with AI coaching.",
+    keywords: "froggie login, google login resume, github login resume, free resume account, ATS resume sign in",
     canonical: "https://froggie.site/login",
     ogImage: "https://froggie.site/og-image.png",
   });
@@ -327,63 +315,7 @@ const Login = () => {
             </button>
           </div>
 
-          {/* SOCIAL LOGIN BUTTONS */}
-          <div className="space-y-3 mb-6">
-            <div className="grid grid-cols-2 gap-2.5">
-              {/* GOOGLE */}
-              <button
-                type="button"
-                onClick={() => handleSocialLogin("google")}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 shadow-2xs hover:shadow-xs hover:border-slate-300 transition-all cursor-pointer"
-                title="Sign in with Google"
-              >
-                <GoogleIcon className="size-4 shrink-0" />
-                <span>Google</span>
-              </button>
-
-              {/* LINKEDIN */}
-              <button
-                type="button"
-                onClick={() => handleSocialLogin("linkedin")}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#0077b5]/5 hover:bg-[#0077b5]/10 border border-[#0077b5]/20 rounded-xl text-xs font-bold text-[#0077b5] shadow-2xs hover:shadow-xs hover:border-[#0077b5]/40 transition-all cursor-pointer"
-                title="Sign in with LinkedIn"
-              >
-                <LinkedInIcon className="size-4 shrink-0" />
-                <span>LinkedIn</span>
-              </button>
-
-              {/* GITHUB */}
-              <button
-                type="button"
-                onClick={() => handleSocialLogin("github")}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-white shadow-2xs hover:shadow-xs transition-all cursor-pointer"
-                title="Sign in with GitHub"
-              >
-                <GitHubIcon className="size-4 shrink-0" />
-                <span>GitHub</span>
-              </button>
-
-              {/* FACEBOOK */}
-              <button
-                type="button"
-                onClick={() => handleSocialLogin("facebook")}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 bg-[#1877f2]/5 hover:bg-[#1877f2]/10 border border-[#1877f2]/20 rounded-xl text-xs font-bold text-[#1877f2] shadow-2xs hover:shadow-xs hover:border-[#1877f2]/40 transition-all cursor-pointer"
-                title="Sign in with Facebook"
-              >
-                <FacebookIcon className="size-4 shrink-0" />
-                <span>Facebook</span>
-              </button>
-            </div>
-
-            {/* DIVIDER */}
-            <div className="relative flex items-center justify-center pt-2">
-              <div className="border-t border-slate-200 w-full" />
-              <span className="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 relative z-10">
-                Or continue with email
-              </span>
-            </div>
-          </div>
-
+          {/* EMAIL & PASSWORD FORM */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {state === "register" && (
               <div className="space-y-1.5 animate-in fade-in duration-200">
@@ -470,6 +402,39 @@ const Login = () => {
               {!loading && <ArrowRight size={14} />}
             </button>
           </form>
+
+          {/* DIVIDER */}
+          <div className="relative flex items-center justify-center my-6">
+            <div className="border-t border-slate-200 w-full" />
+            <span className="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 relative z-10">
+              Or continue with
+            </span>
+          </div>
+
+          {/* SOCIAL LOGIN BUTTONS (BOTTOM) */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* GOOGLE */}
+            <button
+              type="button"
+              onClick={() => handleSocialLogin("google")}
+              className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              title={state === "login" ? "Sign in with Google" : "Sign up with Google"}
+            >
+              <GoogleIcon className="size-4 shrink-0" />
+              <span>Google</span>
+            </button>
+
+            {/* GITHUB */}
+            <button
+              type="button"
+              onClick={() => handleSocialLogin("github")}
+              className="flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-bold text-white shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              title={state === "login" ? "Sign in with GitHub" : "Sign up with GitHub"}
+            >
+              <GitHubIcon className="size-4 shrink-0" />
+              <span>GitHub</span>
+            </button>
+          </div>
 
           {/* FOOTER SWITCH */}
           <p className="text-center text-xs text-slate-500 mt-6">

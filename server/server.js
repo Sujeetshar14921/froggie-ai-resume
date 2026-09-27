@@ -35,6 +35,24 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Database connectivity middleware for API routes
+app.use("/api", async (req, res, next) => {
+  if (req.path === "/health") {
+    return next();
+  }
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await connectDB();
+    } catch (err) {
+      return res.status(503).json({
+        message: "Database connection unavailable. Please check MongoDB connection and Atlas IP Whitelist (0.0.0.0/0).",
+        error: err.message,
+      });
+    }
+  }
+  next();
+});
+
 // App API routes
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
