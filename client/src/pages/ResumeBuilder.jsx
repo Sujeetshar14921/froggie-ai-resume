@@ -389,8 +389,8 @@ const ResumeBuilder = () => {
       />
 
       {/* MAIN 2-PANEL WORKSPACE */}
-      <main className="resume-builder-workspace flex-1 min-h-0 px-3 sm:px-5 lg:px-8 py-3 sm:py-4 overflow-hidden">
-        <div className="max-w-8xl mx-auto w-full h-full min-h-0">
+      <main className="resume-builder-workspace flex-1 min-h-0 px-3 sm:px-6 lg:px-10 xl:px-12 py-3 sm:py-4 overflow-hidden">
+        <div className="w-full h-full min-h-0">
           <div className="grid lg:grid-cols-12 gap-4 sm:gap-5 h-full min-h-0">
             
             {/* LEFT PANEL - UI FORM EDITOR */}
@@ -531,7 +531,7 @@ const ResumeBuilder = () => {
               <button
                 onClick={saveResume}
                 disabled={isSaving || isLoading}
-                className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-1.5 rounded-lg transition-all shadow-xs disabled:opacity-60 cursor-pointer"
+                className="shimmer-button flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-1.5 rounded-lg transition-all shadow-xs disabled:opacity-60 cursor-pointer hover:scale-102 active:scale-98"
               >
                 {isSaving && <Loader2 className="size-3.5 animate-spin" />}
                 <span>{isSaving ? "Saving..." : "Save Changes"}</span>

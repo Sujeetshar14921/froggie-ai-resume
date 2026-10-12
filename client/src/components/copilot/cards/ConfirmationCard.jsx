@@ -71,16 +71,16 @@ const ConfirmationCard = ({ data = {} }) => {
           type="button"
           onClick={handleConfirm}
           disabled={isProcessing}
-          className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/20 transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5"
+          className="btn-3d-delete-solid px-4 py-2 rounded-xl text-white font-black text-xs cursor-pointer flex items-center gap-1.5"
         >
           {isProcessing ? (
             <>
-              <Loader2 size={13} className="animate-spin" />
+              <Loader2 size={13} className="animate-spin text-white" />
               <span>Deleting...</span>
             </>
           ) : (
             <>
-              <Trash2 size={13} />
+              <Trash2 size={13} className="lucide-3d" />
               <span>Yes, Confirm Delete</span>
             </>
           )}

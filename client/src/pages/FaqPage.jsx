@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/home/Footer";
 import { useCopilot } from "../hooks/useCopilot";
-import FrogFace from "../components/FrogLogo";
+import FrogFace, { Copilot3DIcon } from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
 import { animateAccordion } from "../animations";
 
@@ -202,26 +202,23 @@ const FaqPage = () => {
         <Navbar />
 
         {/* HERO HEADER */}
-        <section className="relative py-16 sm:py-24 bg-white border-b border-slate-200/80 overflow-hidden group">
+        <section className="relative py-10 sm:py-24 bg-white border-b border-slate-200/80 overflow-hidden group">
           {/* Ambient Glows & Half-circle environment auras */}
           <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-6">
-            <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+          <div className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 text-center relative z-10 space-y-3.5 sm:space-y-6">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-2xs">
               <FrogFace size={14} />
               Help & Knowledge Base
             </span>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
-              Frequently Asked{" "}
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
-                Questions
-              </span>
+            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight">
+              Frequently Asked <span className="text-gradient-emerald">Questions</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xs sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
               Find instant answers to common questions about our froggie ATS Resume Builder, Copilot, Exports, and Job Tools.
             </p>
 
@@ -234,37 +231,57 @@ const FaqPage = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search questions (e.g., ATS, export, copilot, pdf)..."
-                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-medium"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-medium"
                 />
               </div>
             </div>
 
             {/* 4 MINI STAT CARDS WITH COLORFUL HALF CIRCLES */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left pt-3 max-w-3xl mx-auto">
-              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+              <div className="relative overflow-hidden p-4 rounded-2xl glass-card-elevated bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/20 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ATS Pass Rate</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ATS Pass Rate</span>
+                  <div className="icon-3d-pod icon-3d-pod-emerald p-1 rounded-lg">
+                    <ShieldCheck size={14} className="lucide-3d text-white" />
+                  </div>
+                </div>
                 <span className="text-lg font-black text-slate-950">99%+</span>
                 <span className="text-[10px] text-emerald-700 font-bold block mt-0.5">Parser Standard</span>
               </div>
 
-              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+              <div className="relative overflow-hidden p-4 rounded-2xl glass-card-elevated bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-blue-500/20 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Copilot</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Copilot</span>
+                  <div className="icon-3d-pod icon-3d-pod-blue p-1 rounded-lg">
+                    <Sparkles size={14} className="lucide-3d text-white" />
+                  </div>
+                </div>
                 <span className="text-lg font-black text-blue-600">Gemini 2.5</span>
                 <span className="text-[10px] text-slate-500 font-medium block mt-0.5">Flash powered</span>
               </div>
 
-              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+              <div className="relative overflow-hidden p-4 rounded-2xl glass-card-elevated bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-purple-500/20 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Export Type</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Export Type</span>
+                  <div className="icon-3d-pod icon-3d-pod-purple p-1 rounded-lg">
+                    <Download size={14} className="lucide-3d text-white" />
+                  </div>
+                </div>
                 <span className="text-lg font-black text-purple-600">PDF & DOC</span>
                 <span className="text-[10px] text-slate-500 font-medium block mt-0.5">High resolution</span>
               </div>
 
-              <div className="relative overflow-hidden p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md transition-all">
+              <div className="relative overflow-hidden p-4 rounded-2xl glass-card-elevated bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-amber-500/20 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cost</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cost</span>
+                  <div className="icon-3d-pod icon-3d-pod-amber p-1 rounded-lg">
+                    <Zap size={14} className="lucide-3d text-white" />
+                  </div>
+                </div>
                 <span className="text-lg font-black text-amber-600">100% Free</span>
                 <span className="text-[10px] text-slate-500 font-medium block mt-0.5">Zero paywalls</span>
               </div>
@@ -299,7 +316,7 @@ const FaqPage = () => {
         </section>
 
         {/* FAQ ACCORDION LIST */}
-        <section className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16 sm:py-20 w-full px-4 sm:px-8 lg:px-12 xl:px-16">
           {filteredFaqs.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-3xl border border-slate-200/90 p-8 space-y-3">
               <HelpCircle size={36} className="mx-auto text-slate-300" />
@@ -331,28 +348,31 @@ const FaqPage = () => {
           )}
 
           {/* ASK CAREER COPILOT BANNER */}
-          <div className="relative overflow-hidden mt-16 p-8 rounded-3xl bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800 group">
+          <div className="relative overflow-hidden mt-16 p-8 sm:p-10 rounded-3xl glass-dark-elevated bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800 group">
             {/* Half-circle colorful environment auras */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
-            <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700 blur-xl" />
+            <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none blur-xl" />
 
-            <div className="relative z-10 space-y-1.5 text-center sm:text-left">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
-                <FrogFace size={14} />
-                Need Personalized Career Help?
+            <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+              <Copilot3DIcon size="md" />
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
+                  <Sparkles size={12} />
+                  Need Personalized Career Help?
+                </div>
+                <h3 className="text-lg sm:text-2xl font-black tracking-tight">Ask froggie Career Copilot</h3>
+                <p className="text-xs sm:text-sm text-slate-300 max-w-md">
+                  Get real-time answers tailored to your resume, career path, and target jobs.
+                </p>
               </div>
-              <h3 className="text-lg sm:text-xl font-black">Ask froggie Career Copilot</h3>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-md">
-                Get real-time answers tailored to your resume, career path, and target jobs.
-              </p>
             </div>
 
             <button
               onClick={handleAskCopilot}
-              className="relative z-10 px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
+              className="shimmer-button relative z-10 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
             >
               <span>Ask froggie Now</span>
-              <ArrowRight size={14} />
+              <ArrowRight size={15} />
             </button>
           </div>
         </section>

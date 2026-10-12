@@ -62,7 +62,7 @@ const AtsInputSection = ({
   };
 
   return (
-    <div className="relative overflow-hidden bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-7 group text-left">
+    <div className="relative overflow-hidden bg-white dark:bg-[#0c1424] rounded-3xl p-6 sm:p-8 border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-7 group text-left">
       {/* Half circle ambient glows */}
       <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
       <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
@@ -71,25 +71,25 @@ const AtsInputSection = ({
       <div className="relative z-10 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <FileCheck size={20} className="text-emerald-600" />
               1. Choose Resume to Audit
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Select one of your existing resumes or upload a new PDF file
             </p>
           </div>
 
           {/* TAB TOGGLE */}
-          <div className="flex p-1 bg-slate-100 rounded-xl border border-slate-200/60 self-start sm:self-auto">
+          <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200/60 dark:border-slate-800 self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setInputTab("saved")}
               disabled={userResumes.length === 0}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 inputTab === "saved"
-                  ? "bg-white text-emerald-700 shadow-2xs"
-                  : "text-slate-500 hover:text-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-2xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
               }`}
             >
               My Resumes ({userResumes.length})
@@ -99,8 +99,8 @@ const AtsInputSection = ({
               onClick={() => setInputTab("upload")}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 inputTab === "upload"
-                  ? "bg-white text-emerald-700 shadow-2xs"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-2xs"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
               Upload PDF
@@ -247,7 +247,7 @@ const AtsInputSection = ({
             <button
               type="button"
               onClick={handlePasteJd}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/60 dark:border-emerald-800/60 rounded-xl transition-colors cursor-pointer"
             >
               <Clipboard size={13} />
               <span>Paste JD</span>
@@ -256,9 +256,9 @@ const AtsInputSection = ({
               <button
                 type="button"
                 onClick={handleClearJd}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                className="btn-3d-delete inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl cursor-pointer"
               >
-                <Trash2 size={13} />
+                <Trash2 size={13} className="lucide-3d" />
                 <span>Clear</span>
               </button>
             )}

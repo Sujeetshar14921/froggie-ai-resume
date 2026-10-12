@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Banner from "../components/home/Banner";
 import Hero from "../components/home/Hero";
+import BrandScroller from "../components/home/BrandScroller";
 import HowItWorks from "../components/home/HowItWorks";
 import Features from "../components/home/Features";
 import TemplateShowcase from "../components/home/TemplateShowcase";
@@ -28,22 +29,37 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 selection:bg-emerald-500 selection:text-white relative">
+    <div className="min-h-screen bg-white dark:bg-[#090d16] text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-white relative pb-20 lg:pb-0">
       {/* Scroll Progress Bar at the top of the viewport */}
       <div
         ref={progressBarRef}
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 origin-left z-[100] pointer-events-none"
       />
 
-      <Banner />
+      {/* Desktop-only announcement banner */}
+      <div className="hidden md:block">
+        <Banner />
+      </div>
+
       <Navbar />
 
       <main>
         <Hero />
+        
+        {/* Heavy brand marquee: desktop only */}
+        <div className="hidden md:block">
+          <BrandScroller />
+        </div>
+
         <HowItWorks />
         <Features />
         <TemplateShowcase />
-        <Testimonial />
+
+        {/* 6-card testimonial grid: desktop only */}
+        <div className="hidden md:block">
+          <Testimonial />
+        </div>
+
         <CallToAction />
       </main>
 

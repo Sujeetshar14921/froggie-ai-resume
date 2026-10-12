@@ -76,10 +76,10 @@ const AchievementForm = ({ data = [], onChange }) => {
 
                 <button
                   onClick={() => removeAchievement(index)}
-                  className="text-red-500 hover:text-red-700 transition-colors p-1 cursor-pointer"
+                  className="btn-3d-delete p-1.5 rounded-lg cursor-pointer"
                   title="Remove Achievement"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-4 lucide-3d" />
                 </button>
               </div>
 

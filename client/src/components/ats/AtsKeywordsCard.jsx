@@ -13,9 +13,11 @@ const AtsKeywordsCard = ({ keywords = {} }) => {
       <div className="absolute bottom-0 left-0 w-28 h-28 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-tr-full pointer-events-none" />
 
       <div className="relative z-10">
-        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <Tag size={18} className="text-emerald-600" />
-          ATS Keyword Coverage
+        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+          <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
+            <Tag size={16} className="lucide-3d text-white" />
+          </div>
+          <span>ATS Keyword Coverage</span>
         </h3>
         <p className="text-xs text-slate-500 mt-0.5">
           Applicant Tracking Systems scan for specific terms and industry buzzwords found in the job description

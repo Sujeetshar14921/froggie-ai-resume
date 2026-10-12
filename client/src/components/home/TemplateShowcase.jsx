@@ -84,7 +84,7 @@ const TemplateShowcase = () => {
   };
 
   return (
-    <section id="templates" ref={containerRef} className="py-28 bg-white relative overflow-hidden">
+    <section id="templates" ref={containerRef} className="py-10 sm:py-20 lg:py-28 bg-white dark:bg-[#090d16] relative overflow-hidden">
       {/* VIBRANT HALF-CIRCLE AMBIENT GLOWS */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none blur-2xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-blue-500/15 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none blur-2xl" />
@@ -92,48 +92,48 @@ const TemplateShowcase = () => {
       {/* Background radiant orbs */}
       <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-emerald-50/50 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10">
 
         {/* SECTION HEADER */}
-        <div className="section-header text-center max-w-3xl mx-auto mb-16">
-          <span className="section-badge inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="section-header text-center max-w-3xl mx-auto mb-8 sm:mb-16">
+          <span className="section-badge inline-flex items-center gap-1.5 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-black uppercase tracking-wider mb-3 sm:mb-4 shadow-2xs">
             <FrogFace size={15} />
             10 Battle-Tested ATS Formats
           </span>
 
-          <h2 className="section-title text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
+          <h2 className="section-title text-2xl sm:text-4xl lg:text-5xl font-black text-slate-950 dark:text-slate-50 tracking-tight">
             Choose a Template Designed to{" "}
             <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
               Beat the ATS
             </span>
           </h2>
 
-          <p className="section-subtitle mt-4 text-base sm:text-lg text-slate-600">
+          <p className="section-subtitle mt-2.5 sm:mt-4 text-xs sm:text-base lg:text-lg text-slate-600 dark:text-slate-300">
             Switch templates with 1-click at any time. Your content seamlessly reformats.
           </p>
         </div>
 
-        {/* TEMPLATE PICKER TABS */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        {/* TEMPLATE PICKER TABS - Native Horizontal Scroll On Mobile */}
+        <div className="flex items-center gap-1.5 sm:gap-2 mb-6 sm:mb-12 overflow-x-auto sm:flex-wrap sm:justify-center pb-2 sm:pb-0 no-scrollbar">
           {TEMPLATES.map((tpl) => {
             const isSelected = selectedTemplate.id === tpl.id;
             return (
               <button
                 key={tpl.id}
                 onClick={() => handleTemplateChange(tpl)}
-                className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`shrink-0 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer shadow-2xs ${
                   isSelected
-                    ? "bg-slate-950 text-white shadow-lg scale-105"
-                    : "bg-slate-100 hover:bg-slate-200/80 text-slate-700 hover:text-slate-950"
+                    ? "bg-slate-950 dark:bg-emerald-600 text-white shadow-md scale-102 sm:scale-105 border border-emerald-500/50"
+                    : "bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white border border-slate-200/80 dark:border-slate-800 hover:scale-102"
                 }`}
               >
                 <span>{tpl.name}</span>
                 {tpl.badge && (
                   <span
-                    className={`px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider ${
+                    className={`px-1.5 py-0.2 sm:px-2 sm:py-0.5 text-[9px] sm:text-[10px] rounded-full font-bold uppercase tracking-wider ${
                       isSelected
                         ? "bg-emerald-500 text-slate-950"
-                        : "bg-slate-200 text-slate-600"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-transparent dark:border-slate-700"
                     }`}
                   >
                     {tpl.badge}
@@ -145,40 +145,40 @@ const TemplateShowcase = () => {
         </div>
 
         {/* INTERACTIVE PREVIEW CARD */}
-        <div className="grid lg:grid-cols-12 gap-8 items-center bg-gradient-to-b from-slate-50 to-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-xl">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-center glass-card-elevated rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 border border-slate-200/90 shadow-2xl">
 
           {/* LEFT: DETAILS & COLOR PICKER */}
           <div className="lg:col-span-5 space-y-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold mb-3 border border-emerald-200/80">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold mb-3 border border-emerald-200/80 dark:border-emerald-800/60">
                 <FrogFace size={14} />
                 Selected: {selectedTemplate.name}
               </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
                 {selectedTemplate.name}
               </h3>
-              <p className="text-slate-600 text-sm mt-3 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 text-sm mt-3 leading-relaxed">
                 {selectedTemplate.description}
               </p>
             </div>
 
             {/* BEST FOR */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <div className="bg-white dark:bg-slate-900/90 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Recommended For
               </span>
-              <p className="text-sm font-semibold text-slate-800 mt-1">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 mt-1">
                 {selectedTemplate.bestFor}
               </p>
             </div>
 
             {/* FEATURES LIST */}
             <div className="space-y-2.5">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 Key Template Features
               </span>
               {selectedTemplate.features.map((feature, i) => (
-                <div key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-700">
+                <div key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                   <div
                     className="w-5 h-5 rounded-full flex items-center justify-center text-white shrink-0 shadow-xs"
                     style={{ backgroundColor: activeColor }}
@@ -219,16 +219,16 @@ const TemplateShowcase = () => {
               <button
                 onClick={handleUseTemplate}
                 disabled={isCreating}
-                className="w-full sm:w-auto px-8 py-3.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-sm rounded-xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed border border-emerald-500/30"
+                className="shimmer-button w-full sm:w-auto px-8 py-4 bg-slate-950 hover:bg-slate-900 text-white font-black text-sm rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed border border-emerald-500/40"
               >
                 {isCreating ? (
                   <>
                     <Loader2 size={16} className="animate-spin text-emerald-400" />
-                    <span>Preparing Template...</span>
+                    <span>Preparing Template Studio...</span>
                   </>
                 ) : (
                   <>
-                    <span>Use {selectedTemplate.name}</span>
+                    <span>Use {selectedTemplate.name} Studio</span>
                     <ArrowRight size={16} className="text-emerald-400" />
                   </>
                 )}

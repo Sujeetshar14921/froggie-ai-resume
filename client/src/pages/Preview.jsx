@@ -142,7 +142,7 @@ const Preview = () => {
   return resumeData ? (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
       {/* PUBLIC PREVIEW TOP BAR */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between gap-3 shadow-2xs no-print select-none">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 lg:px-12 xl:px-16 py-3 flex items-center justify-between gap-3 shadow-2xs no-print select-none">
         
         {/* BRAND IDENTITY & TALENT POOL BACK BUTTON */}
         <div className="flex items-center gap-3">
@@ -203,7 +203,7 @@ const Preview = () => {
           <button
             onClick={handleDownloadPdf}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-white text-xs font-bold transition-all shadow-md disabled:opacity-50 cursor-pointer border border-emerald-500/30"
+            className="shimmer-button inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-white text-xs font-bold transition-all shadow-md disabled:opacity-50 cursor-pointer border border-emerald-500/30 hover:scale-102 active:scale-98"
           >
             {isExporting ? (
               <Loader2 size={14} className="animate-spin text-emerald-400" />
@@ -216,8 +216,8 @@ const Preview = () => {
       </header>
 
       {/* CANDIDATE PROFILE SUMMARY BANNER (NO-PRINT) */}
-      <section className="no-print max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-2 text-left">
-        <div className="relative overflow-hidden bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5 group">
+      <section className="no-print w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-6 pb-2 text-left">
+        <div className="relative overflow-hidden glass-card-elevated bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5 group">
           {/* Half circles */}
           <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-tr-full pointer-events-none" />
@@ -341,7 +341,7 @@ const Preview = () => {
           <div className="relative z-10 flex items-center gap-2.5 flex-wrap shrink-0">
             <button
               onClick={handleCopyPublicLink}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm border border-emerald-500/30 shadow-md transition-all cursor-pointer hover:scale-102"
+              className="shimmer-button inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm border border-emerald-500/30 shadow-md transition-all cursor-pointer hover:scale-102 active:scale-98"
             >
               <Copy size={15} className="text-emerald-400" />
               <span>Copy Share Link</span>

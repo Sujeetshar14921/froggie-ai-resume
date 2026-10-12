@@ -202,10 +202,10 @@ const CustomSectionsForm = ({ data = [], onChange, activeCustomIndex = null }) =
                     <button
                       type="button"
                       onClick={() => handleRemoveSection(sIdx)}
-                      className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all cursor-pointer"
+                      className="btn-3d-delete p-2 rounded-xl cursor-pointer"
                       title="Delete this entire section"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-4 lucide-3d" />
                     </button>
                   </div>
                 </div>
@@ -237,10 +237,10 @@ const CustomSectionsForm = ({ data = [], onChange, activeCustomIndex = null }) =
                           <button
                             type="button"
                             onClick={() => handleRemoveItem(sIdx, iIdx)}
-                            className="text-slate-400 hover:text-rose-600 transition-colors p-1 cursor-pointer"
+                            className="btn-3d-delete p-1 rounded-lg cursor-pointer"
                             title="Remove item"
                           >
-                            <Trash2 className="size-3.5" />
+                            <Trash2 className="size-3.5 lucide-3d" />
                           </button>
                         </div>
 

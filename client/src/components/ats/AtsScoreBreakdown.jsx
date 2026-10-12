@@ -106,8 +106,8 @@ const AtsScoreBreakdown = ({ scores = {} }) => {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2.5">
-                  <div className={`p-1.5 rounded-lg ${cat.bgLight} ${cat.textLight}`}>
-                    <Icon size={16} />
+                  <div className={`p-1.5 rounded-xl ${cat.bgLight} ${cat.textLight} border border-slate-200/50 shadow-2xs`}>
+                    <Icon size={16} className="lucide-3d" />
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-800">{cat.label}</p>

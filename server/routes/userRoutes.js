@@ -1,5 +1,12 @@
-import express from "express";
-import { getUserById, getUserResumes, loginUser, registerUser, updateUserProfile } from "../controllers/userController.js";
+import { 
+  getUserById, 
+  getUserResumes, 
+  loginUser, 
+  registerUser, 
+  updateUserProfile,
+  deactivateUserAccount,
+  deleteUserAccount
+} from "../controllers/userController.js";
 import { initiateOAuth, handleOAuthCallback } from "../controllers/oauthController.js";
 import protect from "../middlewares/authMiddleware.js";
 import upload from "../configs/multer.js";
@@ -12,6 +19,8 @@ userRouter.post('/login', authLimiter, loginUser);
 userRouter.get('/data', protect, getUserById);
 userRouter.get('/resumes', protect, getUserResumes);
 userRouter.put('/profile', upload.single('image'), protect, updateUserProfile);
+userRouter.post('/deactivate', protect, deactivateUserAccount);
+userRouter.delete('/account', protect, deleteUserAccount);
 
 // Social OAuth 2.0 routes
 userRouter.get('/auth/:provider', initiateOAuth);

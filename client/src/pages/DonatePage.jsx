@@ -148,15 +148,15 @@ const DonatePage = () => {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/20 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-b from-emerald-500/15 via-teal-500/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6 text-center">
+          <div className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 relative z-10 space-y-3.5 sm:space-y-6 text-center">
             {/* BADGE */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-black tracking-widest uppercase shadow-xs">
-              <FrogFace size={15} />
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] sm:text-xs font-black tracking-widest uppercase shadow-xs">
+              <FrogFace size={14} />
               <span>COMMUNITY SUPPORT & DONATION</span>
             </div>
 
             {/* MAIN HEADLINE */}
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight max-w-4xl mx-auto">
+            <h1 className="text-2xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight max-w-4xl mx-auto">
               Keep froggie{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300">
                 100% Free Forever
@@ -165,22 +165,22 @@ const DonatePage = () => {
             </h1>
 
             {/* SUBTITLE */}
-            <p className="text-sm sm:text-base md:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
+            <p className="text-xs sm:text-base md:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
               We believe quality career tools and ATS-friendly resumes should be accessible to every student and jobseeker worldwide with zero paywalls.
             </p>
 
             {/* TRUST HIGHLIGHTS BAR */}
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 font-semibold shadow-xs">
-                <ShieldCheck size={15} className="text-emerald-400" />
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-1 sm:pt-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] sm:text-xs text-slate-300 font-semibold shadow-xs">
+                <ShieldCheck size={14} className="text-emerald-400" />
                 <span>0% Hidden Fees</span>
               </div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 font-semibold shadow-xs">
-                <Zap size={15} className="text-amber-400" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] sm:text-xs text-slate-300 font-semibold shadow-xs">
+                <Zap size={14} className="text-amber-400" />
                 <span>Instant Direct UPI</span>
               </div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 font-semibold shadow-xs">
-                <Lock size={15} className="text-blue-400" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] sm:text-xs text-slate-300 font-semibold shadow-xs">
+                <Lock size={14} className="text-blue-400" />
                 <span>Direct Bank Transfer</span>
               </div>
             </div>
@@ -188,18 +188,18 @@ const DonatePage = () => {
         </section>
 
         {/* INTERACTIVE DONATION CHECKOUT CARD */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-20 relative z-20 text-left">
-          <div className="relative bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-100 group">
+        <section className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 -mt-8 sm:-mt-12 mb-14 sm:mb-20 relative z-20 text-left">
+          <div className="relative glass-card-elevated bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-100 group">
             {/* Half circle background auras */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/10 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
 
             {/* LEFT COLUMN: TIER & DETAILS (7 COLS) */}
-            <div className="relative z-10 p-6 sm:p-8 lg:col-span-7 space-y-6">
+            <div className="relative z-10 p-4 sm:p-8 lg:col-span-7 space-y-4 sm:space-y-6">
               <div>
                 <div className="flex items-center gap-2 text-slate-950">
-                  <Coffee size={20} className="text-emerald-600" />
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+                  <Coffee size={18} className="text-emerald-600 sm:w-5 sm:h-5" />
+                  <h2 className="text-lg sm:text-2xl font-black tracking-tight">
                     Choose Your Contribution
                   </h2>
                 </div>
@@ -424,7 +424,7 @@ const DonatePage = () => {
         </section>
 
         {/* TRANSPARENCY: WHERE DOES YOUR CONTRIBUTION GO? */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 text-left">
+        <section className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 mb-20 text-left">
           <div className="text-center space-y-2 mb-10">
             <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">
               Financial Transparency
@@ -448,7 +448,7 @@ const DonatePage = () => {
               return (
                 <div
                   key={idx}
-                  className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-2xs space-y-3 relative overflow-hidden group hover:shadow-md transition-all"
+                  className="p-6 rounded-3xl glass-card-elevated bg-white border border-slate-200/90 shadow-2xs space-y-3 relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 transition-all"
                 >
                   {/* Half-circle colorful corner */}
                   <div
@@ -469,11 +469,11 @@ const DonatePage = () => {
         </section>
 
         {/* SUPPORTERS WALL / HALL OF FAME */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 text-left">
-          <div className="bg-slate-950 text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-slate-800 group">
+        <section className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 mb-20 text-left">
+          <div className="glass-dark-elevated bg-slate-950 text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-xl border border-slate-800 group">
             {/* Half-circle colorful environment auras */}
-            <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none" />
+            <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700 blur-xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-purple-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none blur-xl" />
 
             <div className="relative z-10 max-w-2xl space-y-3 mb-8">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
@@ -492,7 +492,7 @@ const DonatePage = () => {
               {communityDonors.map((donor, i) => (
                 <div
                   key={i}
-                  className="relative overflow-hidden p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 group/donor"
+                  className="relative overflow-hidden p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3 group/donor hover:border-slate-700 transition-colors"
                 >
                   {/* Subtle corner aura */}
                   <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-emerald-500/15 to-transparent rounded-bl-full pointer-events-none group-hover/donor:scale-125 transition-transform" />
@@ -523,8 +523,8 @@ const DonatePage = () => {
         </section>
 
         {/* CAN'T DONATE? VIRAL SPREAD CALLOUT */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <div className="relative overflow-hidden bg-white p-8 sm:p-10 rounded-3xl border border-slate-200/90 shadow-2xs group text-center space-y-6">
+        <section className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 mb-20">
+          <div className="relative overflow-hidden glass-card-elevated bg-white p-8 sm:p-10 rounded-3xl border border-slate-200/90 shadow-2xs group text-center space-y-6">
             {/* Half-circle colorful environment auras */}
             <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
             <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-blue-500/10 via-purple-400/5 to-transparent rounded-tr-full pointer-events-none" />

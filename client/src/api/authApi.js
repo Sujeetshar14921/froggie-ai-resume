@@ -47,6 +47,31 @@ export const authApi = {
     });
     return data;
   },
+
+  /**
+   * Deactivate user account
+   * @param {Object} feedbackData
+   * @param {string} token
+   */
+  deactivateAccount: async (feedbackData, token) => {
+    const { data } = await api.post("/api/users/deactivate", feedbackData, {
+      headers: { Authorization: token },
+    });
+    return data;
+  },
+
+  /**
+   * Permanently delete user account and all data
+   * @param {Object} feedbackData
+   * @param {string} token
+   */
+  deleteAccount: async (feedbackData, token) => {
+    const { data } = await api.delete("/api/users/account", {
+      headers: { Authorization: token },
+      data: feedbackData,
+    });
+    return data;
+  },
 };
 
 export default authApi;

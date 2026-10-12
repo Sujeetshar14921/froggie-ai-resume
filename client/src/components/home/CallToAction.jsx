@@ -14,10 +14,10 @@ const CallToAction = () => {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-white relative">
+    <section ref={containerRef} className="py-10 sm:py-20 lg:py-24 px-3.5 sm:px-8 lg:px-12 xl:px-16 bg-white dark:bg-[#090d16] relative">
       <div className="max-w-7xl mx-auto">
 
-        <div className="cta-banner relative overflow-hidden rounded-3xl bg-slate-950 p-8 sm:p-12 lg:p-16 text-white shadow-2xl border border-slate-800">
+        <div className="cta-banner relative overflow-hidden rounded-2xl sm:rounded-3xl bg-slate-950 p-6 sm:p-12 lg:p-16 text-white shadow-2xl border border-slate-800">
 
           {/* VIBRANT HALF-CIRCLE AMBIENT GLOWS */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-emerald-500/30 via-teal-400/15 to-transparent rounded-bl-full pointer-events-none blur-xl" />
@@ -36,56 +36,56 @@ const CallToAction = () => {
             }}
           />
 
-          <div className="relative z-10 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="relative z-10 grid lg:grid-cols-12 gap-6 lg:gap-10 items-center">
 
             {/* Left Content */}
-            <div className="lg:col-span-7 space-y-5">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-5">
 
-              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[11px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-2xs">
                 <FrogFace size={14} />
-                Instant Resume Generation &middot; 100% Free
+                Instant Generation &middot; 100% Free
               </span>
 
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.14]">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.12] sm:leading-[1.08]">
                 Your Next Career Move Starts With a{" "}
                 <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">
                   Better Resume
                 </span>
               </h2>
 
-              <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl font-normal">
-                Don't let rigid formatting and missing keywords hold you back. Build, optimize, and verify your resume with Froggie AI in minutes.
+              <p className="text-slate-300 text-xs sm:text-base lg:text-lg leading-relaxed max-w-xl font-normal">
+                Don't let rigid formatting and missing keywords hold you back. Build, optimize, and verify your resume with froggie AI in minutes.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-4 pt-1 sm:pt-2">
                 <button
                   onClick={() => navigate("/app")}
-                  className="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-black text-sm sm:text-base flex items-center gap-2.5 shadow-xl shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                  className="shimmer-button w-full sm:w-auto justify-center px-6 py-3.5 sm:px-9 sm:py-4 bg-emerald-500 text-slate-950 rounded-2xl font-black text-xs sm:text-base flex items-center gap-2.5 transition-all cursor-pointer border border-emerald-400/40"
                 >
                   <span>Build My Resume Free</span>
                   <ArrowRight size={16} />
                 </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-6 pt-3 text-xs text-slate-400 font-medium">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-2 sm:pt-3 text-[11px] sm:text-xs text-slate-400 font-medium">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck size={15} className="text-emerald-400" />
-                  No Credit Card Required
+                  <ShieldCheck size={14} className="text-emerald-400" />
+                  No Credit Card
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Zap size={15} className="text-emerald-400" />
+                  <Zap size={14} className="text-emerald-400" />
                   Zero Watermarks
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 size={15} className="text-emerald-400" />
+                  <CheckCircle2 size={14} className="text-emerald-400" />
                   PDF & Word Export
                 </span>
               </div>
 
             </div>
 
-            {/* Right Side Mockup */}
-            <div className="lg:col-span-5 relative flex justify-center">
+            {/* Right Side Mockup - Desktop & Tablet only */}
+            <div className="lg:col-span-5 relative justify-center hidden sm:flex">
 
               {/* Resume Approved Card */}
               <div className="cta-mockup-card bg-white/95 backdrop-blur-xl rounded-2xl p-6 w-full max-w-[320px] shadow-2xl text-slate-900 border border-slate-200/90 rotate-[-2deg] transition-all hover:scale-105 hover:rotate-0 cursor-default">

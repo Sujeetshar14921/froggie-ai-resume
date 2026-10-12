@@ -152,14 +152,14 @@ const MyResumes = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/70 pb-20 font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6 text-left">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 space-y-4 sm:space-y-6 text-left">
         {/* TOP COMMAND HEADER */}
-        <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-2xs group">
+        <div className="relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card-elevated p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm group">
           {/* Half-circle colorful environment auras */}
           <div className="absolute top-0 right-0 w-44 h-44 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
           <div className="absolute bottom-0 left-0 w-36 h-36 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
 
-          <div className="relative z-10 space-y-1.5">
+          <div className="relative z-10 space-y-1 sm:space-y-1.5">
             <button
               onClick={() => navigate("/app")}
               className="inline-flex items-center gap-1.5 text-xs font-extrabold text-slate-500 hover:text-emerald-700 transition-colors group/btn cursor-pointer"
@@ -168,16 +168,16 @@ const MyResumes = () => {
               <span>Back to Dashboard</span>
             </button>
 
-            <div className="flex items-center gap-2 flex-wrap pt-1">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+            <div className="flex items-center gap-2 flex-wrap pt-0.5 sm:pt-1">
+              <h1 className="text-xl sm:text-3xl font-black text-slate-950 tracking-tight">
                 My Resumes Vault
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70">
                 {resumes.length} {resumes.length === 1 ? "Resume" : "Resumes"}
               </span>
               {publicCount > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200/70">
-                  {publicCount} Public Portfolio
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200/70">
+                  {publicCount} Public
                 </span>
               )}
             </div>
@@ -187,45 +187,45 @@ const MyResumes = () => {
           </div>
 
           {/* ACTION BUTTONS */}
-          <div className="relative z-10 flex items-center gap-2.5 flex-wrap shrink-0">
+          <div className="relative z-10 flex items-center gap-2 sm:gap-2.5 flex-wrap shrink-0">
             <button
               onClick={() => setShowTrashModal(true)}
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white hover:bg-rose-50/50 text-slate-700 hover:text-rose-600 font-bold text-xs sm:text-sm border border-slate-200 shadow-2xs hover:border-rose-200 transition-all cursor-pointer"
+              className="btn-3d-delete inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm cursor-pointer"
               title="View Trash & Recycle Bin"
             >
-              <Trash2 size={15} className="text-rose-500" />
+              <Trash2 size={14} className="lucide-3d" />
               <span>Trash</span>
             </button>
 
             <button
               onClick={() => setShowUploadModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer hover:scale-102"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer hover:scale-102"
             >
-              <UploadCloud size={16} className="text-slate-600" />
+              <UploadCloud size={15} className="text-slate-600 dark:text-slate-300" />
               <span>Import PDF</span>
             </button>
 
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/30"
+              className="shimmer-button inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/40"
             >
-              <Plus size={16} className="text-emerald-400" />
-              <span>Create New Resume</span>
+              <Plus size={15} className="text-emerald-400" />
+              <span>New Resume</span>
             </button>
           </div>
         </div>
 
         {/* 4 MINI STAT CARDS WITH COLORFUL HALF CIRCLES */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
           {/* Card 1: Total Created */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/15 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Total Resumes
               </span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-                <FileText size={14} />
+              <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
+                <FileText size={15} className="lucide-3d text-white" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -243,12 +243,12 @@ const MyResumes = () => {
           {/* Card 2: Public Portfolios */}
           <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-500/15 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Public Live
               </span>
-              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-                <Globe size={14} />
+              <div className="icon-3d-pod icon-3d-pod-blue p-1.5 rounded-xl">
+                <Globe size={15} className="lucide-3d text-white" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -266,12 +266,12 @@ const MyResumes = () => {
           {/* Card 3: ATS Ready Standard */}
           <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/15 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 ATS Format
               </span>
-              <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
-                <ShieldCheck size={14} />
+              <div className="icon-3d-pod icon-3d-pod-purple p-1.5 rounded-xl">
+                <ShieldCheck size={15} className="lucide-3d text-white" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -289,12 +289,12 @@ const MyResumes = () => {
           {/* Card 4: AI Optimization */}
           <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/15 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 AI Powered
               </span>
-              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-                <Sparkles size={14} />
+              <div className="icon-3d-pod icon-3d-pod-amber p-1.5 rounded-xl">
+                <Sparkles size={15} className="lucide-3d text-white" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -311,7 +311,7 @@ const MyResumes = () => {
         </div>
 
         {/* SEARCH, FILTER & SORT TOOLBAR */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-3 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-3 bg-white dark:bg-[#0c1424] rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
           {/* Search Box */}
           <div className="relative flex-1 min-w-[240px]">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -320,7 +320,7 @@ const MyResumes = () => {
               placeholder="Search resumes by title, profession, or name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200/80 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none font-medium text-slate-900"
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-850 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/30 outline-none font-medium text-slate-900 dark:text-slate-100"
             />
             {searchQuery && (
               <button
@@ -335,14 +335,14 @@ const MyResumes = () => {
           {/* Visibility Filter Tabs & Sort Dropdown */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Quick Filter Tabs */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/70">
+            <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200/70 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setFilterVisibility("all")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterVisibility === "all"
-                    ? "bg-white text-slate-950 shadow-2xs"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-2xs"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 All ({resumes.length})
@@ -352,8 +352,8 @@ const MyResumes = () => {
                 onClick={() => setFilterVisibility("public")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterVisibility === "public"
-                    ? "bg-white text-slate-950 shadow-2xs"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-emerald-800 dark:text-emerald-400 shadow-2xs"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 Public ({publicCount})
@@ -363,8 +363,8 @@ const MyResumes = () => {
                 onClick={() => setFilterVisibility("private")}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   filterVisibility === "private"
-                    ? "bg-white text-slate-950 shadow-2xs"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-2xs"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
               >
                 Private ({resumes.length - publicCount})
@@ -377,7 +377,7 @@ const MyResumes = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200/90 px-3 py-1.5 rounded-xl outline-none cursor-pointer"
+                className="select-3d text-xs font-bold text-slate-700 px-3.5 py-2 rounded-xl outline-none cursor-pointer"
               >
                 <option value="date">Sort: Last Modified</option>
                 <option value="title">Sort: Title (A-Z)</option>

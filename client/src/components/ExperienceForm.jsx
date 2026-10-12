@@ -83,8 +83,8 @@ const updateExperience = (index, field, value)=>{
                 <div key={index} className="p-4 border border-gray-200 rounded-xl space-y-3 bg-white">
                     <div className='flex justify-between items-start'>
                         <h4 className="font-bold text-sm text-slate-800">Experience #{index + 1}</h4>
-                        <button onClick={()=> removeExperience(index)} className='text-red-500 hover:text-red-700 transition-colors p-1'>
-                            <Trash2 className="size-4"/>
+                        <button onClick={()=> removeExperience(index)} title="Remove Experience" className='btn-3d-delete p-1.5 rounded-lg cursor-pointer'>
+                            <Trash2 className="size-4 lucide-3d"/>
                         </button>
                     </div>
 

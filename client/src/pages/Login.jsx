@@ -254,7 +254,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden bg-tech-grid">
       {/* SECURE HIGH-SPEED AUTHENTICATION OVERLAY */}
       {loading && tokenInUrl && (
         <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[9999] flex flex-col items-center justify-center space-y-3.5 select-none animate-in fade-in duration-200">
@@ -268,8 +268,8 @@ const Login = () => {
       )}
 
       {/* Background ambient lighting */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-300/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-300/15 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-300/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-300/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
 
@@ -294,7 +294,9 @@ const Login = () => {
         </div>
 
         {/* AUTH CARD */}
-        <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/90 p-8 sm:p-10">
+        <div className="glass-card-elevated bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/90 p-8 sm:p-10 relative overflow-hidden">
+          {/* Subtle top corner glow */}
+          <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-bl-full pointer-events-none" />
 
           {/* TAB SWITCHER */}
           <div className="flex bg-slate-100 p-1 rounded-2xl mb-6">
@@ -390,7 +392,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+              className="shimmer-button w-full mt-2 py-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-500/25 hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="size-4 animate-spin" />

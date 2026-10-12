@@ -54,7 +54,7 @@ const Footer = () => {
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-emerald-500/10 blur-[130px] pointer-events-none" />
       <div className="absolute -top-24 right-10 size-72 bg-emerald-600/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-10 sm:pt-16 sm:pb-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 pt-14 pb-10 sm:pt-16 sm:pb-12 relative z-10">
         
         {/* MAIN 4-COLUMN GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-slate-800/80">

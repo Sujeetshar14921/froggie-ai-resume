@@ -10,20 +10,21 @@ import {
   Sparkles,
   ArrowRight,
   ArrowLeft,
-  Menu,
-  X,
+  Sun,
+  Moon,
   ChevronDown,
   UserCheck,
   ShieldCheck,
   Coffee,
   Briefcase,
   Users,
+  Settings,
 } from "lucide-react";
-import ProfileModal from "./ProfileModal";
-import FrogFace, { BrandIcon } from "./FrogLogo";
+import FrogFace, { BrandIcon, Copilot3DIcon } from "./FrogLogo";
 import { NotificationBell } from "./notifications";
 import { useCopilot } from "../hooks/useCopilot";
-import { initNavbarAnimation, animateMobileMenu } from "../animations";
+import { initNavbarAnimation } from "../animations";
+import { applyTheme, isDarkEffective } from "../utils/theme";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -33,13 +34,10 @@ const Navbar = () => {
   const location = useLocation();
 
   const [open, setOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => isDarkEffective());
   const headerRef = useRef(null);
-  const mobileMenuRef = useRef(null);
   const profileDropdownRef = useRef(null);
-  const isInitialMenuMount = useRef(true);
 
   const isTalentPage = location.pathname.startsWith("/talent");
   const isLandingOrFaq =
@@ -48,10 +46,26 @@ const Navbar = () => {
       location.pathname === "/donate") &&
     !isTalentPage;
 
+  // React to theme changes across application
+  useEffect(() => {
+    const handleThemeChange = (e) => {
+      if (e.detail) {
+        setIsDark(e.detail.isDark);
+      }
+    };
+    window.addEventListener("froggie-theme-change", handleThemeChange);
+    return () => window.removeEventListener("froggie-theme-change", handleThemeChange);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = isDark ? "light" : "dark";
+    applyTheme(nextTheme);
+    setIsDark(!isDark);
+  };
+
   // Auto-close all dropdowns on route navigation
   useEffect(() => {
     setOpen(false);
-    setMobileMenuOpen(false);
   }, [location.pathname, location.search]);
 
   // Auto-close on click-outside, Escape key, and scroll
@@ -68,7 +82,6 @@ const Navbar = () => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         setOpen(false);
-        setMobileMenuOpen(false);
       }
     };
 
@@ -78,7 +91,7 @@ const Navbar = () => {
       }
     };
 
-    if (open || mobileMenuOpen) {
+    if (open) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
@@ -91,20 +104,12 @@ const Navbar = () => {
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("scroll", handleScrollClose);
     };
-  }, [open, mobileMenuOpen]);
+  }, [open]);
 
   useEffect(() => {
     const cleanup = initNavbarAnimation(headerRef.current);
     return cleanup;
   }, []);
-
-  useEffect(() => {
-    if (isInitialMenuMount.current) {
-      isInitialMenuMount.current = false;
-      return;
-    }
-    animateMobileMenu(mobileMenuRef.current, mobileMenuOpen);
-  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -140,7 +145,7 @@ const Navbar = () => {
             : "bg-white/65 backdrop-blur-md border-b border-slate-200/40"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 h-18 sm:h-20 flex items-center justify-between">
 
           {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
           {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
@@ -210,7 +215,21 @@ const Navbar = () => {
           )}
 
           {/* RIGHT SIDE ACTIONS */}
-          <div className="nav-actions flex items-center gap-2 sm:gap-3">
+          <div className="nav-actions flex items-center gap-1.5 sm:gap-2.5">
+            {/* QUICK 1-CLICK THEME TOGGLE (DESKTOP ONLY) */}
+            <button
+              onClick={toggleTheme}
+              className="hidden lg:inline-flex p-2 sm:p-2.5 rounded-2xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer border border-slate-200/80 dark:border-slate-800/80 shadow-2xs"
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle Theme"
+            >
+              {isDark ? (
+                <Sun size={17} className="text-amber-400 animate-pulse-subtle" />
+              ) : (
+                <Moon size={17} className="text-slate-700 dark:text-slate-200" />
+              )}
+            </button>
+
             {/* NOTIFICATION BELL (Visible strictly only when user is logged in) */}
             {user && <NotificationBell />}
 
@@ -219,7 +238,7 @@ const Navbar = () => {
               <div ref={profileDropdownRef} className="relative">
                 <button
                   onClick={() => setOpen(!open)}
-                  className="flex items-center gap-2.5 bg-white/90 backdrop-blur-md border border-slate-200/90 p-1.5 sm:pr-3 rounded-2xl shadow-xs hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-500/10 transition-all cursor-pointer group"
+                  className="flex items-center gap-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 p-1.5 sm:pr-3 rounded-2xl shadow-xs hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/10 transition-all cursor-pointer group"
                   aria-expanded={open}
                   aria-haspopup="true"
                 >
@@ -239,10 +258,10 @@ const Navbar = () => {
                   </div>
 
                   <div className="text-left hidden sm:block">
-                    <p className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px] group-hover:text-emerald-700 transition-colors">
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-tight truncate max-w-[120px] group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                       {user?.name || "Candidate"}
                     </p>
-                    <p className="text-[10px] text-slate-400 font-medium truncate max-w-[120px] flex items-center gap-1">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium truncate max-w-[120px] flex items-center gap-1">
                       <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
                       <span className="truncate">{user?.profession || "My Account"}</span>
                     </p>
@@ -263,10 +282,10 @@ const Navbar = () => {
                       className="fixed inset-0 z-40"
                       onClick={() => setOpen(false)}
                     />
-                    <div className="absolute right-0 top-12 mt-2 w-72 bg-white/95 backdrop-blur-2xl border border-emerald-500/20 rounded-3xl shadow-2xl shadow-emerald-950/15 z-50 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-12 mt-2 w-72 bg-white/95 dark:bg-[#0c1222]/98 backdrop-blur-2xl border border-emerald-500/20 dark:border-slate-800 rounded-3xl shadow-2xl shadow-emerald-950/15 dark:shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-50 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-150">
                       
                       {/* USER SUMMARY HEADER */}
-                      <div className="px-4 py-3.5 border-b border-slate-100 bg-gradient-to-br from-emerald-50/80 via-slate-50/60 to-teal-50/40 flex items-center gap-3">
+                      <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-emerald-50/80 via-slate-50/60 to-teal-50/40 dark:from-[#0f172a] dark:via-[#111c30] dark:to-[#0f172a] flex items-center gap-3">
                         <div className="relative shrink-0">
                           {user?.image ? (
                             <img
@@ -284,14 +303,14 @@ const Navbar = () => {
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-xs font-bold text-slate-900 truncate">{user?.name}</p>
-                            <span className="px-1.5 py-0.2 text-[9px] font-black rounded-md bg-emerald-500/20 text-emerald-700 uppercase tracking-wider">
+                            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{user?.name}</p>
+                            <span className="px-1.5 py-0.2 text-[9px] font-black rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                               PRO
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
                           {user?.profession && (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-200/50 truncate max-w-full">
+                            <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-500/30 truncate max-w-full">
                               <FrogFace size={10} />
                               <span className="truncate">{user.profession}</span>
                             </span>
@@ -299,129 +318,169 @@ const Navbar = () => {
                         </div>
                       </div>
 
-                      {/* PROFILE EDIT QUICK BUTTON */}
+                      {/* SETTINGS QUICK BUTTON */}
                       <div className="p-1.5">
-                        <button
-                          onClick={() => {
-                            setOpen(false);
-                            setIsProfileModalOpen(true);
-                          }}
-                          className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-emerald-800 bg-emerald-50/90 hover:bg-emerald-100/90 rounded-2xl transition-all border border-emerald-200/60 cursor-pointer group shadow-2xs"
+                        <Link
+                          to="/app/settings"
+                          onClick={() => setOpen(false)}
+                          className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-all ${
+                            location.pathname === "/app/settings"
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 hover:bg-slate-50/80 dark:hover:bg-slate-800/80"
+                          }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <UserCheck size={16} className="text-emerald-600 group-hover:scale-110 transition-transform" />
-                            <span>Edit Profile & Photo</span>
+                            <div
+                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                                location.pathname === "/app/settings"
+                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                              }`}
+                            >
+                              <Settings size={15} className={location.pathname === "/app/settings" ? "lucide-3d" : ""} />
+                            </div>
+                            <span>Settings & Preferences</span>
                           </div>
-                          <ArrowRight size={13} className="text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                        </button>
+                          <ArrowRight size={13} className="text-slate-400 group-hover:text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                        </Link>
                       </div>
 
                       {/* NAVIGATION LINKS */}
-                      <div className="px-1.5 space-y-0.5">
+                      <div className="px-1.5 space-y-1">
+                        {/* 1. DASHBOARD */}
                         <Link
                           to="/app"
                           onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
+                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname === "/app"
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
                         >
-                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
-                            <LayoutDashboard size={15} />
+                          <div
+                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                              location.pathname === "/app"
+                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                            }`}
+                          >
+                            <LayoutDashboard size={15} className={location.pathname === "/app" ? "lucide-3d" : ""} />
                           </div>
                           <span>Dashboard</span>
                         </Link>
 
+                        {/* 2. MY RESUMES */}
                         <Link
                           to="/app/my-resumes"
                           onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
+                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes")
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
                         >
-                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
-                            <FileText size={15} />
+                          <div
+                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                              location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes")
+                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                            }`}
+                          >
+                            <FileText size={15} className={location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes") ? "lucide-3d" : ""} />
                           </div>
                           <span>My Resumes</span>
                         </Link>
 
-                        {/* TALENT POOL / CANDIDATE DIRECTORY */}
-                        <Link
-                          to="/talent"
-                          onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
-                        >
-                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
-                            <Users size={15} />
-                          </div>
-                          <span>Talent Pool</span>
-                        </Link>
-
-                        {/* JOB APPLICATION CRM TRACKER */}
+                        {/* 3. JOB TRACKER CRM */}
                         <Link
                           to="/app/applications"
                           onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors group"
+                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname.startsWith("/app/applications")
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
                         >
-                          <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
-                            <Briefcase size={15} />
+                          <div
+                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                              location.pathname.startsWith("/app/applications")
+                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                            }`}
+                          >
+                            <Briefcase size={15} className={location.pathname.startsWith("/app/applications") ? "lucide-3d" : ""} />
                           </div>
                           <span>Job Tracker CRM</span>
                         </Link>
 
-                        {/* ATS RESUME CHECKER (FEATURED LINK) */}
+                        {/* 4. ATS RESUME CHECKER */}
                         <Link
                           to="/app/ats-checker"
                           onClick={() => setOpen(false)}
-                          className="flex items-center justify-between px-3.5 py-2.5 text-xs font-bold text-emerald-900 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-transparent hover:from-emerald-500/20 hover:to-teal-500/15 rounded-xl border border-emerald-500/20 transition-all group"
+                          className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname.startsWith("/app/ats-checker")
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className="size-7 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-700 group-hover:scale-105 transition-transform">
-                              <ShieldCheck size={15} />
+                            <div
+                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                                location.pathname.startsWith("/app/ats-checker")
+                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                              }`}
+                            >
+                              <ShieldCheck size={15} className={location.pathname.startsWith("/app/ats-checker") ? "lucide-3d" : ""} />
                             </div>
                             <span>ATS Resume Checker</span>
                           </div>
-                          <span className="text-[9px] font-black uppercase px-1.5 py-0.5 bg-emerald-600 text-white rounded-md tracking-wider">
+                          <span
+                            className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md tracking-wider ${
+                              location.pathname.startsWith("/app/ats-checker")
+                                ? "bg-emerald-700 text-white shadow-2xs"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700"
+                            }`}
+                          >
                             AI
                           </span>
                         </Link>
 
-                        {/* CAREER COPILOT QUICK LAUNCHER */}
-                        <button
-                          onClick={() => {
-                            setOpen(false);
-                            openCopilot();
-                          }}
-                          className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-emerald-50/60 hover:text-emerald-900 rounded-xl transition-colors text-left cursor-pointer group"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="size-7 rounded-lg bg-slate-100 group-hover:bg-emerald-100/80 flex items-center justify-center text-slate-500 group-hover:text-emerald-700 transition-colors">
-                              <Sparkles size={15} />
-                            </div>
-                            <span>Ask Froggie Copilot</span>
-                          </div>
-                          <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                        </button>
-
-                        {/* SUPPORT FROGGIE LINK */}
+                        {/* 5. SUPPORT FROGGIE LINK */}
                         <Link
                           to="/donate"
                           onClick={() => setOpen(false)}
-                          className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold text-amber-900 bg-amber-500/10 hover:bg-amber-500/15 rounded-xl border border-amber-500/20 transition-colors group"
+                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname === "/donate"
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
                         >
-                          <div className="size-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-700 group-hover:scale-105 transition-transform">
-                            <Coffee size={15} />
+                          <div
+                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                              location.pathname === "/donate"
+                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/40 text-slate-500 dark:text-slate-400 group-hover:text-amber-700 dark:group-hover:text-amber-300"
+                            }`}
+                          >
+                            <Coffee size={15} className={location.pathname === "/donate" ? "lucide-3d" : ""} />
                           </div>
-                          <span className="font-bold">Support Froggie ☕</span>
+                          <span>Support Froggie ☕</span>
                         </Link>
                       </div>
 
                       {/* DIVIDER */}
-                      <div className="border-t border-slate-100 my-1" />
+                      <div className="border-t border-slate-100 dark:border-slate-800/80 my-1.5" />
 
-                      {/* SIGN OUT */}
-                      <div className="px-1.5">
+                      {/* SIGN OUT (PERMANENT 3D BUTTON) */}
+                      <div className="p-2 pt-1">
                         <button
                           onClick={logoutUser}
-                          className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 rounded-xl transition-colors text-left cursor-pointer group"
+                          className="btn-3d-signout w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-2xl font-black text-xs text-rose-600 dark:text-rose-400 cursor-pointer shadow-xs"
+                          title="Sign Out of Froggie"
                         >
-                          <div className="size-7 rounded-lg bg-rose-50 group-hover:bg-rose-100 flex items-center justify-center text-rose-500 group-hover:text-rose-700 transition-colors">
-                            <LogOut size={15} />
+                          <div className="icon-3d-pod icon-3d-pod-rose size-6 rounded-lg flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
+                            <LogOut size={13} className="lucide-3d" />
                           </div>
                           <span>Sign Out</span>
                         </button>
@@ -461,65 +520,20 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/login?state=register"
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 text-xs font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-md shadow-emerald-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="shimmer-button inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 text-xs font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-md shadow-emerald-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <Sparkles size={14} />
-                  <span>Get Started</span>
+                  <span>Get Started Free</span>
                   <ArrowRight size={13} className="hidden sm:inline" />
                 </Link>
               </div>
             )}
 
-            {/* MOBILE MENU TOGGLE */}
-            {isLandingOrFaq && (
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
-                aria-label="Toggle Navigation Menu"
-              >
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </button>
-            )}
           </div>
         </div>
-
-        {/* MOBILE MENU DRAWER */}
-        {isLandingOrFaq && (
-          <div
-            ref={mobileMenuRef}
-            style={{ display: mobileMenuOpen ? "block" : "none", overflow: "hidden" }}
-            className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-2"
-          >
-            {navLinks.map((link) =>
-              link.isRoute ? (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mobile-nav-link block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ) : (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mobile-nav-link block px-3 py-2 rounded-xl text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
-                >
-                  {link.name}
-                </a>
-              )
-            )}
-          </div>
-        )}
       </header>
 
-      {/* PROFILE EDIT MODAL */}
-      <ProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-      />
+
     </>
   );
 };

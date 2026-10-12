@@ -25,9 +25,11 @@ const AtsInsightsCard = ({
       <div className="grid md:grid-cols-2 gap-6">
         {/* STRENGTHS */}
         <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <CheckCircle2 size={20} className="text-emerald-600" />
-            Resume Strengths
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+            <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
+              <CheckCircle2 size={16} className="lucide-3d text-white" />
+            </div>
+            <span>Resume Strengths</span>
           </h3>
           <p className="text-xs text-slate-500">
             Competencies and formatting elements where your resume excels
@@ -52,9 +54,11 @@ const AtsInsightsCard = ({
 
         {/* IMPROVEMENT OPPORTUNITIES */}
         <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Lightbulb size={20} className="text-amber-500" />
-            Actionable Improvements
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+            <div className="icon-3d-pod icon-3d-pod-amber p-1.5 rounded-xl">
+              <Lightbulb size={16} className="lucide-3d text-white" />
+            </div>
+            <span>Actionable Improvements</span>
           </h3>
           <p className="text-xs text-slate-500">
             Highest-impact adjustments to increase your resume ranking
@@ -84,9 +88,11 @@ const AtsInsightsCard = ({
       {atsIssues.length > 0 && (
         <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ShieldAlert size={20} className="text-rose-600" />
-              ATS Readability & Formatting Checks
+            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+              <div className="icon-3d-pod icon-3d-pod-dark p-1.5 rounded-xl">
+                <ShieldAlert size={16} className="lucide-3d text-rose-400" />
+              </div>
+              <span>ATS Readability & Formatting Checks</span>
             </h3>
             <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
               {atsIssues.length} Check{atsIssues.length > 1 ? "s" : ""}

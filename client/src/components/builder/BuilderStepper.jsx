@@ -71,9 +71,9 @@ const BuilderStepper = ({
   };
 
   return (
-    <div className="relative shrink-0 border-b border-slate-100 bg-slate-50/50 select-none">
+    <div className="relative shrink-0 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0a0f1d] select-none">
       {/* PROGRESS STEP BAR */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100 z-10">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-10">
         <div
           className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
@@ -83,9 +83,9 @@ const BuilderStepper = ({
       {/* STEPPER BUTTONS */}
       <div className="pt-2.5 pb-2 px-3 sm:px-4">
         <div className="flex items-center justify-between pb-1 text-[10.5px] text-slate-400">
-          <span className="font-semibold text-slate-500">Sections Navigation</span>
-          <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-            <GripVertical size={11} className="text-emerald-500" />
+          <span className="font-semibold text-slate-500 dark:text-slate-400">Sections Navigation</span>
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+            <GripVertical size={11} className="text-emerald-500 dark:text-emerald-400" />
             <span>Drag tabs to change preview order</span>
           </span>
         </div>
@@ -113,12 +113,12 @@ const BuilderStepper = ({
                 onClick={() => onSelectSection(index)}
                 className={`relative flex flex-col items-center gap-1 group shrink-0 min-w-[58px] sm:min-w-[64px] px-1.5 py-1.5 rounded-xl transition-all cursor-grab active:cursor-grabbing border ${
                   isBeingDragged
-                    ? "opacity-30 border-dashed border-emerald-500 scale-95 bg-emerald-50/50"
+                    ? "opacity-30 border-dashed border-emerald-500 scale-95 bg-emerald-50/50 dark:bg-emerald-950/30"
                     : isDragTarget
-                    ? "border-emerald-500 ring-2 ring-emerald-400/30 bg-emerald-50 scale-105"
+                    ? "border-emerald-500 ring-2 ring-emerald-400/30 bg-emerald-50 dark:bg-emerald-950/40 scale-105"
                     : isActive
-                    ? "bg-emerald-50/90 border-emerald-300/80 shadow-2xs"
-                    : "border-transparent hover:bg-slate-100/70 hover:border-slate-200/60"
+                    ? "bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-300/80 dark:border-emerald-800/80 shadow-2xs"
+                    : "border-transparent hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:border-slate-200/60 dark:hover:border-slate-700"
                 }`}
                 title={`Click to edit or drag to reorder: ${section.name}`}
               >
@@ -129,7 +129,7 @@ const BuilderStepper = ({
                       ? "border-emerald-600 bg-emerald-600 text-white shadow-xs font-bold ring-2 ring-emerald-500/20"
                       : isDone
                       ? "border-emerald-500 bg-emerald-500 text-white"
-                      : "border-slate-200 text-slate-400 group-hover:border-slate-300 bg-white"
+                      : "border-slate-200 dark:border-slate-700 text-slate-400 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
                   {isDone ? <Check className="size-3 stroke-[2.5]" /> : <Icon className="size-3.5" />}
@@ -138,7 +138,7 @@ const BuilderStepper = ({
                 {/* LABEL */}
                 <span
                   className={`text-[10px] font-semibold text-center leading-tight truncate max-w-[68px] ${
-                    isActive ? "text-emerald-800 font-bold" : isDone ? "text-slate-700" : "text-slate-400"
+                    isActive ? "text-emerald-800 dark:text-emerald-300 font-bold" : isDone ? "text-slate-700 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"
                   }`}
                 >
                   {section.name}

@@ -271,14 +271,14 @@ const AtsChecker = () => {
     <div className="min-h-screen bg-slate-50/70 pb-20">
       
       {/* TOP HERO / HEADER BAR */}
-      <div className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      <div className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
+        <div className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 h-14 sm:h-20 flex items-center justify-between">
           
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-base sm:text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="size-5 sm:size-6 text-emerald-600" />
-                froggie ATS Resume Checker
+              <h1 className="text-sm sm:text-xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 sm:gap-2">
+                <ShieldCheck className="size-4.5 sm:size-6 text-emerald-600" />
+                <span>froggie ATS Resume Checker</span>
               </h1>
               <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
                 AI semantic keyword, competency, and formatting compatibility auditor
@@ -293,10 +293,10 @@ const AtsChecker = () => {
                 setIsHistoryOpen(true);
                 loadHistory();
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer hover:scale-102"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98"
             >
-              <History size={14} className="text-emerald-600" />
-              <span>Scan History</span>
+              <History size={13} className="text-emerald-600" />
+              <span>History</span>
             </button>
 
             {report && (
@@ -305,9 +305,9 @@ const AtsChecker = () => {
                   setReport(null);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer hover:scale-102"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98"
               >
-                <RotateCcw size={14} />
+                <RotateCcw size={13} />
                 <span>Re-Analyze</span>
               </button>
             )}
@@ -316,39 +316,39 @@ const AtsChecker = () => {
       </div>
 
       {/* MAIN CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 space-y-6">
+      <main className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-8 space-y-4 sm:space-y-6">
         
         {/* TOP COMMAND HERO CARD */}
-        <div className="relative overflow-hidden bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-2xs group text-left">
+        <div className="relative overflow-hidden glass-card-elevated p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm group text-left">
           {/* Half-circle colorful environment auras */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700" />
-          <div className="absolute bottom-0 left-0 w-36 h-36 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700 blur-xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none blur-xl" />
 
-          <div className="relative z-10 max-w-3xl space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/80">
-              <Sparkles size={13} className="text-emerald-600" />
+          <div className="relative z-10 max-w-4xl space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
+              <Sparkles size={12} className="text-emerald-600 animate-pulse" />
               <span>Live ATS Compatibility Auditor</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-              Benchmark Your Resume Against Any Job
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight">
+              Benchmark Your Resume Against <span className="text-gradient-emerald">Any Job Opening</span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
-              Discover exact keyword gaps, missing technical skills, recruiter score predictions, and 1-click ATS formatting fixes before applying.
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed max-w-2xl">
+              Discover exact keyword gaps, missing technical skills, recruiter score predictions, and 1-click ATS formatting fixes before applying to top companies.
             </p>
           </div>
         </div>
 
         {/* 4 MINI TELEMETRY STAT CARDS WITH COLORFUL HALF CIRCLES */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-left">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-left">
           {/* Card 1: Parser Accuracy */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/15 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Parser Standard
               </span>
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-                <ShieldCheck size={14} />
+              <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
+                <ShieldCheck size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -357,21 +357,21 @@ const AtsChecker = () => {
               </span>
               <span className="text-[10px] font-bold text-slate-400">read rate</span>
             </div>
-            <p className="text-[10px] text-emerald-700 font-bold mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               Standard ATS compliant
             </p>
           </div>
 
           {/* Card 2: Semantic Match */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-500/15 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Keyword Matching
               </span>
-              <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-                <Target size={14} />
+              <div className="icon-3d-pod icon-3d-pod-blue p-1.5 rounded-xl">
+                <Target size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -380,21 +380,21 @@ const AtsChecker = () => {
               </span>
               <span className="text-[10px] font-bold text-blue-400">JD gap check</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
               Hard & soft skills scan
             </p>
           </div>
 
           {/* Card 3: Formatting Health */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/15 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Formatting Audit
               </span>
-              <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
-                <FileCheck size={14} />
+              <div className="icon-3d-pod icon-3d-pod-purple p-1.5 rounded-xl">
+                <FileCheck size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -403,21 +403,21 @@ const AtsChecker = () => {
               </span>
               <span className="text-[10px] font-bold text-purple-400">safe layout</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
               No table / header glitches
             </p>
           </div>
 
           {/* Card 4: 1-Click AI Fix */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/15 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-1.5">
+            <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Auto-Optimize
               </span>
-              <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-                <Sparkles size={14} />
+              <div className="icon-3d-pod icon-3d-pod-amber p-1.5 rounded-xl">
+                <Sparkles size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -426,7 +426,7 @@ const AtsChecker = () => {
               </span>
               <span className="text-[10px] font-bold text-amber-400">JD sync</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-0.5 flex items-center gap-1">
+            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
               Direct resume upgrade
             </p>
@@ -506,22 +506,23 @@ const AtsChecker = () => {
             />
 
             {/* BOTTOM RE-ANALYZE BAR */}
-            <div className="p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-              <div>
-                <h4 className="text-base font-bold">Want to test adjustments?</h4>
-                <p className="text-xs text-slate-400">
-                  Update your resume in the editor or modify the target Job Description to benchmark your score again.
+            <div className="p-6 sm:p-8 rounded-3xl glass-dark-elevated text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="relative z-10 space-y-1">
+                <h4 className="text-base sm:text-lg font-black tracking-tight text-white">Want to test adjustments?</h4>
+                <p className="text-xs text-slate-400 max-w-xl">
+                  Update your resume in the editor or modify the target Job Description to benchmark your score again with our AI auditor.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center gap-3 flex-wrap relative z-10 shrink-0">
                 {selectedResumeData && (
                   <Link
                     to={`/app/builder/${selectedResumeId}`}
-                    className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-1.5"
+                    className="shimmer-button px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
                   >
                     <span>Open in Resume Builder</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight size={14} />
                   </Link>
                 )}
 
@@ -530,7 +531,7 @@ const AtsChecker = () => {
                     setReport(null);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2"
+                  className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
                 >
                   <RotateCcw size={14} />
                   <span>Modify & Re-Analyze</span>

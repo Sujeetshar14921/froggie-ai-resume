@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Resume from "../models/Resume.js";
+import AtsReport from "../models/AtsReport.js";
+import CopilotChat from "../models/CopilotChat.js";
 import fs from "fs";
 import imagekit from "../configs/imageKit.js";
 
@@ -189,4 +191,69 @@ export const updateUserProfile = async (req, res) => {
     } catch (error) {
         return res.status(400).json({ message: error.message });
     }
-}
+}
+
+// controller for deactivating user account
+// POST: /api/users/deactivate
+export const deactivateUserAccount = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { reason, feedback, partedAdvice } = req.body || {};
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.isDeactivated = true;
+        user.deactivationReason = reason || 'User requested deactivation';
+        user.feedback = {
+            reason,
+            feedback,
+            partedAdvice,
+            deactivatedAt: new Date()
+        };
+        await user.save();
+
+        // Protect privacy: make all public resumes private while deactivated
+        await Resume.updateMany({ userId }, { isPublic: false });
+
+        return res.status(200).json({ 
+            message: 'Account successfully deactivated. All your public resumes are now private.' 
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// controller for permanently deleting user account and all personal data
+// DELETE: /api/users/account
+export const deleteUserAccount = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { reason, feedback, partedAdvice } = req.body || {};
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // 1. Delete all associated resumes
+        await Resume.deleteMany({ userId });
+
+        // 2. Delete all ATS scanner audit reports
+        await AtsReport.deleteMany({ userId });
+
+        // 3. Delete all Copilot conversation logs
+        await CopilotChat.deleteMany({ userId });
+
+        // 4. Finally delete the user account
+        await User.findByIdAndDelete(userId);
+
+        return res.status(200).json({ 
+            message: 'Account and all related resumes, ATS scans, and data have been permanently deleted.' 
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};

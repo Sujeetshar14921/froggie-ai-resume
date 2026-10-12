@@ -90,10 +90,10 @@ const FileListCard = ({ data = {} }) => {
                 <button
                   type="button"
                   onClick={() => sendMessage(`Delete my resume named "${file.title}"`)}
-                  className="p-1 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="btn-3d-delete p-1.5 rounded-lg cursor-pointer"
                   title="Delete resume"
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={13} className="lucide-3d" />
                 </button>
               </div>
             </div>

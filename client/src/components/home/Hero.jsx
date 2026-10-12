@@ -9,12 +9,11 @@ import {
   Zap,
   Check,
   Loader2,
-  TrendingUp,
-  Cpu,
-  BarChart3,
   Search,
-  SlidersHorizontal,
-  ChevronRight,
+  Users,
+  Target,
+  Star,
+  TrendingUp,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -84,7 +83,7 @@ const Hero = () => {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-slate-50/90 via-white to-emerald-50/20 pt-10 pb-20 select-none"
+      className="relative min-h-0 sm:min-h-[90vh] flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-slate-50/90 via-white to-emerald-50/20 dark:from-[#090d16] dark:via-[#0c1222] dark:to-[#090d16] pt-4 sm:pt-10 pb-8 sm:pb-20 select-none"
     >
       {/* AMBIENT BACKGROUND GLOW & TECHNICAL MESH */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -107,37 +106,37 @@ const Hero = () => {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-3.5 sm:px-8 lg:px-12 xl:px-16 w-full text-center">
 
         {/* TOP STATUS PILL */}
-        <div className="hero-status-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-emerald-300/70 shadow-xs text-emerald-800 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-md">
-          <span className="flex h-2 w-2 relative">
+        <div className="hero-status-pill inline-flex items-center gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/95 dark:bg-slate-900/90 border border-emerald-300/80 dark:border-emerald-500/30 shadow-[0_4px_24px_-4px_rgba(16,185,129,0.18)] text-emerald-800 dark:text-emerald-300 text-[11px] sm:text-sm font-bold mb-3 sm:mb-6 backdrop-blur-xl">
+          <span className="flex h-2 w-2 sm:h-2.5 sm:w-2.5 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+            <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-600" />
           </span>
-          <FrogFace size={16} />
-          <span className="tracking-tight text-slate-800">
-            Froggie AI 3.0 Studio <span className="text-emerald-600 font-bold">&middot;</span> Real-Time ATS Scoring & Public Talent Pool
+          <FrogFace size={14} />
+          <span className="tracking-tight text-slate-900 dark:text-slate-100 truncate">
+            froggie AI 3.0 <span className="text-emerald-600 font-black">&middot;</span> Real-Time ATS Scoring
           </span>
         </div>
 
         {/* MAIN HEADLINE */}
-        <h1 className="hero-headline text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.14] max-w-4xl mx-auto">
+        <h1 className="hero-headline text-2xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-slate-950 dark:text-slate-50 tracking-tight leading-[1.12] sm:leading-[1.08] max-w-5xl mx-auto">
           The AI Resume Builder Engineered to{" "}
           <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
             Beat the ATS
           </span>{" "}
-          & Land Interviews
+          & Land Top Interviews
         </h1>
 
         {/* PERSUASIVE SUBTITLE */}
-        <p className="hero-subtitle mt-5 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-          Build recruiter-ready resumes in minutes. Live ATS scoring, AI STAR-method bullet refinement, and 7 battle-tested formats—all 100% free to export.
+        <p className="hero-subtitle mt-2.5 sm:mt-6 text-xs sm:text-lg lg:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+          Craft high-converting, recruiter-ready resumes in minutes. Live ATS scoring, AI bullet refinement, and 7 battle-tested formats—all 100% free.
         </p>
 
         {/* ROLE SELECTION CHIPS */}
-        <div className="hero-chips-container mt-7 flex flex-wrap items-center justify-center gap-2 text-xs">
-          <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] mr-1 hidden sm:inline">
+        <div className="hero-chips-container mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-xs">
+          <span className="text-slate-400 font-extrabold uppercase tracking-wider text-[10px] mr-1 hidden sm:inline">
             Choose Target Role:
           </span>
           {trendingRoles.map((role) => {
@@ -147,10 +146,10 @@ const Hero = () => {
                 key={role.id}
                 type="button"
                 onClick={() => setSelectedRole(role)}
-                className={`hero-chip px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`hero-chip px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-[11px] sm:text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
                   isSelected
-                    ? "bg-slate-950 text-white shadow-sm scale-105 border border-emerald-500/50"
-                    : "bg-white/80 hover:bg-white text-slate-600 hover:text-slate-950 border border-slate-200/90 shadow-2xs backdrop-blur-xs"
+                    ? "bg-slate-950 dark:bg-emerald-600 text-white shadow-md scale-102 sm:scale-105 border border-emerald-500/60"
+                    : "bg-white/90 dark:bg-slate-900/90 hover:bg-white text-slate-600 dark:text-slate-300 hover:text-slate-950 border border-slate-200/90 dark:border-slate-800 backdrop-blur-md"
                 }`}
               >
                 {isSelected && <Check size={12} className="text-emerald-400" />}
@@ -161,16 +160,16 @@ const Hero = () => {
         </div>
 
         {/* CTA ACTION BUTTONS */}
-        <div className="hero-cta-group mt-7 flex flex-wrap items-center justify-center gap-3.5">
+        <div className="hero-cta-group mt-5 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
           <button
             onClick={() => handleStart(selectedRole)}
             disabled={isCreating}
-            className="hero-cta-btn group px-7 py-3.5 bg-slate-950 hover:bg-slate-900 text-white rounded-xl font-bold text-sm sm:text-base flex items-center gap-2.5 shadow-xl shadow-slate-950/15 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed border border-emerald-500/30"
+            className="hero-cta-btn shimmer-button group w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-slate-950 dark:bg-emerald-600 text-white rounded-2xl font-black text-xs sm:text-base flex items-center justify-center gap-2.5 sm:gap-3 transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed border border-emerald-500/30"
           >
             {isCreating ? (
               <>
-                <Loader2 size={18} className="animate-spin text-emerald-400" />
-                <span>Preparing Editor...</span>
+                <Loader2 size={16} className="animate-spin text-emerald-400" />
+                <span>Preparing Studio...</span>
               </>
             ) : (
               <>
@@ -183,239 +182,174 @@ const Hero = () => {
 
           <button
             onClick={() => navigate("/ats-checker")}
-            className="hero-cta-btn px-6 py-3.5 bg-white/80 hover:bg-white border border-slate-200 text-slate-800 rounded-xl font-bold text-sm sm:text-base hover:border-emerald-300 hover:shadow-xs transition-all flex items-center gap-2 cursor-pointer shadow-2xs backdrop-blur-md"
+            className="hero-cta-btn w-full sm:w-auto px-5 py-3 sm:px-7 sm:py-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl font-bold text-xs sm:text-base transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Search size={16} className="text-emerald-600" />
-            <span>Check Existing ATS Score</span>
+            <Search size={15} className="text-emerald-600 dark:text-emerald-400" />
+            <span>Scan Existing ATS Score</span>
           </button>
         </div>
 
         {/* TRUST BADGES ROW */}
-        <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-slate-500 font-medium">
-          <div className="hero-trust-item flex items-center gap-1.5">
-            <CheckCircle2 size={15} className="text-emerald-600" />
-            <span>Instant PDF & Word Export</span>
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mt-5 sm:mt-8 text-xs text-slate-500 font-medium">
+          <div className="hero-trust-item flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800 shadow-2xs backdrop-blur-sm text-[11px] sm:text-xs">
+            <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400 sm:w-3.5 sm:h-3.5" />
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Instant Export</span>
           </div>
 
-          <div className="hero-trust-item flex items-center gap-1.5">
-            <ShieldCheck size={15} className="text-emerald-600" />
-            <span>100% ATS Parser Safe</span>
+          <div className="hero-trust-item flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800 shadow-2xs backdrop-blur-sm text-[11px] sm:text-xs">
+            <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400 sm:w-3.5 sm:h-3.5" />
+            <span className="font-semibold text-slate-700 dark:text-slate-300">100% ATS Safe</span>
           </div>
 
-          <div className="hero-trust-item flex items-center gap-1.5">
-            <Zap size={15} className="text-emerald-600" />
-            <span>Zero Watermarks</span>
+          <div className="hero-trust-item hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800 shadow-2xs backdrop-blur-sm">
+            <Zap size={15} className="text-emerald-600 dark:text-emerald-400" />
+            <span className="font-semibold text-slate-700 dark:text-slate-300">Zero Watermarks</span>
           </div>
 
-          <div className="hero-trust-item flex items-center gap-1.5 text-slate-600">
-            <Sparkles size={14} className="text-emerald-600" />
-            <span>AI Career Copilot Included</span>
+          <div className="hero-trust-item hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50/80 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300 shadow-2xs backdrop-blur-sm">
+            <Sparkles size={14} className="text-emerald-600 dark:text-emerald-400" />
+            <span className="font-bold">AI Career Copilot Included</span>
           </div>
         </div>
 
-        {/* PREMIUM GLASS PRODUCT PREVIEW DASHBOARD */}
-        <div className="hero-showcase-container relative mt-12 max-w-5xl mx-auto text-left">
+        {/* ELEVATED PROOF TELEMETRY METRICS DOCK (AWWWARDS-LEVEL UI) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 lg:gap-5 mt-10 sm:mt-12 w-full max-w-6xl mx-auto text-left">
           
-          {/* FLOATING GLASS TELEMETRY BADGE: ATS SCORE (TOP RIGHT) */}
-          <div className="hero-showcase-badge hero-badge-float-1 absolute -top-4 -right-2 sm:-right-4 z-20 p-3 sm:p-3.5 rounded-2xl bg-slate-950/95 text-white shadow-2xl shadow-emerald-950/40 border border-emerald-500/40 flex items-center gap-3 backdrop-blur-xl">
-            <div className="size-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 font-black text-sm">
-              {selectedRole.score}%
-            </div>
-            <div className="leading-tight">
-              <div className="flex items-center gap-1">
-                <span className="text-[11px] font-black text-emerald-400 uppercase tracking-wider">ATS Score</span>
-                <Sparkles size={11} className="text-emerald-400 animate-pulse" />
-              </div>
-              <p className="text-[10px] text-slate-300 font-medium">Workday & Taleo Compliant</p>
-            </div>
-          </div>
-
-          {/* FLOATING GLASS TELEMETRY BADGE: AI COPILOT SUGGESTION (BOTTOM LEFT) */}
-          <div className="hero-showcase-badge hero-badge-float-2 absolute -bottom-4 -left-2 sm:-left-4 z-20 p-3 sm:p-3.5 rounded-2xl bg-white/95 text-slate-900 shadow-xl shadow-slate-900/10 border border-slate-200/90 flex items-center gap-3 backdrop-blur-xl">
-            <BrandIcon size="xs" />
-            <div className="leading-tight">
-              <div className="flex items-center gap-1">
-                <span className="text-[11px] font-black text-slate-950 uppercase tracking-wider">STAR Metric Generated</span>
-                <CheckCircle2 size={12} className="text-emerald-600" />
-              </div>
-              <p className="text-[10px] text-slate-500 font-medium">Quantified +42% efficiency impact</p>
-            </div>
-          </div>
-
-          {/* MAIN GLASS DASHBOARD CONTAINER */}
-          <div className="rounded-2xl sm:rounded-3xl bg-white/85 border border-slate-200/90 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.12)] overflow-hidden backdrop-blur-xl">
+          {/* 1. RESUMES CRAFTED */}
+          <div className="hero-metric-card relative overflow-hidden bg-white/95 backdrop-blur-xl border border-slate-200/90 hover:border-emerald-500/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 lg:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.18)] hover:-translate-y-1.5 transition-all duration-300 group">
+            {/* Top Corner Ambient Glow */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
             
-            {/* WINDOW TOP HEADER */}
-            <div className="px-4 py-3 bg-slate-100/70 border-b border-slate-200/70 flex items-center justify-between backdrop-blur-md">
-              <div className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full bg-rose-400/80" />
-                <span className="size-2.5 rounded-full bg-amber-400/80" />
-                <span className="size-2.5 rounded-full bg-emerald-400/80" />
-                <span className="ml-2 text-[11px] font-mono text-slate-400 font-semibold hidden sm:inline">
-                  froggie.site &mdash; {selectedRole.title} Live Preview
-                </span>
+            {/* Top Badge & Icon Row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="icon-3d-pod icon-3d-pod-emerald p-2 sm:p-2.5 rounded-xl sm:rounded-2xl">
+                <Users size={18} className="lucide-3d" />
               </div>
-
-              <div className="flex items-center gap-2 text-[11px] font-bold text-emerald-700 bg-emerald-500/10 border border-emerald-200/80 px-2.5 py-0.5 rounded-full">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70 shadow-2xs">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>ATS Engine Verified</span>
-              </div>
+                <span>Live</span>
+              </span>
             </div>
 
-            {/* SPLIT DASHBOARD: RESUME CONTENT + ATS TELEMETRY PANEL */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200/70">
-              
-              {/* LEFT: RESUME DOCUMENT PREVIEW (8 COLS) */}
-              <div className="lg:col-span-8 p-6 sm:p-7 space-y-5 bg-white/60">
-                {/* CANDIDATE PROFILE HEADER */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-                  <div>
-                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                      Alex Rivera
-                    </h3>
-                    <p className="text-xs sm:text-sm font-bold text-emerald-600 mt-0.5">
-                      Senior {selectedRole.title}
-                    </p>
-                  </div>
+            {/* Metric Value */}
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight leading-none font-display">
+              50,000+
+            </div>
 
-                  <div className="flex flex-wrap gap-1.5 text-[10px] font-medium text-slate-500">
-                    <span className="px-2 py-0.5 rounded bg-slate-100">San Francisco, CA</span>
-                    <span className="px-2 py-0.5 rounded bg-slate-100">alex.rivera@email.com</span>
-                    <span className="px-2 py-0.5 rounded bg-slate-100">github.com/alex</span>
-                  </div>
-                </div>
+            {/* Metric Label */}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-black uppercase tracking-wider mt-2">
+              Resumes Crafted
+            </p>
 
-                {/* WORK EXPERIENCE */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                      <TrendingUp size={13} className="text-emerald-600" />
-                      Work Experience
-                    </h4>
-                    <span className="text-[10px] text-slate-400 font-medium">2022 &ndash; Present</span>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/70 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-800">
-                      <span>Lead {selectedRole.title} &middot; Vertex Technologies</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
-                        STAR Compliant
-                      </span>
-                    </div>
-                    <ul className="space-y-1 text-xs text-slate-600 pl-1 leading-relaxed">
-                      <li className="flex items-start gap-2">
-                        <span className="size-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                        <span>
-                          Architected high-throughput infrastructure reducing API latency by{" "}
-                          <strong className="text-emerald-900 font-bold bg-emerald-100/80 px-1 rounded">42%</strong> for 2.5M+ active users.
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="size-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
-                        <span>
-                          Automated deployment workflows cutting release cycles from <strong className="text-emerald-900 font-bold bg-emerald-100/80 px-1 rounded">3 days to 45 minutes</strong>.
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* MATCHED SKILLS CLUSTER */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Cpu size={13} className="text-emerald-600" />
-                    Target Role Keywords
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedRole.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-semibold text-[11px] border border-emerald-200/80"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                    <span className="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 font-medium text-[11px]">
-                      +8 More Extracted
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT: REAL-TIME ATS AUDIT PANEL (4 COLS) */}
-              <div className="lg:col-span-4 p-5 sm:p-6 bg-slate-50/60 space-y-4 flex flex-col justify-between">
-                <div className="space-y-3.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                      <BarChart3 size={14} className="text-emerald-600" />
-                      ATS Telemetry
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
-                      Grade A+
-                    </span>
-                  </div>
-
-                  {/* MINI METRIC BARS */}
-                  <div className="space-y-2.5 text-xs">
-                    <div>
-                      <div className="flex justify-between text-[11px] font-semibold text-slate-600 mb-1">
-                        <span>Keyword Alignment</span>
-                        <span className="text-slate-900 font-bold">96%</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full w-[96%]" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-[11px] font-semibold text-slate-600 mb-1">
-                        <span>Parser Readability</span>
-                        <span className="text-slate-900 font-bold">100%</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full w-full" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between text-[11px] font-semibold text-slate-600 mb-1">
-                        <span>Quantified Metrics</span>
-                        <span className="text-slate-900 font-bold">4 of 4</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-                        <div className="h-full bg-emerald-500 rounded-full w-[100%]" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* AUDIT CHECKPOINTS */}
-                  <div className="pt-2 border-t border-slate-200/80 space-y-1.5 text-[11px] text-slate-600">
-                    <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-600 shrink-0" />
-                      <span>Single-column standard layout</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-600 shrink-0" />
-                      <span>Standard web-safe fonts</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Check size={13} className="text-emerald-600 shrink-0" />
-                      <span>Zero tables, graphs, or text boxes</span>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleStart(selectedRole)}
-                  className="w-full mt-2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>Customize in Studio</span>
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-
+            {/* Context Sublabel */}
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span className="text-slate-600 font-bold truncate">Worldwide Users</span>
+              <span className="text-emerald-600 font-extrabold flex items-center gap-0.5">
+                <TrendingUp size={12} />
+                +14% MoM
+              </span>
             </div>
           </div>
+
+          {/* 2. ATS PASS RATE */}
+          <div className="hero-metric-card relative overflow-hidden bg-white/95 backdrop-blur-xl border border-slate-200/90 hover:border-emerald-500/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 lg:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.18)] hover:-translate-y-1.5 transition-all duration-300 group">
+            {/* Top Corner Ambient Glow */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-teal-500/15 via-emerald-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            
+            {/* Top Badge & Icon Row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="icon-3d-pod icon-3d-pod-teal p-2 sm:p-2.5 rounded-xl sm:rounded-2xl">
+                <Target size={18} className="lucide-3d" />
+              </div>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-teal-50 text-teal-800 border border-teal-200/70 shadow-2xs">
+                <span>Top 1% Tier</span>
+              </span>
+            </div>
+
+            {/* Metric Value */}
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent tracking-tight leading-none font-display">
+              96.4%
+            </div>
+
+            {/* Metric Label */}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-black uppercase tracking-wider mt-2">
+              ATS Pass Rate
+            </p>
+
+            {/* Context Sublabel */}
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span className="text-slate-600 font-bold truncate">Parsed & Verified</span>
+              <span className="text-teal-700 font-extrabold">Workday & Taleo</span>
+            </div>
+          </div>
+
+          {/* 3. CANDIDATE RATING */}
+          <div className="hero-metric-card hidden sm:block relative overflow-hidden bg-white/95 backdrop-blur-xl border border-slate-200/90 hover:border-amber-400/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 lg:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.18)] hover:-translate-y-1.5 transition-all duration-300 group">
+            {/* Top Corner Ambient Glow */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-500/15 via-orange-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            
+            {/* Top Badge & Icon Row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="icon-3d-pod icon-3d-pod-amber p-2 sm:p-2.5 rounded-xl sm:rounded-2xl">
+                <Star size={18} className="fill-white text-white lucide-3d" />
+              </div>
+              <div className="flex items-center gap-0.5 text-amber-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+            </div>
+
+            {/* Metric Value */}
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight leading-none font-display flex items-baseline gap-1">
+              <span>4.9</span>
+              <span className="text-base sm:text-lg text-slate-400 font-bold">/ 5.0</span>
+            </div>
+
+            {/* Metric Label */}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-black uppercase tracking-wider mt-2">
+              Candidate Rating
+            </p>
+
+            {/* Context Sublabel */}
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span className="text-slate-600 font-bold truncate">Verified Outcomes</span>
+              <span className="text-amber-700 font-extrabold">4,800+ Reviews</span>
+            </div>
+          </div>
+
+          {/* 4. ZERO PAYWALLS */}
+          <div className="hero-metric-card hidden sm:block relative overflow-hidden bg-white/95 backdrop-blur-xl border border-slate-200/90 hover:border-emerald-500/50 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 lg:p-6 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.18)] hover:-translate-y-1.5 transition-all duration-300 group">
+            {/* Top Corner Ambient Glow */}
+            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/15 via-teal-400/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+            
+            {/* Top Badge & Icon Row */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="icon-3d-pod icon-3d-pod-emerald p-2 sm:p-2.5 rounded-xl sm:rounded-2xl">
+                <Zap size={18} className="lucide-3d" />
+              </div>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70 shadow-2xs">
+                <span>Free Forever</span>
+              </span>
+            </div>
+
+            {/* Metric Value */}
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent tracking-tight leading-none font-display">
+              100% Free
+            </div>
+
+            {/* Metric Label */}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-black uppercase tracking-wider mt-2">
+              Zero Paywalls
+            </p>
+
+            {/* Context Sublabel */}
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+              <span className="text-slate-600 font-bold truncate">No Credit Card</span>
+              <span className="text-emerald-700 font-extrabold">Unlimited Exports</span>
+            </div>
+          </div>
+
         </div>
 
       </div>

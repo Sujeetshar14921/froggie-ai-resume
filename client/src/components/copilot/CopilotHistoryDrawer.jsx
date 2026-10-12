@@ -133,10 +133,10 @@ const CopilotHistoryDrawer = ({ isOpen, onClose }) => {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={(e) => handleDelete(c._id, e)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+                    className="btn-3d-delete p-1.5 rounded-lg cursor-pointer opacity-0 group-hover:opacity-100"
                     title="Delete Chat"
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={13} className="lucide-3d" />
                   </button>
                   <ArrowRight size={13} className="text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </div>

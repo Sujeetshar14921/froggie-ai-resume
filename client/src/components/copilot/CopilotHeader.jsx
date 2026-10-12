@@ -1,6 +1,6 @@
 import React from "react";
 import { Plus, History, X, FileText, ChevronDown, Sparkles } from "lucide-react";
-import { BrandIcon } from "../FrogLogo";
+import { Copilot3DIcon } from "../FrogLogo";
 import { useCopilot } from "../../hooks/useCopilot";
 
 const CopilotHeader = ({ onOpenHistory }) => {
@@ -18,10 +18,9 @@ const CopilotHeader = ({ onOpenHistory }) => {
     <header className="relative px-4 sm:px-5 py-3.5 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shrink-0 flex items-center justify-between z-10 select-none">
       {/* BRAND & RESUME CONTEXT */}
       <div className="flex items-center gap-2.5 min-w-0">
-        {/* AVATAR */}
+        {/* 3D AVATAR */}
         <div className="relative">
-          <BrandIcon size="sm" />
-          <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" title="Copilot Online" />
+          <Copilot3DIcon size="sm" showStatus={true} animated={false} />
         </div>
 
         <div className="min-w-0">

@@ -36,7 +36,7 @@ const AtsSkillsMatch = ({ skills = {} }) => {
         <div className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-100 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
-              <CheckCircle2 size={16} className="text-emerald-600" />
+              <CheckCircle2 size={16} className="text-emerald-600 lucide-3d" />
               Matched Skills ({matched.length})
             </h4>
           </div>

@@ -20,6 +20,7 @@ export function initHeroAnimation(container) {
           ".hero-chips-container",
           ".hero-cta-group",
           ".hero-trust-item",
+          ".hero-metric-card",
           ".hero-showcase-container",
           ".hero-showcase-badge",
           ".hero-companies-section",
@@ -126,81 +127,109 @@ export function initHeroAnimation(container) {
         },
         "-=0.3"
       )
-      // 8. 3D Showcase Mockup Rises Up into View
+      // 8. Elevated Telemetry Metric Cards stagger in
       .fromTo(
-        ".hero-showcase-container",
-        {
-          opacity: 0,
-          y: 70,
-          scale: 0.92,
-          rotateX: 12,
-          transformPerspective: 1200,
-        },
+        ".hero-metric-card",
+        { opacity: 0, y: 24, scale: 0.95 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          rotateX: 0,
-          duration: 1.1,
-          ease: "power3.out",
+          duration: 0.7,
+          stagger: 0.1,
+          ease: animationConfig.ease.overshoot,
         },
-        "-=0.4"
+        "-=0.2"
       )
-      // 9. Floating Telemetry Badges Pop Out
-      .fromTo(
-        ".hero-showcase-badge",
-        { opacity: 0, scale: 0.5, y: 20 },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.12,
-          ease: "back.out(2)",
-        },
-        "-=0.5"
-      )
-      // 10. Hiring company logos reveal
-      .fromTo(
-        ".hero-companies-section",
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: animationConfig.ease.smooth,
-        },
-        "-=0.3"
-      );
+      // 8. 3D Showcase Mockup Rises Up into View (if present)
+      if (container.querySelector(".hero-showcase-container")) {
+        tl.fromTo(
+          ".hero-showcase-container",
+          {
+            opacity: 0,
+            y: 70,
+            scale: 0.92,
+            rotateX: 12,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotateX: 0,
+            duration: 1.1,
+            ease: "power3.out",
+          },
+          "-=0.4"
+        );
+      }
 
-    // Continuous Subtle Ambient Float for 3D Card
-    gsap.to(".hero-showcase-card", {
-      y: -10,
-      rotateX: 2,
-      rotateY: -2,
-      duration: 4.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
+      // 9. Floating Telemetry Badges Pop Out (if present)
+      if (container.querySelector(".hero-showcase-badge")) {
+        tl.fromTo(
+          ".hero-showcase-badge",
+          { opacity: 0, scale: 0.5, y: 20 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.12,
+            ease: "back.out(2)",
+          },
+          "-=0.5"
+        );
+      }
 
-    // Independent Float for Floating Badge 1 (ATS Score)
-    gsap.to(".hero-badge-float-1", {
-      y: -8,
-      duration: 3.2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
+      // 10. Hiring company logos reveal (if present)
+      if (container.querySelector(".hero-companies-section")) {
+        tl.fromTo(
+          ".hero-companies-section",
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: animationConfig.ease.smooth,
+          },
+          "-=0.3"
+        );
+      }
 
-    // Independent Float for Floating Badge 2 (AI Copilot)
-    gsap.to(".hero-badge-float-2", {
-      y: 8,
-      duration: 3.8,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
+    // Continuous Subtle Ambient Float for 3D Card (if present)
+    if (container.querySelector(".hero-showcase-card")) {
+      gsap.to(".hero-showcase-card", {
+        y: -10,
+        rotateX: 2,
+        rotateY: -2,
+        duration: 4.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }
+
+    // Independent Float for Floating Badge 1 (ATS Score) (if present)
+    if (container.querySelector(".hero-badge-float-1")) {
+      gsap.to(".hero-badge-float-1", {
+        y: -8,
+        duration: 3.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }
+
+    // Independent Float for Floating Badge 2 (AI Copilot) (if present)
+    if (container.querySelector(".hero-badge-float-2")) {
+      gsap.to(".hero-badge-float-2", {
+        y: 8,
+        duration: 3.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+    }
 
     // Interactive 3D Cursor Tilt
     const showcaseContainer = container.querySelector(".hero-showcase-container");

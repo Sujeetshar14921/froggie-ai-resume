@@ -458,33 +458,33 @@ const TalentPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/70 text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50/70 dark:bg-[#090d16] text-slate-800 dark:text-slate-100 flex flex-col font-sans pb-20 lg:pb-0">
       <Navbar />
 
       {/* TOP COMMAND HEADER */}
-      <section className="relative overflow-hidden pt-7 pb-8 bg-white border-b border-slate-200/80">
+      <section className="relative overflow-hidden pt-7 pb-8 bg-white dark:bg-[#0d1424] border-b border-slate-200/80 dark:border-slate-800">
         {/* Colorful half-circle ambient auras */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none blur-xl animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none blur-xl" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none blur-2xl animate-pulse" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none blur-2xl" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
+        <div className="w-full px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10 space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1 text-left">
+            <div className="space-y-1.5 text-left">
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-black">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] font-black shadow-2xs">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <Sparkles size={13} className="text-emerald-600" />
                   <span>Verified Public Talent Showcase</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">
+                <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">
                   Open Directory
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
-                Public Talent Discovery & Resume Showcase
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight">
+                Public Talent Discovery & <span className="text-gradient-emerald">Resume Showcase</span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-xl">
+              <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-xl leading-relaxed">
                 Explore candidate profiles by exact skill stacks, roles, verified experience, degrees & age group.
               </p>
             </div>
@@ -494,7 +494,7 @@ const TalentPage = () => {
               <button
                 type="button"
                 onClick={() => setIsJdMatcherOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500/25 hover:to-teal-500/25 text-emerald-900 border border-emerald-300 font-extrabold text-xs shadow-2xs transition-all cursor-pointer hover:scale-102"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500/25 hover:to-teal-500/25 text-emerald-900 border border-emerald-300 font-extrabold text-xs shadow-2xs transition-all cursor-pointer hover:scale-102 active:scale-98"
               >
                 <FileSearch size={15} className="text-emerald-700" />
                 <span>AI Job Description Matcher</span>
@@ -503,7 +503,7 @@ const TalentPage = () => {
               <button
                 type="button"
                 onClick={() => setOnlyShortlisted((prev) => !prev)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-102 active:scale-98 ${
                   onlyShortlisted
                     ? "bg-amber-50 text-amber-900 border-amber-300 shadow-xs"
                     : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
@@ -528,7 +528,7 @@ const TalentPage = () => {
                 setCurrentPage(1);
               }}
               placeholder="Search by skill (React, AWS), role (Full Stack), name, college/degree, or keyword..."
-              className="w-full bg-transparent border-none outline-none text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+              className="w-full bg-transparent border-none outline-none text-xs sm:text-sm font-semibold text-slate-950 placeholder:text-slate-400"
             />
             {searchQuery && (
               <button
@@ -542,7 +542,7 @@ const TalentPage = () => {
             <button
               type="button"
               onClick={() => fetchTalentPool()}
-              className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-white font-black text-xs sm:text-sm transition-all shadow-md shrink-0 cursor-pointer border border-emerald-500/30"
+              className="shimmer-button px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 text-white font-black text-xs sm:text-sm transition-all shadow-md shrink-0 cursor-pointer border border-emerald-500/30 hover:scale-102 active:scale-98"
             >
               Search Candidates
             </button>
@@ -578,7 +578,7 @@ const TalentPage = () => {
       </section>
 
       {/* MAIN CONTENT: MULTI-FILTER BAR & CANDIDATE GRID */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-5 text-left">
+      <main className="flex-1 w-full px-4 sm:px-8 lg:px-12 xl:px-16 py-6 sm:py-8 space-y-6 text-left">
         
         {/* AI JOB MATCH ACTIVE BANNER */}
         {aiMatchData && (

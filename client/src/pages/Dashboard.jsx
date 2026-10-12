@@ -145,25 +145,25 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/70 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {/* HERO COMMAND HEADER */}
-        <div className="relative overflow-hidden bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-2xs text-left">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/10 via-teal-500/5 to-transparent rounded-full pointer-events-none" />
+        <div className="relative overflow-hidden glass-card-elevated p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm text-left">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-teal-500/5 to-transparent rounded-full pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-black shadow-2xs">
                   <FrogFace size={13} />
-                  <span>froggie AI v2.4 Active</span>
+                  <span>froggie AI v3.0 Studio</span>
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] sm:text-xs font-black shadow-2xs">
                   <ShieldCheck size={13} className="text-emerald-600" />
-                  <span>ATS Engine 100% Ready</span>
+                  <span>ATS Engine Ready</span>
                 </span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-black text-slate-950 tracking-tight">
+              <h1 className="text-xl sm:text-4xl font-black text-slate-950 tracking-tight">
                 Welcome back, {user?.name?.split(" ")[0] || "Candidate"} 👋
               </h1>
               <p className="text-slate-500 text-xs sm:text-sm max-w-2xl font-medium">
@@ -172,20 +172,20 @@ const Dashboard = () => {
             </div>
 
             {/* QUICK LAUNCH ACTIONS */}
-            <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap shrink-0">
               <button
                 onClick={() => setShowCreateResume(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/30"
+                className="shimmer-button flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-black text-xs sm:text-sm shadow-xl transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/40"
               >
-                <Plus size={16} className="text-emerald-400" />
+                <Plus size={15} className="text-emerald-400" />
                 <span>Create Resume</span>
               </button>
 
               <button
                 onClick={() => setShowUploadResume(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-extrabold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer hover:scale-102"
               >
-                <UploadCloud size={16} className="text-slate-600" />
+                <UploadCloud size={15} className="text-slate-600 dark:text-slate-300" />
                 <span>Import PDF</span>
               </button>
             </div>
@@ -193,93 +193,93 @@ const Dashboard = () => {
         </div>
 
         {/* 4 TELEMETRY STATS CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-left">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 text-left">
           {/* Total Resumes */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 group hover:shadow-md transition-all">
+          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
             <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Resumes in Vault
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Resumes
               </span>
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-                <FileText size={16} />
+              <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
+                <FileText size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-slate-950">
+            <div className="text-xl sm:text-3xl font-black text-slate-950">
               {resumes.length}
             </div>
-            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              {resumes.length > 0 ? "Ready to tailor & export" : "Create your first draft"}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+              <span className="truncate">{resumes.length > 0 ? "Ready to export" : "Create draft"}</span>
             </p>
           </div>
 
           {/* ATS Readiness */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 group hover:shadow-md transition-all">
+          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
             <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                ATS Parsing Score
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                ATS Score
               </span>
-              <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-                <Target size={16} />
+              <div className="icon-3d-pod icon-3d-pod-blue p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
+                <Target size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-blue-600">
+            <div className="text-xl sm:text-3xl font-black text-blue-600">
               96%
             </div>
-            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-              Workday & Lever tested
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
+              <span className="truncate">Workday & Lever</span>
             </p>
           </div>
 
           {/* Active Job CRM Pipeline */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 group hover:shadow-md transition-all">
+          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
             <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 Tracked Jobs
               </span>
-              <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-                <Briefcase size={16} />
+              <div className="icon-3d-pod icon-3d-pod-amber p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
+                <Briefcase size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-amber-600">
+            <div className="text-xl sm:text-3xl font-black text-amber-600">
               {totalTracked}
             </div>
-            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-              {activeInterviews > 0 ? `${activeInterviews} active interviews` : "CRM pipeline active"}
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+              <span className="truncate">{activeInterviews > 0 ? `${activeInterviews} interviews` : "Pipeline active"}</span>
             </p>
           </div>
 
           {/* Career Wins / Offers */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 group hover:shadow-md transition-all">
+          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
             <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Offers & Wins
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                Offers
               </span>
-              <div className="p-2 rounded-xl bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
-                <Award size={16} />
+              <div className="icon-3d-pod icon-3d-pod-purple p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
+                <Award size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
               </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-purple-600">
+            <div className="text-xl sm:text-3xl font-black text-purple-600">
               {totalOffers}
             </div>
-            <p className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-              Target salary milestones
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
+              <span className="truncate">Milestones</span>
             </p>
           </div>
         </div>
 
         {/* 4 CORE WORKFLOW HERO CARDS */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 text-left">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 text-left">
           {/* CREATE RESUME */}
           <div
             onClick={() => setShowCreateResume(true)}
-            className="group relative bg-white rounded-3xl p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-72 overflow-hidden"
+            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-              <Plus size={24} />
+            <div className="icon-3d-pod icon-3d-pod-emerald w-12 h-12 rounded-2xl flex items-center justify-center">
+              <Plus size={24} className="lucide-3d text-white" />
             </div>
 
             <div>
@@ -303,81 +303,81 @@ const Dashboard = () => {
           {/* IMPORT PDF RESUME */}
           <div
             onClick={() => setShowUploadResume(true)}
-            className="group relative bg-white rounded-3xl p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-400 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-72 overflow-hidden"
+            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-400 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-900 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-slate-950 group-hover:text-white transition-all">
-              <UploadCloud size={24} />
+            <div className="icon-3d-pod icon-3d-pod-dark w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-400">
+              <UploadCloud size={20} className="lucide-3d sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-800 mb-2 border border-slate-200">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-800 mb-1.5 sm:mb-2 border border-slate-200">
                 AI PDF Parser
               </span>
-              <h3 className="text-lg font-black text-slate-950 group-hover:text-slate-900 transition-colors">
+              <h3 className="text-base sm:text-lg font-black text-slate-950 group-hover:text-slate-900 transition-colors">
                 Import PDF / Doc
               </h3>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
+              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
                 Upload your existing PDF and AI will auto-extract skills, work history, and sections.
               </p>
             </div>
 
             <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Upload Document</span>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </div>
           </div>
 
           {/* ATS SCORE CHECKER */}
           <div
             onClick={() => navigate("/app/ats-checker")}
-            className="group relative bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 shadow-md hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-72 overflow-hidden"
+            className="group relative bg-slate-950 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-800 shadow-md hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-400/30 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-              <ShieldCheck size={24} />
+            <div className="icon-3d-pod icon-3d-pod-emerald w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
+              <ShieldCheck size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-2">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-1.5 sm:mb-2">
                 AI Match 0-100
               </span>
-              <h3 className="text-lg font-black text-white group-hover:text-emerald-300 transition-colors">
+              <h3 className="text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors">
                 ATS Checker
               </h3>
-              <p className="text-slate-300 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
+              <p className="text-slate-300 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
                 Scan your resume against any job description to discover keyword gaps & optimize score.
               </p>
             </div>
 
             <div className="flex items-center gap-1.5 text-emerald-300 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Run ATS Benchmark</span>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </div>
           </div>
 
           {/* JOB APPLICATION TRACKER */}
           <div
             onClick={() => navigate("/app/applications")}
-            className="group relative bg-white rounded-3xl p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-amber-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between h-72 overflow-hidden"
+            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-amber-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shadow-xs group-hover:scale-110 group-hover:bg-amber-600 group-hover:text-white transition-all">
-              <Briefcase size={24} />
+            <div className="icon-3d-pod icon-3d-pod-amber w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
+              <Briefcase size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 mb-2 border border-amber-200/70">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 mb-1.5 sm:mb-2 border border-amber-200/70">
                 Pipeline CRM
               </span>
-              <h3 className="text-lg font-black text-slate-950 group-hover:text-amber-700 transition-colors">
+              <h3 className="text-base sm:text-lg font-black text-slate-950 group-hover:text-amber-700 transition-colors">
                 Job Tracker
               </h3>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
+              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
                 Track interview rounds, follow-up dates, tailored resumes, and salary negotiations.
               </p>
             </div>
 
             <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Open Pipeline</span>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </div>
           </div>
         </div>
@@ -387,17 +387,17 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText size={18} className="text-slate-900" />
-              <h2 className="text-xl font-black text-slate-950 tracking-tight">
+              <h2 className="text-xl font-black text-slate-950 dark:text-white tracking-tight">
                 Recent Resumes
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700">
+              <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-700">
                 {resumes.length}
               </span>
             </div>
 
             <button
               onClick={() => navigate("/app/my-resumes")}
-              className="text-xs font-extrabold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 hover:underline cursor-pointer"
+              className="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1 hover:underline cursor-pointer"
             >
               <span>View All Resumes</span>
               <ChevronRight size={14} />
@@ -405,7 +405,7 @@ const Dashboard = () => {
           </div>
 
           {isFetchingResumes ? (
-            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-400">
+            <div className="p-12 text-center bg-white dark:bg-[#0c1424] rounded-3xl border border-slate-200 dark:border-slate-800 text-slate-400">
               <RefreshCw size={24} className="animate-spin mx-auto text-emerald-600 mb-2" />
               <p className="text-xs font-bold">Loading your resume drafts...</p>
             </div>
@@ -415,24 +415,24 @@ const Dashboard = () => {
                 <div
                   key={r._id}
                   onClick={() => navigate(`/app/builder/${r._id}`)}
-                  className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer space-y-3 group text-left"
+                  className="bg-white dark:bg-[#0c1424] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all cursor-pointer space-y-3 group text-left"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <h4 className="font-black text-sm text-slate-950 truncate group-hover:text-emerald-700 transition-colors">
+                      <h4 className="font-black text-sm text-slate-950 dark:text-white truncate group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {r.title || "Untitled Resume"}
                       </h4>
-                      <p className="text-[11px] text-slate-500 font-semibold truncate mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold truncate mt-0.5">
                         {r.personal_info?.profession || "Profession not set"}
                       </p>
                     </div>
 
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[10px] font-black shrink-0">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-black shrink-0">
                       ATS Ready
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-slate-400 flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
                     <span className="flex items-center gap-1">
                       <Clock size={11} />
                       <span>{new Date(r.updatedAt || Date.now()).toLocaleDateString()}</span>
@@ -444,14 +444,14 @@ const Dashboard = () => {
                           e.stopPropagation();
                           navigate(`/app/ats-checker?resumeId=${r._id}`);
                         }}
-                        className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 text-[10px] font-bold transition-colors"
+                        className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 text-slate-700 dark:text-slate-300 text-[10px] font-bold transition-colors border border-transparent dark:border-slate-700"
                         title="Scan with ATS"
                       >
                         ATS Scan
                       </button>
                       <button
                         onClick={(e) => handleDuplicateResume(r._id, e)}
-                        className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+                        className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
                         title="Duplicate"
                       >
                         <Copy size={12} />

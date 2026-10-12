@@ -65,39 +65,39 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-      <div className="relative bg-white w-full max-w-lg p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
+      <div className="relative bg-white dark:bg-[#0c1424] w-full max-w-lg p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
         <button
           onClick={handleClose}
-          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
         >
           <X size={20} />
         </button>
 
-        <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-5">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-5">
           <UploadCloud size={24} />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-900">Upload & Import Resume</h2>
-        <p className="text-slate-500 text-sm mt-1 mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Upload & Import Resume</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 mb-6">
           Upload any <strong>PDF</strong> or <strong>Word (.doc, .docx)</strong> resume. froggie AI extracts all details and loads them directly into the visual preview & editor.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Resume Title
             </label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Senior Engineer Resume"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-850 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/30 outline-none transition-all"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Select Resume File (PDF / DOC / DOCX)
             </label>
             <label
@@ -113,7 +113,7 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
                   ? "border-emerald-500 bg-emerald-50"
                   : resumeFile
                   ? "border-emerald-400 bg-emerald-50/50"
-                  : "border-slate-200 hover:border-emerald-400 hover:bg-slate-50"
+                  : "border-slate-200 dark:border-slate-800 hover:border-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-900/40"
               }`}
             >
               <div
@@ -126,17 +126,17 @@ const UploadResumeModal = ({ isOpen, onClose, onUpload, isLoading }) => {
 
               {resumeFile ? (
                 <div>
-                  <p className="font-bold text-slate-900 text-sm">{resumeFile.name}</p>
+                  <p className="font-bold text-slate-900 dark:text-white text-sm">{resumeFile.name}</p>
                   <p className="text-xs text-emerald-600 font-semibold mt-1">
                     ✓ File attached ({(resumeFile.size / 1024).toFixed(1)} KB) · Click to change
                   </p>
                 </div>
               ) : (
                 <div>
-                  <p className="font-bold text-slate-900 text-sm">
+                  <p className="font-bold text-slate-900 dark:text-white text-sm">
                     Click to browse or drag & drop Resume
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                     Supports PDF, Word (.docx, .doc), or TXT up to 10MB
                   </p>
                 </div>

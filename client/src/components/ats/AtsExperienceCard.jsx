@@ -9,9 +9,11 @@ const AtsExperienceCard = ({ experience = {}, jobTitle = "", resumeTitle = "" })
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
       <div>
-        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <Briefcase size={18} className="text-emerald-600" />
-          Experience & Role Alignment
+        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+          <div className="icon-3d-pod icon-3d-pod-teal p-1.5 rounded-xl">
+            <Briefcase size={16} className="lucide-3d text-white" />
+          </div>
+          <span>Experience & Role Alignment</span>
         </h3>
         <p className="text-xs text-slate-500 mt-0.5">
           Seniority, required tenure, and title consistency check

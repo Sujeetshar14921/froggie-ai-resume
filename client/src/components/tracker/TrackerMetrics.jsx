@@ -35,8 +35,8 @@ const TrackerMetrics = ({ metrics = {}, applications = [] }) => {
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
               Total Tracked
             </span>
-            <div className="p-2 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-              <Briefcase size={16} />
+            <div className="icon-3d-pod icon-3d-pod-blue p-2 rounded-xl">
+              <Briefcase size={16} className="lucide-3d text-white" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -58,8 +58,8 @@ const TrackerMetrics = ({ metrics = {}, applications = [] }) => {
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
               Interviewing
             </span>
-            <div className="p-2 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-              <Clock size={16} />
+            <div className="icon-3d-pod icon-3d-pod-amber p-2 rounded-xl">
+              <Clock size={16} className="lucide-3d text-white" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -81,8 +81,8 @@ const TrackerMetrics = ({ metrics = {}, applications = [] }) => {
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
               Response Rate
             </span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-              <TrendingUp size={16} />
+            <div className="icon-3d-pod icon-3d-pod-emerald p-2 rounded-xl">
+              <TrendingUp size={16} className="lucide-3d text-white" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -108,8 +108,8 @@ const TrackerMetrics = ({ metrics = {}, applications = [] }) => {
             <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
               Offers Received
             </span>
-            <div className="p-2 rounded-xl bg-purple-50 text-purple-600 group-hover:scale-110 transition-transform">
-              <Award size={16} />
+            <div className="icon-3d-pod icon-3d-pod-purple p-2 rounded-xl">
+              <Award size={16} className="lucide-3d text-white" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">

@@ -316,10 +316,10 @@ const ApplicationTracker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-50/60 py-4 sm:py-8 px-3.5 sm:px-8 lg:px-12 xl:px-16 pb-20">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* TOP COMMAND HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card-elevated p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm">
           <div className="space-y-1.5 text-left">
             <div className="flex items-center gap-2">
               <BrandIcon size="sm" />
@@ -342,14 +342,14 @@ const ApplicationTracker = () => {
           {/* TOP RIGHT ACTION BAR */}
           <div className="flex flex-wrap items-center gap-2.5 justify-start md:justify-end">
             {/* View Mode Toggle Switcher */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-2xl border border-slate-200/80">
+            <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setViewMode("kanban")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   viewMode === "kanban"
-                    ? "bg-white text-slate-950 shadow-xs scale-102"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-xs scale-102"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
                 title="Kanban Board View"
               >
@@ -361,8 +361,8 @@ const ApplicationTracker = () => {
                 onClick={() => setViewMode("list")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   viewMode === "list"
-                    ? "bg-white text-slate-950 shadow-xs scale-102"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-xs scale-102"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
                 title="Table / List View"
               >
@@ -374,7 +374,7 @@ const ApplicationTracker = () => {
             {/* Export CSV */}
             <button
               onClick={handleExportCSV}
-              className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              className="p-2.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
               title="Export to CSV"
             >
               <Download size={15} />
@@ -383,7 +383,7 @@ const ApplicationTracker = () => {
             {/* Reset Demo Data */}
             <button
               onClick={handleResetDemoData}
-              className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              className="p-2.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-200 dark:border-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
               title="Reset Sample Data"
             >
               <RotateCcw size={15} />
@@ -392,7 +392,7 @@ const ApplicationTracker = () => {
             {/* Primary Add Button */}
             <button
               onClick={() => handleOpenAddModal("wishlist")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/30"
+              className="shimmer-button inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/40"
             >
               <Plus size={15} className="text-emerald-400" />
               <span>Add Application</span>

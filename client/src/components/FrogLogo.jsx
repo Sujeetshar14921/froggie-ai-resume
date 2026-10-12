@@ -128,4 +128,126 @@ export const BrandIcon = ({
   );
 };
 
+/**
+ * 3D Holographic Froggie Copilot Mascot Icon
+ * Engineered with realistic 3D volumetric glass, specular highlights,
+ * emerald metallic extrusion rim, and animated micro-sparkle AI aura.
+ */
+export const Copilot3DIcon = ({
+  size = "md",
+  className = "",
+  showGlow = true,
+  showStatus = true,
+  animated = true,
+}) => {
+  const sizeMap = {
+    xs: {
+      wrapper: "size-7 rounded-xl",
+      inner: "rounded-[10px]",
+      icon: 16,
+      statusDot: "size-2 -bottom-0.5 -right-0.5",
+    },
+    sm: {
+      wrapper: "size-9 rounded-2xl",
+      inner: "rounded-[14px]",
+      icon: 21,
+      statusDot: "size-2.5 -bottom-0.5 -right-0.5",
+    },
+    md: {
+      wrapper: "size-11 rounded-2xl",
+      inner: "rounded-[14px]",
+      icon: 26,
+      statusDot: "size-3 -bottom-0.5 -right-0.5",
+    },
+    lg: {
+      wrapper: "size-14 rounded-3xl",
+      inner: "rounded-[20px]",
+      icon: 34,
+      statusDot: "size-3.5 -bottom-1 -right-1",
+    },
+    xl: {
+      wrapper: "size-20 rounded-[28px]",
+      inner: "rounded-[24px]",
+      icon: 48,
+      statusDot: "size-4 -bottom-1 -right-1",
+    },
+  };
+
+  const config = sizeMap[size] || sizeMap.md;
+
+  return (
+    <div className={`relative shrink-0 select-none ${config.wrapper} ${className}`}>
+      {/* 1. AMBIENT 3D RADIAL GLOW (PULSING AURA) */}
+      {showGlow && (
+        <span
+          className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 opacity-40 blur-md pointer-events-none animate-pulse"
+          style={{ animationDuration: "2.5s" }}
+        />
+      )}
+
+      {/* 2. 3D METALLIC RIM CONTAINER WITH INSET RIM LIGHT */}
+      <div
+        className={`relative w-full h-full p-[2px] ${config.wrapper} transition-all duration-300 ${
+          animated ? "group-hover:scale-105 group-hover:-translate-y-0.5" : ""
+        }`}
+        style={{
+          background:
+            "linear-gradient(135deg, #34d399 0%, #10b981 30%, #047857 70%, #064e3b 100%)",
+          boxShadow: `
+            inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.75),
+            inset 0 -1.5px 1.5px 0 rgba(0, 0, 0, 0.6),
+            0 4px 14px -2px rgba(16, 185, 129, 0.45),
+            0 8px 20px -4px rgba(0, 0, 0, 0.4)
+          `,
+        }}
+      >
+        {/* 3. INNER OBSIDIAN GLASS CORE */}
+        <div
+          className={`relative w-full h-full flex items-center justify-center overflow-hidden ${config.inner}`}
+          style={{
+            background:
+              "radial-gradient(circle at 35% 25%, #1e293b 0%, #09131f 55%, #020617 100%)",
+            boxShadow:
+              "inset 0 3px 6px -1px rgba(0, 0, 0, 0.85), inset 0 -1px 2px 0 rgba(16, 185, 129, 0.3)",
+          }}
+        >
+          {/* 4. SPECULAR GLASS TOP-SHEEN ARC */}
+          <div
+            className="absolute top-0 left-0 right-0 h-[55%] pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.08) 65%, transparent 100%)",
+              borderTopLeftRadius: "inherit",
+              borderTopRightRadius: "inherit",
+            }}
+          />
+
+          {/* 5. 3D FLOATING FROGFACE MASCOT WITH DEPTH SHADOW */}
+          <div
+            className="relative z-10 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110"
+            style={{
+              filter:
+                "drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 2px rgba(16, 185, 129, 0.35))",
+            }}
+          >
+            <FrogFace size={config.icon} />
+          </div>
+
+          {/* 6. CORNER MICRO-SPECULAR FLARE */}
+          <div className="absolute top-1 left-1.5 size-1.5 rounded-full bg-white opacity-70 blur-[0.5px] pointer-events-none" />
+        </div>
+      </div>
+
+      {/* 7. LIVE PULSING AI STATUS BEACON */}
+      {showStatus && (
+        <span
+          className={`absolute ${config.statusDot} rounded-full bg-emerald-400 ring-2 ring-slate-950 shadow-md shadow-emerald-500/50 flex items-center justify-center z-20`}
+        >
+          <span className="size-1 rounded-full bg-white animate-ping opacity-75" />
+        </span>
+      )}
+    </div>
+  );
+};
+
 export default FrogFace;

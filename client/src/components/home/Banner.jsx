@@ -15,7 +15,7 @@ const Banner = () => {
       <div className="absolute left-1/4 -top-10 w-96 h-24 bg-emerald-500/15 blur-[60px] pointer-events-none" />
       <div className="absolute right-1/4 -top-10 w-96 h-24 bg-teal-500/15 blur-[60px] pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 py-2.5">
         <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
 
           {/* LEFT BADGE & TEXT */}

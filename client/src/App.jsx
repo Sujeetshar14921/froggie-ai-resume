@@ -4,8 +4,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authApi } from './api/authApi'
 import { login, setLoading } from './app/features/authSlice'
 import { FroggieToaster } from './components/notifications'
+import CookieConsent from './components/CookieConsent'
 import { CopilotProvider } from './context/CopilotContext'
 import { CopilotWidget, CopilotDrawer } from './components/copilot'
+import MobileBottomNav from './components/MobileBottomNav'
+import { initTheme } from './utils/theme'
 
 // Route-level code-splitting for high-speed page loads
 const Home = lazy(() => import('./pages/Home'))
@@ -20,6 +23,7 @@ const Login = lazy(() => import('./pages/Login'))
 const FaqPage = lazy(() => import('./pages/FaqPage'))
 const DonatePage = lazy(() => import('./pages/DonatePage'))
 const TalentPage = lazy(() => import('./pages/TalentPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 // Minimalist fallback loader
 const PageLoader = () => (
@@ -55,12 +59,14 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
+    initTheme()
     getUserData()
   }, [getUserData])
 
   return (
     <CopilotProvider>
       <FroggieToaster />
+      <CookieConsent />
 
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -77,6 +83,7 @@ const App = () => {
             <Route path='my-resumes' element={<MyResumes />} />
             <Route path='ats-checker' element={<AtsChecker />} />
             <Route path='applications' element={<ApplicationTracker />} />
+            <Route path='settings' element={<SettingsPage />} />
             <Route path='builder/:resumeId' element={<ResumeBuilder />} />
           </Route>
 
@@ -84,13 +91,12 @@ const App = () => {
         </Routes>
       </Suspense>
 
-      {/* GLOBAL FLOATING CAREER COPILOT WIDGET & SLIDE-OVER DRAWER (Visible only when user creates account / logs in) */}
-      {user && (
-        <>
-          <CopilotWidget />
-          <CopilotDrawer />
-        </>
-      )}
+      {/* GLOBAL FLOATING CAREER COPILOT 3D WIDGET & SLIDE-OVER DRAWER */}
+      <CopilotWidget />
+      {user && <CopilotDrawer />}
+
+      {/* NATIVE MOBILE BOTTOM CONTROLS */}
+      <MobileBottomNav />
     </CopilotProvider>
   )
 }

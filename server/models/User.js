@@ -16,6 +16,9 @@ const UserSchema = new mongoose.Schema({
     phone: { type: String, default: '' },
     location: { type: String, default: '' },
     bio: { type: String, default: '' },
+    isDeactivated: { type: Boolean, default: false },
+    deactivationReason: { type: String, default: '' },
+    feedback: { type: mongoose.Schema.Types.Mixed, default: {} },
 }, { timestamps: true })
 
 UserSchema.methods.comparePassword = function (password){
