@@ -271,8 +271,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* 4 CORE WORKFLOW HERO CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 text-left">
+        {/* 5 CORE WORKFLOW HERO CARDS */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 text-left">
           {/* CREATE RESUME */}
           <div
             onClick={() => setShowCreateResume(true)}
@@ -377,6 +377,33 @@ const Dashboard = () => {
 
             <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Open Pipeline</span>
+              <ArrowRight size={13} />
+            </div>
+          </div>
+
+          {/* SMART FILE & MEDIA STUDIO */}
+          <div
+            onClick={() => navigate("/file-studio")}
+            className="group relative bg-white dark:bg-[#0c1424] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden col-span-2 sm:col-span-1"
+          >
+            <div className="icon-3d-pod icon-3d-pod-purple w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-indigo-400">
+              <Sparkles size={20} className="lucide-3d sm:w-6 sm:h-6" />
+            </div>
+
+            <div>
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 mb-1.5 sm:mb-2 border border-indigo-200/70 dark:border-indigo-800/60">
+                All-in-One Studio
+              </span>
+              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                File & Media Studio
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
+                Resize storage (KB/MB), convert (PDF ↔ Word, PNG ↔ JPG), crop, edit & remove photo background.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
+              <span>Open Studio</span>
               <ArrowRight size={13} />
             </div>
           </div>

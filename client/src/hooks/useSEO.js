@@ -23,7 +23,7 @@ export const useSEO = ({
   useEffect(() => {
     // 1. Update Title
     if (title) {
-      const fullTitle = title.includes("froggie") ? title : `${title} | froggie AI Resume Studio`;
+      const fullTitle = title.includes("froggie") ? title : `${title} | froggie AI`;
       document.title = fullTitle;
 
       // OG Title

@@ -314,7 +314,10 @@ const NovaSidebarTemplate = ({ data, accentColor = "#0284C7", pageContent = null
                 src={data.personal_info.image}
                 alt={data?.personal_info?.full_name}
                 className="size-20 sm:size-24 rounded-2xl object-cover border-2 shadow-xs"
-                style={{ borderColor: accentColor || "#0284C7" }}
+                style={{
+                  borderColor: accentColor || "#0284C7",
+                  backgroundColor: data?.personal_info?.image_bg || "transparent",
+                }}
               />
             </div>
           ) : (

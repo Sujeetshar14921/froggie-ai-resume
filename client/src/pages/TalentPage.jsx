@@ -160,39 +160,67 @@ const TalentPage = () => {
 
   const talentSchema = useMemo(() => ({
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "@id": "https://froggie.site/talent#page",
-    "name": "froggie Public Talent Discovery & Verified Resume Directory",
-    "url": "https://froggie.site/talent",
-    "description": "Discover verified candidate profiles, developer portfolios, and ATS-optimized resumes. Filter candidates by technical skills, experience level, location, and specialization.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "froggie",
-      "url": "https://froggie.site/",
-      "logo": "https://froggie.site/favicon.svg"
-    },
-    "mainEntity": {
-      "@type": "ItemList",
-      "itemListElement": (resumes || []).slice(0, 20).map((candidate, idx) => ({
-        "@type": "ListItem",
-        "position": idx + 1,
-        "item": {
-          "@type": "ProfilePage",
-          "name": `${candidate.personal_info?.full_name || "Verified Candidate"} — ${candidate.personal_info?.profession || "Professional"}`,
-          "url": `https://froggie.site/view/${candidate._id}`,
-          "description": candidate.professional_summary || `${candidate.personal_info?.profession || "Candidate"} resume profile on froggie`,
-          "image": candidate.personal_info?.image || candidate.userId?.image || "https://froggie.site/og-image.png"
-        }
-      }))
-    }
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": "https://froggie.site/talent#directory",
+        "name": "froggie Public Talent Discovery & Verified Candidate Directory",
+        "url": "https://froggie.site/talent",
+        "description": "Discover, filter, and hire pre-screened tech talent, full-stack developers, software engineers, and UI/UX designers with ATS-optimized resumes and portfolios.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "froggie",
+          "url": "https://froggie.site/",
+          "logo": "https://froggie.site/favicon.svg",
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://froggie.site/talent?q={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+        "mainEntity": {
+          "@type": "ItemList",
+          "numberOfItems": (resumes || []).length,
+          "itemListElement": (resumes || []).slice(0, 25).map((candidate, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "item": {
+              "@type": "ProfilePage",
+              "name": `${candidate.personal_info?.full_name || "Verified Candidate"} — ${candidate.personal_info?.profession || "Software Professional"}`,
+              "url": `https://froggie.site/view/${candidate._id}`,
+              "description": candidate.professional_summary || `${candidate.personal_info?.profession || "Candidate"} verified resume profile on froggie`,
+              "image": candidate.personal_info?.image || candidate.userId?.image || "https://froggie.site/og-image.png",
+            },
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://froggie.site/talent#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://froggie.site/",
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Public Talent Pool",
+            "item": "https://froggie.site/talent",
+          },
+        ],
+      },
+    ],
   }), [resumes]);
 
   useSEO({
-    title: "Public Talent Discovery & Resume Directory | froggie",
+    title: "talent | froggie AI",
     description:
-      "Explore, filter, and discover verified candidate resumes and portfolios. Search top talent by technical skills, roles, experience, degrees, and location on froggie.",
+      "Discover and hire verified software engineers, full-stack developers, React engineers, and tech talent. Browse pre-screened ATS-compliant resumes, GitHub portfolios, and direct contact details. Free for hiring teams & recruiters.",
     keywords:
-      "talent pool, verified resumes, candidate directory, hire developers, frontend developer resumes, backend engineer portfolios, full stack developer CV, data scientist resumes, ATS resumes directory, froggie talent showcase, public developer profiles",
+      "hire developers, tech talent pool, public candidate directory, developer resumes, hire software engineers, full stack developer resumes, frontend developer CV, backend engineer portfolio, hire React developers, hire Node.js developers, hire Python engineers, data scientist resumes, verified candidate showcase, ATS resumes directory, remote tech talent, hire talent India, hire freelance developers, froggie talent pool, froggie candidate showcase, hire AI engineers",
     canonical: "https://froggie.site/talent",
     ogImage: "https://froggie.site/og-image.png",
     schema: talentSchema,

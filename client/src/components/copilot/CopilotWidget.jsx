@@ -189,36 +189,19 @@ const CopilotWidget = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onMouseDown={handleMouseDown}
-          className={`relative size-13 rounded-2xl flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform ${
+          className={`relative group size-13 rounded-2xl flex items-center justify-center cursor-grab active:cursor-grabbing transition-all duration-300 bg-slate-950/95 border border-slate-700/60 hover:border-emerald-500/60 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.6)] hover:shadow-[0_8px_24px_-2px_rgba(16,185,129,0.35)] backdrop-blur-xl ${
             isDragging ? "scale-110 shadow-2xl" : "active:scale-95"
           }`}
-          style={{
-            background:
-              "linear-gradient(145deg, rgba(15, 23, 42, 0.96) 0%, rgba(2, 6, 23, 0.98) 100%)",
-            border: "1.5px solid rgba(52, 211, 153, 0.65)",
-            boxShadow: `
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
-              inset 0 -2px 0 0 rgba(0, 0, 0, 0.8),
-              0 8px 24px -2px rgba(0, 0, 0, 0.6),
-              0 0 16px 2px rgba(16, 185, 129, 0.35)
-            `,
-            backdropFilter: "blur(20px)",
-          }}
           title="Drag anywhere or tap to open AI Copilot"
           aria-label="Open Froggie AI Copilot"
         >
-          {/* Glowing Aura Ring */}
-          <span className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-40 blur-md pointer-events-none animate-pulse-glow" />
+          {/* Glowing Aura Ring (ONLY on hover / active) */}
+          <span className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-0 group-hover:opacity-50 blur-md pointer-events-none transition-opacity duration-300" />
 
           {/* 3D Copilot Icon */}
           <div className="relative z-10 shrink-0 pointer-events-none">
-            <Copilot3DIcon size="sm" showStatus={false} animated={false} />
+            <Copilot3DIcon size="sm" showGlow={false} showStatus={false} animated={false} />
           </div>
-
-          {/* Mini AI Badge Indicator */}
-          <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-black text-[8px] tracking-wider uppercase shadow-xs ring-2 ring-slate-950">
-            AI
-          </span>
         </button>
       </div>
 
@@ -227,28 +210,16 @@ const CopilotWidget = () => {
         <button
           type="button"
           onClick={handleClick}
-          className="relative group flex items-center gap-2.5 pl-2 pr-4.5 py-2 rounded-full text-white cursor-pointer select-none transition-all duration-300 hover:scale-105 active:scale-95"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%)",
-            border: "1px solid rgba(52, 211, 153, 0.45)",
-            boxShadow: `
-              inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
-              inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.7),
-              0 6px 20px -2px rgba(16, 185, 129, 0.38),
-              0 12px 32px -4px rgba(0, 0, 0, 0.5)
-            `,
-            backdropFilter: "blur(16px)",
-          }}
+          className="relative group flex items-center gap-2.5 pl-2.5 pr-4.5 py-2 rounded-full text-white cursor-pointer select-none transition-all duration-300 bg-slate-950/90 dark:bg-slate-900/95 border border-slate-700/60 dark:border-slate-800 hover:border-emerald-500/60 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_28px_-2px_rgba(16,185,129,0.35)] hover:scale-105 active:scale-95 backdrop-blur-xl"
           title="Chat with Froggie AI Copilot"
           aria-label="Open Froggie AI Copilot"
         >
-          {/* Ambient Aurora Glow */}
-          <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-35 blur-md group-hover:opacity-65 transition-opacity duration-300 pointer-events-none" />
+          {/* Ambient Aurora Glow (ONLY on hover) */}
+          <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-0 group-hover:opacity-50 blur-md transition-opacity duration-300 pointer-events-none" />
 
           {/* 3D Holographic Icon */}
           <div className="relative z-10 shrink-0">
-            <Copilot3DIcon size="sm" showStatus={false} animated={false} />
+            <Copilot3DIcon size="sm" showGlow={false} showStatus={false} animated={false} />
           </div>
 
           {/* Labels */}
@@ -257,13 +228,10 @@ const CopilotWidget = () => {
               <span className="text-xs font-black tracking-tight text-white group-hover:text-emerald-300 transition-colors">
                 Copilot
               </span>
-              <span className="px-1.5 py-0.2 rounded-md text-[8px] font-black bg-gradient-to-r from-emerald-500/25 to-teal-500/25 text-emerald-300 border border-emerald-400/40 uppercase tracking-wider shadow-2xs">
-                AI 3.0
-              </span>
             </div>
             <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
-              <span className="group-hover:text-slate-300 transition-colors">Ask anything</span>
-              <Sparkles size={9} className="text-emerald-400 animate-pulse" />
+              <span className="group-hover:text-slate-200 transition-colors">Ask anything</span>
+              <Sparkles size={9} className="text-slate-400 group-hover:text-emerald-400 transition-colors" />
             </span>
           </div>
         </button>

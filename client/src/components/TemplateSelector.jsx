@@ -33,8 +33,8 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
         <Layout size={13} className="text-emerald-600 dark:text-emerald-400" />
         <span className="max-sm:hidden">{activeTemplate.name}</span>
         <span className="sm:hidden">Template</span>
-        <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200/80 dark:border-emerald-800/80">
-          ATS {activeTemplate.atsScore}
+        <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700/60 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-600">
+          {activeTemplate.badge || "Layout"}
         </span>
       </button>
 
@@ -45,7 +45,7 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
               <FrogFace size={15} />
               Choose Template
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">ATS-Optimized</span>
+            <span className="text-[10px] text-slate-400 font-medium">Layouts</span>
           </div>
 
           <div className="space-y-2.5">
@@ -70,12 +70,6 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
                         <h4 className={`text-xs font-bold ${isSelected ? "text-emerald-950 font-black" : "text-slate-800 dark:text-slate-200"}`}>
                           {template.name}
                         </h4>
-                        <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
-                          isSelected ? "bg-emerald-200/80 text-emerald-900 border border-emerald-300/80" : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
-                        }`}>
-                          <ShieldCheck size={10} className="lucide-3d" />
-                          ATS {template.atsScore}
-                        </span>
                         {template.badge && (
                           <span className="text-[9px] font-bold text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                             {template.badge}

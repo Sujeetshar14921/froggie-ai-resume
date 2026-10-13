@@ -67,17 +67,6 @@ const BuilderHeader = ({
             </button>
           )}
 
-          {/* ATS CHECKER BUTTON */}
-          <Link
-            to={resumeId ? `/app/ats-checker?resumeId=${resumeId}` : "/app/ats-checker"}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-500/10 hover:bg-emerald-500/20 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-200 rounded-lg border border-emerald-400/50 dark:border-emerald-800/60 transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
-            title="Scan and benchmark this resume in the ATS Checker"
-          >
-            <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">ATS Checker</span>
-            <span className="sm:hidden">ATS</span>
-          </Link>
-
           {/* PUBLIC / PRIVATE TOGGLE */}
           <button
             onClick={onToggleVisibility}

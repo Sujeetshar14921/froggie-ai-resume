@@ -24,6 +24,7 @@ const FaqPage = lazy(() => import('./pages/FaqPage'))
 const DonatePage = lazy(() => import('./pages/DonatePage'))
 const TalentPage = lazy(() => import('./pages/TalentPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const FileStudioPage = lazy(() => import('./pages/FileStudioPage'))
 
 // Minimalist fallback loader
 const PageLoader = () => (
@@ -72,17 +73,20 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<Login initialMode="register" />} />
           <Route path='/faq' element={<FaqPage />} />
           <Route path='/donate' element={<DonatePage />} />
           <Route path='/talent' element={<TalentPage />} />
           <Route path='/talent/:resumeId' element={<Preview />} />
           <Route path='/ats-checker' element={<Navigate to='/app/ats-checker' replace />} />
+          <Route path='/file-studio' element={<FileStudioPage />} />
 
           <Route path='app' element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path='my-resumes' element={<MyResumes />} />
             <Route path='ats-checker' element={<AtsChecker />} />
             <Route path='applications' element={<ApplicationTracker />} />
+            <Route path='file-studio' element={<Navigate to='/file-studio' replace />} />
             <Route path='settings' element={<SettingsPage />} />
             <Route path='builder/:resumeId' element={<ResumeBuilder />} />
           </Route>

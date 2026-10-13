@@ -7,7 +7,6 @@ import {
   UploadCloud,
   ShieldCheck,
   Zap,
-  Check,
   Loader2,
   Search,
   Users,
@@ -22,18 +21,9 @@ import toast from "react-hot-toast";
 import FrogFace, { BrandIcon } from "../FrogLogo";
 import { initHeroAnimation } from "../../animations";
 
-const trendingRoles = [
-  { id: "swe", title: "Software Engineer", skills: ["React", "TypeScript", "Node.js", "System Design", "AWS", "Docker"], score: 96 },
-  { id: "pm", title: "Product Manager", skills: ["Product Strategy", "A/B Testing", "Agile", "User Research", "GTM", "SQL"], score: 94 },
-  { id: "ds", title: "Data Scientist", skills: ["Python", "Machine Learning", "PyTorch", "SQL", "Deep Learning", "Pandas"], score: 95 },
-  { id: "devops", title: "DevOps Engineer", skills: ["Kubernetes", "Terraform", "CI/CD", "AWS", "Prometheus", "Linux"], score: 93 },
-  { id: "ux", title: "Product Designer", skills: ["Figma", "Design Systems", "Prototyping", "User Research", "Wireframing"], score: 94 },
-];
-
 const Hero = () => {
   const navigate = useNavigate();
   const { token, user } = useSelector((state) => state.auth);
-  const [selectedRole, setSelectedRole] = useState(trendingRoles[0]);
   const [isCreating, setIsCreating] = useState(false);
   const heroRef = useRef(null);
 
@@ -42,9 +32,8 @@ const Hero = () => {
     return cleanup;
   }, []);
 
-  const handleStart = async (roleObj = selectedRole) => {
-    const roleTitle = roleObj.title;
-    const resumeTitle = user?.name ? `${user.name} - ${roleTitle}` : `${roleTitle} Resume`;
+  const handleStart = async () => {
+    const resumeTitle = user?.name ? `${user.name}'s Resume` : "My Resume";
 
     if (token) {
       try {
@@ -59,7 +48,7 @@ const Hero = () => {
           { headers: { Authorization: token } }
         );
 
-        toast.success(`Opening ${roleTitle} resume in editor...`);
+        toast.success("Opening resume in editor...");
         navigate(`/app/builder/${data.resume._id}`);
       } catch (error) {
         toast.error(error?.response?.data?.message || "Failed to create resume");
@@ -72,7 +61,7 @@ const Hero = () => {
         JSON.stringify({
           template: "classic",
           accent_color: "#10B981",
-          title: `${roleTitle} Resume`,
+          title: resumeTitle,
         })
       );
       toast.success("Please sign in or create an account to customize this resume!");
@@ -134,35 +123,10 @@ const Hero = () => {
           Craft high-converting, recruiter-ready resumes in minutes. Live ATS scoring, AI bullet refinement, and 7 battle-tested formats—all 100% free.
         </p>
 
-        {/* ROLE SELECTION CHIPS */}
-        <div className="hero-chips-container mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-xs">
-          <span className="text-slate-400 font-extrabold uppercase tracking-wider text-[10px] mr-1 hidden sm:inline">
-            Choose Target Role:
-          </span>
-          {trendingRoles.map((role) => {
-            const isSelected = selectedRole.id === role.id;
-            return (
-              <button
-                key={role.id}
-                type="button"
-                onClick={() => setSelectedRole(role)}
-                className={`hero-chip px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-[11px] sm:text-xs transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
-                  isSelected
-                    ? "bg-slate-950 dark:bg-emerald-600 text-white shadow-md scale-102 sm:scale-105 border border-emerald-500/60"
-                    : "bg-white/90 dark:bg-slate-900/90 hover:bg-white text-slate-600 dark:text-slate-300 hover:text-slate-950 border border-slate-200/90 dark:border-slate-800 backdrop-blur-md"
-                }`}
-              >
-                {isSelected && <Check size={12} className="text-emerald-400" />}
-                <span>{role.title}</span>
-              </button>
-            );
-          })}
-        </div>
-
         {/* CTA ACTION BUTTONS */}
-        <div className="hero-cta-group mt-5 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
+        <div className="hero-cta-group mt-6 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 w-full sm:w-auto">
           <button
-            onClick={() => handleStart(selectedRole)}
+            onClick={handleStart}
             disabled={isCreating}
             className="hero-cta-btn shimmer-button group w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-slate-950 dark:bg-emerald-600 text-white rounded-2xl font-black text-xs sm:text-base flex items-center justify-center gap-2.5 sm:gap-3 transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed border border-emerald-500/30"
           >
@@ -174,7 +138,7 @@ const Hero = () => {
             ) : (
               <>
                 <BrandIcon size="xs" />
-                <span>Build {selectedRole.title} Resume Free</span>
+                <span>Build Your Resume Free</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform text-emerald-400" />
               </>
             )}

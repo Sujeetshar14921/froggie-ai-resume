@@ -506,6 +506,7 @@ const SkillBulletTemplate = ({ data, accentColor = "#10B981", pageContent = null
                 src={imageSrc}
                 alt="Profile"
                 className="size-20 sm:size-24 rounded-2xl object-cover ring-2 ring-slate-200 shadow-xs shrink-0"
+                style={{ backgroundColor: data?.personal_info?.image_bg || "transparent" }}
               />
             )}
 

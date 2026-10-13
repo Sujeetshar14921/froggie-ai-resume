@@ -40,10 +40,12 @@ const Navbar = () => {
   const profileDropdownRef = useRef(null);
 
   const isTalentPage = location.pathname.startsWith("/talent");
+  const isFileStudioPage = location.pathname.startsWith("/file-studio");
   const isLandingOrFaq =
     (location.pathname === "/" ||
       location.pathname === "/faq" ||
-      location.pathname === "/donate") &&
+      location.pathname === "/donate" ||
+      isFileStudioPage) &&
     !isTalentPage;
 
   // React to theme changes across application
@@ -128,11 +130,10 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Find Talent", href: "/talent", isRoute: true },
+    { name: "File Studio", href: "/file-studio", isRoute: true },
     { name: "Features", href: "/#features", isRoute: false },
     { name: "Templates", href: "/#templates", isRoute: false },
     { name: "How It Works", href: "/#how-it-works", isRoute: false },
-    { name: "ATS Scanner", href: "/app/ats-checker", isRoute: true },
-    { name: "FAQ", href: "/faq", isRoute: true },
   ];
 
   return (
@@ -141,13 +142,12 @@ const Navbar = () => {
         ref={headerRef}
         className={`sticky top-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]"
-            : "bg-white/65 backdrop-blur-md border-b border-slate-200/40"
+            ? "bg-white/85 dark:bg-[#090d16]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)]"
+            : "bg-white/70 dark:bg-[#090d16]/70 backdrop-blur-md border-b border-slate-200/40 dark:border-slate-800/40"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 h-18 sm:h-20 flex items-center justify-between">
 
-          {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
           {/* BRAND NAME IDENTITY WITH FROGGIE LOGO */}
           <Link to="/" className="nav-brand flex items-center gap-2.5 group shrink-0">
             <BrandIcon
@@ -158,20 +158,16 @@ const Navbar = () => {
 
             <div className="leading-tight">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+                <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white transition-colors">
                   froggie<span className="text-emerald-500">.</span>
                 </span>
-                <span
-                  className={`px-2 py-0.5 text-[10px] font-black rounded-lg uppercase tracking-wider ${
-                    isTalentPage
-                      ? "bg-slate-950 text-white shadow-xs"
-                      : "bg-emerald-50 text-emerald-700 border border-emerald-200/70"
-                  }`}
-                >
-                  {isTalentPage ? "Talent Hub 🌐" : "AI ATS"}
-                </span>
+                {isTalentPage && (
+                  <span className="px-2 py-0.5 text-[10px] font-black rounded-lg uppercase tracking-wider bg-slate-950 dark:bg-emerald-600 text-white shadow-xs">
+                    Talent Hub 🌐
+                  </span>
+                )}
               </div>
-              <p className="text-[10px] text-slate-400 font-medium tracking-wide">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wide">
                 {isTalentPage ? "Verified Candidate Showcase" : "Smart Resume Studio"}
               </p>
             </div>
@@ -179,7 +175,7 @@ const Navbar = () => {
 
           {/* TALENT PAGE CENTER STATUS PILL */}
           {isTalentPage && (
-            <div className="hidden lg:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/80 border border-slate-200/70 text-slate-700 text-xs font-bold shadow-2xs backdrop-blur-sm">
+            <div className="hidden lg:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold shadow-2xs backdrop-blur-sm">
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Public Candidate Showcase & Resume Directory</span>
             </div>
@@ -187,7 +183,7 @@ const Navbar = () => {
 
           {/* DESKTOP NAV LINKS (VISIBLE ON LANDING / FAQ ONLY) */}
           {isLandingOrFaq && (
-            <nav className="nav-links-pill hidden lg:flex items-center gap-1 bg-slate-100/70 px-3 py-1.5 rounded-full border border-slate-200/60 backdrop-blur-sm shadow-2xs">
+            <nav className="nav-links-pill hidden lg:flex items-center gap-1 bg-slate-100/70 dark:bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-200/60 dark:border-slate-800/80 backdrop-blur-sm shadow-2xs">
               {navLinks.map((link) =>
                 link.isRoute ? (
                   <Link
@@ -195,8 +191,8 @@ const Navbar = () => {
                     to={link.href}
                     className={`nav-link-item text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
                       location.pathname === link.href
-                        ? "bg-slate-950 text-white shadow-2xs"
-                        : "text-slate-600 hover:text-emerald-700 hover:bg-white"
+                        ? "bg-slate-950 dark:bg-emerald-600 text-white shadow-2xs"
+                        : "text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-white dark:hover:bg-slate-800"
                     }`}
                   >
                     {link.name}
@@ -205,7 +201,7 @@ const Navbar = () => {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="nav-link-item text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-white px-3.5 py-1.5 rounded-full transition-all"
+                    className="nav-link-item text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-white dark:hover:bg-slate-800 px-3.5 py-1.5 rounded-full transition-all"
                   >
                     {link.name}
                   </a>
@@ -443,6 +439,39 @@ const Navbar = () => {
                             }`}
                           >
                             AI
+                          </span>
+                        </Link>
+
+                        {/* 5. SMART FILE & MEDIA STUDIO */}
+                        <Link
+                          to="/file-studio"
+                          onClick={() => setOpen(false)}
+                          className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition-all ${
+                            location.pathname.startsWith("/file-studio")
+                              ? "dropdown-item-3d-selected font-black"
+                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
+                                location.pathname.startsWith("/file-studio")
+                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
+                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/40 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                              }`}
+                            >
+                              <Sparkles size={15} className={location.pathname.startsWith("/file-studio") ? "lucide-3d" : ""} />
+                            </div>
+                            <span>File & Media Studio</span>
+                          </div>
+                          <span
+                            className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md tracking-wider ${
+                              location.pathname.startsWith("/file-studio")
+                                ? "bg-indigo-600 text-white shadow-2xs"
+                                : "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/40"
+                            }`}
+                          >
+                            Studio
                           </span>
                         </Link>
 

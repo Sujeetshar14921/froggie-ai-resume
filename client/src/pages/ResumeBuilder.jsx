@@ -1,10 +1,20 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Loader2, Eye, Terminal, ShieldCheck, FileCheck, Layers } from "lucide-react";
+import {
+  Loader2,
+  FileCheck,
+  Layers,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ResumePreview from "../components/ResumePreview";
-import AtsXRayScanner from "../components/ats/AtsXRayScanner";
 import ProfessionalSummaryForm from "../components/ProfessionalSummaryForm";
 import ExperienceForm from "../components/ExperienceForm";
 import EducationForm from "../components/EducationForm";
@@ -57,7 +67,7 @@ const ResumeBuilder = () => {
 
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
-  const [previewMode, setPreviewMode] = useState("visual"); // "visual" | "xray"
+  const [previewZoom, setPreviewZoom] = useState(1);
   const [autoFitSinglePage, setAutoFitSinglePage] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -372,7 +382,7 @@ const ResumeBuilder = () => {
   };
 
   return (
-    <div className="lg:h-screen lg:max-h-screen flex flex-col bg-slate-100/80 overflow-x-hidden">
+    <div className="lg:h-screen lg:max-h-screen flex flex-col bg-slate-100/80 dark:bg-[#070b14] overflow-x-hidden">
       {/* TOP COMPACT NAVBAR */}
       <BuilderHeader
         title={resumeData.title}
@@ -394,7 +404,7 @@ const ResumeBuilder = () => {
           <div className="grid lg:grid-cols-12 gap-4 sm:gap-5 h-full min-h-0">
             
             {/* LEFT PANEL - UI FORM EDITOR */}
-            <section className="builder-form-panel no-print lg:col-span-5 h-full flex flex-col min-h-0 bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden relative">
+            <section className="builder-form-panel no-print lg:col-span-5 h-full flex flex-col min-h-0 bg-white dark:bg-[#0c1424] rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden relative">
               
               {/* STEP PROGRESS & ICONS WITH DRAG-AND-DROP REORDERING */}
               <BuilderStepper
@@ -522,86 +532,126 @@ const ResumeBuilder = () => {
             </div>
 
             {/* FIXED BOTTOM FOOTER OF FORM */}
-            <div className="shrink-0 p-3 sm:px-5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between text-xs">
-              <span className="text-slate-500 font-medium">
-                Step {activeSectionIndex + 1} of {orderedBuilderSections.length}:{" "}
-                <strong className="text-slate-800">{activeSection?.name}</strong>
-              </span>
+            <div className="shrink-0 p-3 sm:px-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 flex items-center justify-between text-xs gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveSectionIndex((prev) => Math.max(prev - 1, 0))}
+                  disabled={activeSectionIndex === 0}
+                  className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-800 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+                  title="Previous Section"
+                >
+                  <ChevronLeft className="size-3.5" />
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
 
-              <button
-                onClick={saveResume}
-                disabled={isSaving || isLoading}
-                className="shimmer-button flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-1.5 rounded-lg transition-all shadow-xs disabled:opacity-60 cursor-pointer hover:scale-102 active:scale-98"
-              >
-                {isSaving && <Loader2 className="size-3.5 animate-spin" />}
-                <span>{isSaving ? "Saving..." : "Save Changes"}</span>
-              </button>
+                <span className="text-slate-500 dark:text-slate-400 font-medium text-[11px] truncate">
+                  {activeSectionIndex + 1}/{orderedBuilderSections.length}:{" "}
+                  <strong className="text-slate-800 dark:text-slate-200">{activeSection?.name}</strong>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {activeSectionIndex < orderedBuilderSections.length - 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveSectionIndex((prev) => Math.min(prev + 1, orderedBuilderSections.length - 1))}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/80 dark:border-emerald-800 transition-all cursor-pointer"
+                    title="Next Section"
+                  >
+                    <span>Next</span>
+                    <ChevronRight className="size-3.5" />
+                  </button>
+                )}
+
+                <button
+                  onClick={saveResume}
+                  disabled={isSaving || isLoading}
+                  className="shimmer-button flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold px-3.5 sm:px-4 py-1.5 rounded-lg transition-all shadow-xs disabled:opacity-60 cursor-pointer hover:scale-102 active:scale-98"
+                >
+                  {isSaving && <Loader2 className="size-3.5 animate-spin" />}
+                  <span>{isSaving ? "Saving..." : "Save Changes"}</span>
+                </button>
+              </div>
             </div>
           </section>
 
-          {/* RIGHT PANEL - LIVE PREVIEW & ATS X-RAY WORKSPACE */}
-          <section className="lg:col-span-7 h-full flex flex-col min-h-0 bg-slate-200/70 rounded-2xl border border-slate-200/90 p-2 sm:p-4 shadow-inner overflow-hidden max-lg:min-h-[600px]">
-            {/* WORKSPACE SWITCHER BAR */}
-            <div className="flex items-center justify-between pb-2.5 px-1 shrink-0 select-none gap-2 flex-wrap">
-              <div className="flex items-center bg-white/95 backdrop-blur-md p-1 rounded-xl border border-slate-300/80 shadow-2xs">
-                <button
-                  type="button"
-                  onClick={() => setPreviewMode("visual")}
-                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    previewMode === "visual"
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  <Eye size={13} />
-                  <span>Visual Preview</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewMode("xray")}
-                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    previewMode === "xray"
-                      ? "bg-emerald-600 text-white shadow-xs"
-                      : "text-slate-600 hover:text-emerald-700"
-                  }`}
-                >
-                  <Terminal size={13} />
-                  <span>ATS X-Ray Scanner</span>
-                </button>
+          {/* RIGHT PANEL - LIVE VISUAL PREVIEW STUDIO */}
+          <section className="lg:col-span-7 h-full flex flex-col min-h-0 bg-slate-100/90 dark:bg-[#0b1120] rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-2.5 sm:p-4 shadow-xs overflow-hidden max-lg:min-h-[600px] relative">
+            {/* STUDIO TOP TOOLBAR */}
+            <div className="flex items-center justify-between pb-3 px-1 shrink-0 select-none gap-2 flex-wrap">
+              {/* REAL-TIME SYNC BADGE */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700/80 shadow-2xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-100">Live Visual Preview</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 hidden sm:inline">• Real-time Sync</span>
               </div>
 
-              {/* AUTO-FIT 1-PAGE TOGGLE BUTTON */}
-              <button
-                type="button"
-                onClick={() => setAutoFitSinglePage((prev) => !prev)}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
-                  autoFitSinglePage
-                    ? "bg-emerald-600 text-white border-emerald-500 shadow-xs"
-                    : "bg-white/95 hover:bg-white text-slate-700 border-slate-300/80 hover:border-emerald-300"
-                }`}
-                title="Automatically compress vertical spacing to guarantee everything fits on exactly 1 page"
-              >
-                <FileCheck size={13} className={autoFitSinglePage ? "text-white" : "text-emerald-600"} />
-                <span>Auto-Fit 1-Page</span>
-                {autoFitSinglePage && (
-                  <span className="size-1.5 rounded-full bg-white animate-pulse" />
-                )}
-              </button>
+              {/* CONTROLS: ZOOM & AUTO-FIT 1-PAGE */}
+              <div className="flex items-center gap-2">
+                {/* ZOOM CONTROLS */}
+                <div className="flex items-center bg-white/95 dark:bg-slate-800/90 rounded-xl border border-slate-200/90 dark:border-slate-700/80 p-0.5 shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZoom((z) => Math.max(Number((z - 0.1).toFixed(1)), 0.6))}
+                    disabled={previewZoom <= 0.6}
+                    title="Zoom Out"
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <ZoomOut size={13} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZoom(1)}
+                    title="Reset to 100%"
+                    className="px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer"
+                  >
+                    {Math.round(previewZoom * 100)}%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZoom((z) => Math.min(Number((z + 0.1).toFixed(1)), 1.4))}
+                    disabled={previewZoom >= 1.4}
+                    title="Zoom In"
+                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <ZoomIn size={13} />
+                  </button>
+                </div>
+
+                {/* AUTO-FIT 1-PAGE TOGGLE BUTTON */}
+                <button
+                  type="button"
+                  onClick={() => setAutoFitSinglePage((prev) => !prev)}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs ${
+                    autoFitSinglePage
+                      ? "bg-emerald-600 text-white border-emerald-500 shadow-xs"
+                      : "bg-white/95 dark:bg-slate-800/90 hover:bg-white text-slate-700 dark:text-slate-200 border-slate-200/90 dark:border-slate-700 hover:border-emerald-300"
+                  }`}
+                  title="Automatically compress vertical spacing to guarantee everything fits on exactly 1 page"
+                >
+                  <FileCheck size={13} className={autoFitSinglePage ? "text-white" : "text-emerald-600 dark:text-emerald-400"} />
+                  <span>Auto-Fit 1-Page</span>
+                  {autoFitSinglePage && (
+                    <span className="size-1.5 rounded-full bg-white animate-pulse" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* MAIN PREVIEW / SCANNER VIEWPORT */}
-            <div className="flex-1 min-h-0 overflow-y-auto rounded-xl no-scrollbar hide-scrollbar">
-              {previewMode === "visual" ? (
-                <ResumePreview
-                  data={resumeData}
-                  template={resumeData.template}
-                  accentColor={resumeData.accent_color}
-                  autoFitSinglePage={autoFitSinglePage}
-                />
-              ) : (
-                <AtsXRayScanner data={resumeData} />
-              )}
+            {/* MAIN PREVIEW CANVAS VIEWPORT */}
+            <div className="flex-1 min-h-0 overflow-y-auto rounded-xl sm:rounded-2xl no-scrollbar hide-scrollbar">
+              <ResumePreview
+                data={resumeData}
+                template={resumeData.template}
+                accentColor={resumeData.accent_color}
+                autoFitSinglePage={autoFitSinglePage}
+                zoom={previewZoom}
+                hideHeaderBadge={true}
+              />
             </div>
           </section>
           </div>

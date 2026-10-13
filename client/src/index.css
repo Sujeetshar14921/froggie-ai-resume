@@ -1700,3 +1700,50 @@ html.dark .settings-tab-btn-active {
   box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 
+/* AI Background Removal Laser Scanner & Holographic Matrix */
+@keyframes aiLaserScan {
+  0% {
+    top: 2%;
+    opacity: 0.95;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 2%;
+    opacity: 0.95;
+  }
+}
+
+@keyframes aiScanGlow {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes shimmerSlide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-ai-laser {
+  animation: aiLaserScan 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-ai-glow {
+  animation: aiScanGlow 2s ease-in-out infinite;
+}
+
+.animate-shimmer-slide {
+  animation: shimmerSlide 1.6s ease-in-out infinite;
+}
+
+

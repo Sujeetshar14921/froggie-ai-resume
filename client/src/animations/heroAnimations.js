@@ -17,7 +17,6 @@ export function initHeroAnimation(container) {
           ".hero-status-pill",
           ".hero-headline",
           ".hero-subtitle",
-          ".hero-chips-container",
           ".hero-cta-group",
           ".hero-trust-item",
           ".hero-metric-card",
@@ -86,21 +85,7 @@ export function initHeroAnimation(container) {
         },
         "-=0.6"
       )
-      // 5. Role Selection Chips stagger in
-      .fromTo(
-        ".hero-chip",
-        { opacity: 0, y: 15, scale: 0.9 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          stagger: animationConfig.stagger.micro,
-          ease: animationConfig.ease.softBounce,
-        },
-        "-=0.5"
-      )
-      // 6. Action CTA Buttons appear with scale
+      // 5. Action CTA Buttons appear with scale
       .fromTo(
         ".hero-cta-btn",
         { opacity: 0, y: 20, scale: 0.96 },

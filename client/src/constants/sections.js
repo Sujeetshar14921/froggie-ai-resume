@@ -37,6 +37,8 @@ export const INITIAL_RESUME_STATE = {
     website: "",
     website_label: "",
     image: "",
+    image_bg: "",
+    original_image: "",
   },
   professional_summary: "",
   experience: [],

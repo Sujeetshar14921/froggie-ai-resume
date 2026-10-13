@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { login } from "../app/features/authSlice";
 import { authApi } from "../api/authApi";
 import { resumeApi } from "../api/resumeApi";
@@ -42,22 +42,38 @@ const GitHubIcon = ({ className = "size-4" }) => (
   </svg>
 );
 
-const Login = () => {
-  useSEO({
-    title: "Sign In or Create Account | froggie AI Resume Builder",
-    description: "Sign in or create a free account on froggie with Google or GitHub to build ATS-compliant resumes with AI coaching.",
-    keywords: "froggie login, google login resume, github login resume, free resume account, ATS resume sign in",
-    canonical: "https://froggie.site/login",
-    ogImage: "https://froggie.site/og-image.png",
-  });
-
+const Login = ({ initialMode }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const query = new URLSearchParams(window.location.search);
+  const query = new URLSearchParams(location.search);
   const urlState = query.get("state");
+  const isRegister = initialMode === "register" || location.pathname === "/signup" || urlState === "register";
 
-  const [state, setState] = useState(urlState === "register" ? "register" : "login");
+  const [state, setState] = useState(isRegister ? "register" : "login");
+
+  useEffect(() => {
+    if (location.pathname === "/signup" || urlState === "register") {
+      setState("register");
+    } else if (location.pathname === "/login" && urlState !== "register") {
+      setState("login");
+    }
+  }, [location.pathname, urlState]);
+
+  useSEO({
+    title: state === "register" ? "signup | froggie AI" : "login | froggie AI",
+    description:
+      state === "register"
+        ? "Create your free froggie AI account to build ATS-compliant resumes, find talent, and optimize files with AI."
+        : "Sign in to your froggie AI account to access your resumes, ATS checker, and file studio.",
+    keywords:
+      state === "register"
+        ? "signup, froggie signup, create account, free resume maker signup, froggie AI"
+        : "login, froggie login, sign in, resume builder login, froggie AI",
+    canonical: state === "register" ? "https://froggie.site/signup" : "https://froggie.site/login",
+    ogImage: "https://froggie.site/og-image.png",
+  });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 

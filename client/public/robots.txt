@@ -5,8 +5,11 @@ User-agent: *
 Allow: /
 Allow: /talent
 Allow: /talent/*
+Allow: /file-studio
+Allow: /file-studio/*
 Allow: /faq
 Allow: /login
+Allow: /signup
 Allow: /donate
 Allow: /view/
 Allow: /view/*
@@ -21,8 +24,11 @@ User-agent: Googlebot
 Allow: /
 Allow: /talent
 Allow: /talent/*
+Allow: /file-studio
+Allow: /file-studio/*
 Allow: /faq
 Allow: /login
+Allow: /signup
 Allow: /donate
 Allow: /view/
 Allow: /view/*
@@ -32,6 +38,7 @@ Disallow: /api/
 User-agent: Googlebot-Image
 Allow: /
 Allow: /talent
+Allow: /file-studio
 Allow: /*.png$
 Allow: /*.svg$
 Allow: /*.jpg$
@@ -42,8 +49,11 @@ User-agent: Bingbot
 Allow: /
 Allow: /talent
 Allow: /talent/*
+Allow: /file-studio
+Allow: /file-studio/*
 Allow: /faq
 Allow: /login
+Allow: /signup
 Allow: /donate
 Allow: /view/
 Allow: /view/*

@@ -7,7 +7,6 @@ import HowItWorks from "../components/home/HowItWorks";
 import Features from "../components/home/Features";
 import TemplateShowcase from "../components/home/TemplateShowcase";
 import Testimonial from "../components/home/Testimonial";
-import CallToAction from "../components/home/CallToAction";
 import Footer from "../components/home/Footer";
 import { useSEO } from "../hooks/useSEO";
 import { initScrollProgressBar } from "../animations";
@@ -59,8 +58,6 @@ const Home = () => {
         <div className="hidden md:block">
           <Testimonial />
         </div>
-
-        <CallToAction />
       </main>
 
       <Footer />

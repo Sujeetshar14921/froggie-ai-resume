@@ -2,6 +2,7 @@ import fs from "fs";
 import Resume from "../models/Resume.js";
 import ai from "../configs/ai.js";
 import { extractDocumentText } from "../utils/documentExtractor.js";
+import imagekit from "../configs/imageKit.js";
 
 /**
  * Controller for real-time streaming AI suggestions (Server-Sent Events)
@@ -459,5 +460,79 @@ ${JSON.stringify(resumeData, null, 2)}`;
   } catch (error) {
     console.error("Gemini ATS X-Ray Audit Error:", error);
     return res.status(500).json({ message: error.message || "Failed to complete Gemini ATS X-Ray Audit" });
+  }
+};
+
+/**
+ * Remove image background using ImageKit AI Vision Model (Method 2)
+ * POST: /api/ai/remove-background
+ */
+export const removeImageBackground = async (req, res) => {
+  try {
+    let fileBase64 = null;
+    let fileName = `bg_cutout_${Date.now()}.png`;
+
+    if (req.file) {
+      fileBase64 = fs.readFileSync(req.file.path).toString("base64");
+      fileName = req.file.originalname || fileName;
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {}
+    } else if (req.body?.image) {
+      fileBase64 = req.body.image.replace(/^data:image\/\w+;base64,/, "");
+    }
+
+    if (!fileBase64) {
+      return res.status(400).json({ message: "No image provided for background removal" });
+    }
+
+    const uploadOptions = {
+      file: fileBase64,
+      fileName,
+      folder: "ai-bg-removed",
+      transformation: {
+        pre: "e-bgremove",
+      },
+    };
+
+    const response = await imagekit.files.upload(uploadOptions);
+
+    // ImageKit provides e-bgremove transformation either pre-baked or via URL transform
+    let targetFetchUrl = response.url;
+    if (targetFetchUrl && !targetFetchUrl.includes("e-bgremove")) {
+      targetFetchUrl = targetFetchUrl.includes("?")
+        ? `${targetFetchUrl}&tr=e-bgremove`
+        : `${targetFetchUrl}?tr=e-bgremove`;
+    }
+
+    // Fetch transparent image buffer as base64 so client canvas can load it without CORS restrictions
+    let resultBase64 = null;
+    try {
+      const imgRes = await fetch(targetFetchUrl);
+      if (imgRes.ok) {
+        const buffer = await imgRes.arrayBuffer();
+        resultBase64 = `data:image/png;base64,${Buffer.from(buffer).toString("base64")}`;
+      } else {
+        // Fallback to direct upload URL
+        const directRes = await fetch(response.url);
+        if (directRes.ok) {
+          const buffer = await directRes.arrayBuffer();
+          resultBase64 = `data:image/png;base64,${Buffer.from(buffer).toString("base64")}`;
+        }
+      }
+    } catch (fetchErr) {
+      console.warn("Could not fetch ImageKit buffer locally, using URL directly:", fetchErr.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      imageUrl: targetFetchUrl || response.url,
+      imageBase64: resultBase64 || targetFetchUrl || response.url,
+    });
+  } catch (error) {
+    console.error("ImageKit AI Background Removal Error:", error);
+    return res.status(500).json({
+      message: error.message || "Failed to remove background with ImageKit AI Vision Model",
+    });
   }
 };

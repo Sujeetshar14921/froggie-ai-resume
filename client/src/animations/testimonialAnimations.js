@@ -1,17 +1,16 @@
-import { gsap, ScrollTrigger } from "./utils";
+import { gsap } from "./utils";
 import { animationConfig, isReducedMotion } from "./config";
 
 /**
- * Initializes the testimonials section header reveal and seamless horizontal marquee
+ * Initializes the testimonials section header reveal
  * @param {HTMLElement} container - The testimonial section container
- * @param {HTMLElement} track - The horizontal scrolling track
  * @returns {Function} Cleanup function
  */
-export function initTestimonialsMarquee(container, track) {
+export function initTestimonialsMarquee(container) {
   if (!container) return () => {};
 
   const ctx = gsap.context(() => {
-    // 1. Header Reveal with ScrollTrigger
+    // Header Reveal with ScrollTrigger
     if (!isReducedMotion()) {
       gsap.fromTo(
         ".section-header",
@@ -29,29 +28,6 @@ export function initTestimonialsMarquee(container, track) {
         }
       );
     }
-
-    // 2. Seamless Continuous Horizontal Marquee Loop
-    if (!track) return;
-
-    if (isReducedMotion()) {
-      gsap.set(track, { x: 0 });
-      return;
-    }
-
-    // Track is duplicated with 2x items. Animating xPercent: -50 seamlessly loops without jump or overlap.
-    const marqueeTween = gsap.to(track, {
-      xPercent: -50,
-      ease: "none",
-      duration: 35,
-      repeat: -1,
-    });
-
-    // Pause on hover for comfortable readability
-    const handleMouseEnter = () => marqueeTween.pause();
-    const handleMouseLeave = () => marqueeTween.play();
-
-    container.addEventListener("mouseenter", handleMouseEnter);
-    container.addEventListener("mouseleave", handleMouseLeave);
   }, container);
 
   return () => ctx.revert();

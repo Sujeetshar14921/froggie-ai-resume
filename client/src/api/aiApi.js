@@ -79,6 +79,28 @@ export const aiApi = {
     );
     return data;
   },
+
+  /**
+   * Remove Image Background via Cloud Vision AI (Method 2)
+   * @param {File|Blob|string} imageFileOrBase64
+   * @param {string} [token]
+   */
+  removeImageBackground: async (imageFileOrBase64, token) => {
+    let headers = token ? { Authorization: token } : {};
+    let requestData;
+
+    if (imageFileOrBase64 instanceof File || imageFileOrBase64 instanceof Blob) {
+      const formData = new FormData();
+      formData.append("image", imageFileOrBase64);
+      requestData = formData;
+      headers["Content-Type"] = "multipart/form-data";
+    } else {
+      requestData = { image: imageFileOrBase64 };
+    }
+
+    const { data } = await api.post("/api/ai/remove-background", requestData, { headers });
+    return data;
+  },
 };
 
 export default aiApi;

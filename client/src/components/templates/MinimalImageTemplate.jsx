@@ -428,7 +428,7 @@ const MinimalImageTemplate = ({ data, accentColor = "#0284C7", pageContent = nul
                   src={imageSrc}
                   alt="Profile"
                   className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl mx-auto ring-3 ring-white shadow-sm"
-                  style={{ backgroundColor: `${accentColor}15` }}
+                  style={{ backgroundColor: data?.personal_info?.image_bg || `${accentColor}15` }}
                 />
               ) : (
                 <div

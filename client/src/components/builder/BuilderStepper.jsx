@@ -71,28 +71,31 @@ const BuilderStepper = ({
   };
 
   return (
-    <div className="relative shrink-0 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-[#0a0f1d] select-none">
+    <div className="relative shrink-0 border-b border-slate-100 dark:border-slate-800 bg-white/60 dark:bg-[#0a0f1d] select-none">
       {/* PROGRESS STEP BAR */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-10">
         <div
-          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+          className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      {/* STEPPER BUTTONS */}
+      {/* STEPPER PILLS BAR */}
       <div className="pt-2.5 pb-2 px-3 sm:px-4">
-        <div className="flex items-center justify-between pb-1 text-[10.5px] text-slate-400">
-          <span className="font-semibold text-slate-500 dark:text-slate-400">Sections Navigation</span>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-            <GripVertical size={11} className="text-emerald-500 dark:text-emerald-400" />
-            <span>Drag tabs to change preview order</span>
+        <div className="flex items-center justify-between pb-1.5 text-[10.5px]">
+          <div className="flex items-center gap-1.5 font-bold text-slate-700 dark:text-slate-300">
+            <span>Section {activeSectionIndex + 1} of {sections.length}:</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-extrabold">{sections[activeSectionIndex]?.name}</span>
+          </div>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
+            <GripVertical size={11} className="text-slate-400" />
+            <span>Drag tabs to reorder preview</span>
           </span>
         </div>
 
         <div
           ref={scrollRef}
-          className="flex items-start gap-1.5 overflow-x-auto no-scrollbar scroll-smooth py-1"
+          className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1"
         >
           {sections.map((section, index) => {
             const isActive = index === activeSectionIndex;
@@ -111,43 +114,40 @@ const BuilderStepper = ({
                 onDrop={(e) => handleDrop(e, index)}
                 onDragEnd={handleDragEnd}
                 onClick={() => onSelectSection(index)}
-                className={`relative flex flex-col items-center gap-1 group shrink-0 min-w-[58px] sm:min-w-[64px] px-1.5 py-1.5 rounded-xl transition-all cursor-grab active:cursor-grabbing border ${
+                className={`group shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs transition-all cursor-grab active:cursor-grabbing border whitespace-nowrap shadow-2xs ${
                   isBeingDragged
                     ? "opacity-30 border-dashed border-emerald-500 scale-95 bg-emerald-50/50 dark:bg-emerald-950/30"
                     : isDragTarget
-                    ? "border-emerald-500 ring-2 ring-emerald-400/30 bg-emerald-50 dark:bg-emerald-950/40 scale-105"
+                    ? "border-emerald-500 ring-2 ring-emerald-400/40 bg-emerald-50 dark:bg-emerald-950/40 scale-105"
                     : isActive
-                    ? "bg-emerald-50/90 dark:bg-emerald-950/60 border-emerald-300/80 dark:border-emerald-800/80 shadow-2xs"
-                    : "border-transparent hover:bg-slate-100/70 dark:hover:bg-slate-800/60 hover:border-slate-200/60 dark:hover:border-slate-700"
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-sm font-bold ring-2 ring-emerald-500/20"
+                    : isDone
+                    ? "bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-emerald-300 font-semibold"
+                    : "bg-white dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 border-slate-200/80 dark:border-slate-800 hover:text-slate-800 hover:border-slate-300"
                 }`}
                 title={`Click to edit or drag to reorder: ${section.name}`}
               >
-                {/* ICON BADGE */}
-                <div
-                  className={`flex items-center justify-center size-7 sm:size-7.5 rounded-full border transition-all shrink-0 relative ${
-                    isActive
-                      ? "border-emerald-600 bg-emerald-600 text-white shadow-xs font-bold ring-2 ring-emerald-500/20"
-                      : isDone
-                      ? "border-emerald-500 bg-emerald-500 text-white"
-                      : "border-slate-200 dark:border-slate-700 text-slate-400 group-hover:border-slate-300 dark:group-hover:border-slate-600 bg-white dark:bg-slate-800"
-                  }`}
-                >
-                  {isDone ? <Check className="size-3 stroke-[2.5]" /> : <Icon className="size-3.5" />}
+                {/* ICON */}
+                <div className="shrink-0 flex items-center justify-center">
+                  {isDone ? (
+                    <Check className={`size-3.5 stroke-[2.5] ${isActive ? "text-white" : "text-emerald-600 dark:text-emerald-400"}`} />
+                  ) : (
+                    <Icon className={`size-3.5 ${isActive ? "text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-emerald-600"}`} />
+                  )}
                 </div>
 
-                {/* LABEL */}
-                <span
-                  className={`text-[10px] font-semibold text-center leading-tight truncate max-w-[68px] ${
-                    isActive ? "text-emerald-800 dark:text-emerald-300 font-bold" : isDone ? "text-slate-700 dark:text-slate-200" : "text-slate-400 dark:text-slate-500"
-                  }`}
-                >
+                {/* FULL LEGIBLE LABEL */}
+                <span className="text-xs tracking-tight">
                   {section.name}
                 </span>
 
-                {/* DRAG HANDLE AFFORDANCE (VISIBLE ON HOVER) */}
-                <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <GripVertical size={10} className="text-slate-400" />
-                </div>
+                {/* SUBTLE REORDER HANDLE */}
+                <GripVertical
+                  size={10}
+                  className={`opacity-0 group-hover:opacity-60 transition-opacity shrink-0 ${
+                    isActive ? "text-emerald-200" : "text-slate-400"
+                  }`}
+                />
               </div>
             );
           })}

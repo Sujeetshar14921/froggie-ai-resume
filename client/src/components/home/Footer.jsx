@@ -22,6 +22,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import FeedbackModal from "./FeedbackModal";
 import { BrandIcon } from "../FrogLogo";
 import { TEMPLATES } from "../../constants/templates";
+import FroggieBrandSection from "./FroggieBrandSection";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -49,7 +50,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-800/80 relative overflow-hidden text-left font-sans select-none">
+    <>
+      <FroggieBrandSection />
+      <footer className="bg-slate-950 text-slate-400 border-t border-slate-800/80 relative overflow-hidden text-left font-sans select-none">
       {/* Radiant ambient glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-emerald-500/10 blur-[130px] pointer-events-none" />
       <div className="absolute -top-24 right-10 size-72 bg-emerald-600/5 rounded-full blur-3xl pointer-events-none" />
@@ -167,6 +170,18 @@ const Footer = () => {
                   <span>Public Talent Directory</span>
                   <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     NEW
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/file-studio"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group text-indigo-300 font-semibold"
+                >
+                  <ChevronRight size={12} className="text-indigo-400 group-hover:translate-x-0.5 transition-all" />
+                  <span>Smart File & Media Studio</span>
+                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    FREE
                   </span>
                 </Link>
               </li>
@@ -315,6 +330,7 @@ const Footer = () => {
         }}
       />
     </footer>
+    </>
   );
 };
 
