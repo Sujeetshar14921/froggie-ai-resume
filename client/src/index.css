@@ -1068,8 +1068,6 @@ select option[selected] {
   .builder-stepper,
   .builder-toolbar,
   .builder-form-panel,
-  #copilot-widget,
-  #copilot-drawer,
   .toast,
   .toaster,
   .blur-3xl {

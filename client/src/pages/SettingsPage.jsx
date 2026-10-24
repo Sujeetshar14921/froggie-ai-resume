@@ -1183,7 +1183,7 @@ const SettingsPage = () => {
                         <div className="flex items-center gap-3">
                           <FileText size={15} className="text-purple-600 shrink-0" />
                           <div>
-                            <p className="text-xs font-bold text-slate-900">AI Copilot Personalization</p>
+                            <p className="text-xs font-bold text-slate-900">AI Enhancement Cache</p>
                             <p className="text-[11px] text-slate-500 mt-0.5">
                               Stores generated suggestions temporarily for instant builder reloads.
                             </p>
@@ -1290,7 +1290,7 @@ const SettingsPage = () => {
                           <span>Permanently Delete Account & Resumes</span>
                         </p>
                         <p className="text-[11px] text-rose-800 mt-1">
-                          Irrevocably erases all your tailored resumes, ATS scores, chat histories, and personal profile information. This action cannot be reversed.
+                          Irrevocably erases all your tailored resumes, ATS scores, audit reports, and personal profile information. This action cannot be reversed.
                         </p>
                       </div>
 

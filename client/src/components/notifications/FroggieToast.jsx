@@ -40,7 +40,6 @@ const FroggieToast = ({ toast }) => {
   // Detect category from toast type or content
   const isAI =
     messageText.includes("AI") ||
-    messageText.includes("Copilot") ||
     messageText.includes("🐸") ||
     messageText.includes("Generated") ||
     messageText.includes("Enhanced");

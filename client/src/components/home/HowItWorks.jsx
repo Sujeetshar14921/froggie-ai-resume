@@ -16,7 +16,7 @@ const steps = [
   {
     number: "02",
     icon: Sparkles,
-    title: "Refine With AI Copilot",
+    title: "Refine With AI Enhancer",
     description:
       "Auto-generate STAR-method bullet points with quantifiable business impact and target job keywords.",
     badge: "Step 2",

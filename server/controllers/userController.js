@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Resume from "../models/Resume.js";
 import AtsReport from "../models/AtsReport.js";
-import CopilotChat from "../models/CopilotChat.js";
 import fs from "fs";
 import imagekit from "../configs/imageKit.js";
 
@@ -244,10 +243,7 @@ export const deleteUserAccount = async (req, res) => {
         // 2. Delete all ATS scanner audit reports
         await AtsReport.deleteMany({ userId });
 
-        // 3. Delete all Copilot conversation logs
-        await CopilotChat.deleteMany({ userId });
-
-        // 4. Finally delete the user account
+        // 3. Finally delete the user account
         await User.findByIdAndDelete(userId);
 
         return res.status(200).json({ 

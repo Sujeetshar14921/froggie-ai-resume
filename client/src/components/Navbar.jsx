@@ -20,15 +20,13 @@ import {
   Users,
   Settings,
 } from "lucide-react";
-import FrogFace, { BrandIcon, Copilot3DIcon } from "./FrogLogo";
+import FrogFace, { BrandIcon } from "./FrogLogo";
 import { NotificationBell } from "./notifications";
-import { useCopilot } from "../hooks/useCopilot";
 import { initNavbarAnimation } from "../animations";
 import { applyTheme, isDarkEffective } from "../utils/theme";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
-  const { openCopilot } = useCopilot();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();

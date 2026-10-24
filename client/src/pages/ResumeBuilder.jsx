@@ -33,7 +33,6 @@ import { useResume } from "../hooks/useResume";
 import { BUILDER_SECTIONS } from "../constants/sections";
 import { exportResumeAsPdf, exportResumeAsDoc } from "../utils/exportResume";
 import { resumeApi } from "../api/resumeApi";
-import { useCopilot } from "../hooks/useCopilot";
 import { useSEO } from "../hooks/useSEO";
 import { aiApi } from "../api/aiApi";
 import toast from "react-hot-toast";
@@ -41,12 +40,6 @@ import toast from "react-hot-toast";
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
   const { token } = useSelector((state) => state.auth);
-  const {
-    setActiveResumeId,
-    setActiveResumeData,
-    registerApplyHandler,
-    registerDirectUpdateHandler,
-  } = useCopilot();
 
   const {
     resumeData,
@@ -80,7 +73,6 @@ const ResumeBuilder = () => {
       const data = await aiApi.uploadResumePdf({ file, title, resumeId }, token);
       if (data && data.resume) {
         setResumeData(data.resume);
-        setActiveResumeData(data.resume);
         toast.success("Resume parsed! All details loaded into live visual preview.");
       }
       setShowUploadModal(false);
@@ -93,179 +85,7 @@ const ResumeBuilder = () => {
     }
   };
 
-  // Sync active resume with Career Copilot
-  React.useEffect(() => {
-    if (resumeId) setActiveResumeId(resumeId);
-  }, [resumeId, setActiveResumeId]);
 
-  React.useEffect(() => {
-    if (resumeData) setActiveResumeData(resumeData);
-  }, [resumeData, setActiveResumeData]);
-
-  // Handle Apply to Resume from AI Copilot suggestions
-  React.useEffect(() => {
-    registerApplyHandler((section, text, index) => {
-      setResumeData((prev) => {
-        const next = { ...prev };
-        const sec = (section || "").toLowerCase();
-
-        if (sec.includes("summary")) {
-          next.professional_summary = typeof text === "string" ? text : String(text || "");
-        } else if (sec.includes("skill")) {
-          const newSkills = Array.isArray(text)
-            ? text
-            : typeof text === "string"
-            ? text.split(/,\s*|\n/).map((s) => s.trim()).filter(Boolean)
-            : [];
-          next.skills = Array.from(new Set([...(prev.skills || []), ...newSkills]));
-        } else if (sec.includes("exp")) {
-          const expCopy = [...(prev.experience || [])];
-          if (typeof text === "object" && text !== null && !Array.isArray(text)) {
-            if (index >= 0 && index < expCopy.length) {
-              expCopy[index] = { ...expCopy[index], ...text };
-            } else {
-              expCopy.push(text);
-            }
-          } else if (index >= 0 && index < expCopy.length) {
-            expCopy[index] = { ...expCopy[index], description: text };
-          } else if (expCopy.length > 0) {
-            expCopy[0] = { ...expCopy[0], description: text };
-          } else {
-            expCopy.push({ position: "Role", company: "Company", description: text, is_current: true });
-          }
-          next.experience = expCopy;
-        } else if (sec.includes("proj")) {
-          const projCopy = [...(prev.project || [])];
-          if (typeof text === "object" && text !== null && !Array.isArray(text)) {
-            if (index >= 0 && index < projCopy.length) {
-              projCopy[index] = { ...projCopy[index], ...text };
-            } else {
-              projCopy.push(text);
-            }
-          } else if (index >= 0 && index < projCopy.length) {
-            projCopy[index] = { ...projCopy[index], description: text };
-          } else if (projCopy.length > 0) {
-            projCopy[0] = { ...projCopy[0], description: text };
-          } else {
-            projCopy.push({ name: "New Project", description: text, type: "Full Stack" });
-          }
-          next.project = projCopy;
-        } else if (sec.includes("cert")) {
-          const certCopy = [...(prev.certifications || [])];
-          if (typeof text === "object" && text !== null) {
-            certCopy.push(text);
-          } else if (typeof text === "string") {
-            certCopy.push({ name: text, issuer: "Certified Authority", date: new Date().toISOString().slice(0, 7) });
-          }
-          next.certifications = certCopy;
-        } else if (sec.includes("achieve")) {
-          const achCopy = [...(prev.achievements || [])];
-          if (typeof text === "object" && text !== null) {
-            achCopy.push(text);
-          } else if (typeof text === "string") {
-            achCopy.push({ title: text, description: text, date: new Date().toISOString().slice(0, 7) });
-          }
-          next.achievements = achCopy;
-        }
-
-        setActiveResumeData(next);
-        return next;
-      });
-    });
-
-    // Direct multi-field updates
-    registerDirectUpdateHandler((updates) => {
-      if (!updates || typeof updates !== "object") return;
-
-      setResumeData((prev) => {
-        const next = { ...prev };
-
-        if (updates.personal_info && typeof updates.personal_info === "object") {
-          next.personal_info = { ...next.personal_info, ...updates.personal_info };
-        }
-        if (updates.profession) {
-          next.personal_info = { ...next.personal_info, profession: updates.profession };
-        }
-        if (updates.full_name) {
-          next.personal_info = { ...next.personal_info, full_name: updates.full_name };
-        }
-        if (updates.email) {
-          next.personal_info = { ...next.personal_info, email: updates.email };
-        }
-        if (updates.phone) {
-          next.personal_info = { ...next.personal_info, phone: updates.phone };
-        }
-        if (updates.location) {
-          next.personal_info = { ...next.personal_info, location: updates.location };
-        }
-        if (updates.github) {
-          next.personal_info = { ...next.personal_info, github: updates.github };
-        }
-        if (updates.linkedin) {
-          next.personal_info = { ...next.personal_info, linkedin: updates.linkedin };
-        }
-        if (updates.website) {
-          next.personal_info = { ...next.personal_info, website: updates.website };
-        }
-
-        if (updates.professional_summary !== undefined) {
-          next.professional_summary = updates.professional_summary;
-        } else if (updates.summary !== undefined) {
-          next.professional_summary = updates.summary;
-        }
-
-        if (Array.isArray(updates.skills)) {
-          next.skills = updates.skills;
-        } else if (typeof updates.skills === "string") {
-          const splitSkills = updates.skills.split(/,\s*|\n/).map((s) => s.trim()).filter(Boolean);
-          next.skills = Array.from(new Set([...(prev.skills || []), ...splitSkills]));
-        } else if (Array.isArray(updates.newSkills)) {
-          next.skills = Array.from(new Set([...(prev.skills || []), ...updates.newSkills]));
-        }
-
-        if (Array.isArray(updates.experience)) {
-          next.experience = updates.experience;
-        } else if (updates.experience && typeof updates.experience === "object") {
-          next.experience = [...(prev.experience || []), updates.experience];
-        } else if (updates.newExperience && typeof updates.newExperience === "object") {
-          next.experience = [...(prev.experience || []), updates.newExperience];
-        }
-
-        if (Array.isArray(updates.project)) {
-          next.project = updates.project;
-        } else if (updates.project && typeof updates.project === "object") {
-          next.project = [...(prev.project || []), updates.project];
-        } else if (updates.newProject && typeof updates.newProject === "object") {
-          next.project = [...(prev.project || []), updates.newProject];
-        }
-
-        if (Array.isArray(updates.education)) {
-          next.education = updates.education;
-        } else if (updates.education && typeof updates.education === "object") {
-          next.education = [...(prev.education || []), updates.education];
-        }
-
-        if (Array.isArray(updates.certifications)) {
-          next.certifications = updates.certifications;
-        } else if (updates.certifications && typeof updates.certifications === "object") {
-          next.certifications = [...(prev.certifications || []), updates.certifications];
-        } else if (updates.newCertification && typeof updates.newCertification === "object") {
-          next.certifications = [...(prev.certifications || []), updates.newCertification];
-        }
-
-        if (Array.isArray(updates.achievements)) {
-          next.achievements = updates.achievements;
-        } else if (updates.achievements && typeof updates.achievements === "object") {
-          next.achievements = [...(prev.achievements || []), updates.achievements];
-        } else if (updates.newAchievement && typeof updates.newAchievement === "object") {
-          next.achievements = [...(prev.achievements || []), updates.newAchievement];
-        }
-
-        setActiveResumeData(next);
-        return next;
-      });
-    });
-  }, [registerApplyHandler, registerDirectUpdateHandler, setResumeData, setActiveResumeData]);
 
   // Derive active builder section tabs
   const orderedBuilderSections = React.useMemo(() => {
@@ -674,7 +494,6 @@ const ResumeBuilder = () => {
         token={token}
         onRestored={(restoredResume) => {
           setResumeData(restoredResume);
-          setActiveResumeData(restoredResume);
         }}
       />
     </div>

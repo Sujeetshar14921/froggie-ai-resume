@@ -16,15 +16,14 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/home/Footer";
-import { useCopilot } from "../hooks/useCopilot";
-import FrogFace, { Copilot3DIcon } from "../components/FrogLogo";
+import FrogFace from "../components/FrogLogo";
 import { useSEO } from "../hooks/useSEO";
 import { animateAccordion } from "../animations";
 
 const FAQ_CATEGORIES = [
   { id: "all", label: "All Questions", icon: BookOpen },
   { id: "ats", label: "ATS & Scoring", icon: ShieldCheck },
-  { id: "ai", label: "AI & froggie Copilot", icon: Sparkles },
+  { id: "ai", label: "AI & Optimization", icon: Sparkles },
   { id: "exports", label: "Exports & Formatting", icon: Download },
   { id: "account", label: "Privacy & Account", icon: Zap },
 ];
@@ -42,13 +41,13 @@ const ALL_FAQS = [
   },
   {
     category: "ai",
-    q: "How does froggie Career Copilot work?",
-    a: "froggie Career Copilot is an interactive career mentor that understands your resume context. It helps you coach your resume summaries, evaluate target job descriptions ('Should I Apply?'), practice one-by-one mock interviews with STAR scoring, write tailored cover letters, and generate personalized recruiter outreach messages.",
+    q: "How does froggie AI enhancement work?",
+    a: "froggie AI directly analyzes your professional summary and job experience draft inside the builder. With 1-click, it rewrites descriptions into high-impact STAR-method bullet points with action verbs and quantifiable metrics.",
   },
   {
     category: "ai",
-    q: "Can the AI automatically update my resume in the builder?",
-    a: "Yes! When the AI suggests an improved summary or rewritten experience bullet, you can click the 'Apply to Resume' button on the suggestion card, and it will immediately update your active resume in the editor.",
+    q: "Can the AI help me format my work experience?",
+    a: "Yes! In each experience entry, you can click 'froggie AI Enhance' to convert plain text into strong, ATS-compliant accomplishment statements tailored to your role.",
   },
   {
     category: "exports",
@@ -73,7 +72,7 @@ const ALL_FAQS = [
   {
     category: "account",
     q: "Is froggie free to use?",
-    a: "Yes! You can create, edit, customize colors and templates, run ATS scans, chat with froggie Career Copilot, and export PDF/Word resumes.",
+    a: "Yes! You can create, edit, customize colors and templates, run ATS scans, enhance text with AI, and export PDF/Word resumes completely free.",
   },
 ];
 
@@ -141,13 +140,11 @@ const FaqPageItem = ({ faq, isOpen, onToggle }) => {
 };
 
 const FaqPage = () => {
-  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const { openCopilot } = useCopilot();
 
   useSEO({
     title: "Frequently Asked Questions (FAQ) | froggie AI Resume Builder",
-    description: "Got questions about ATS resume optimization, AI career copilot, PDF/Word exports, or privacy? Browse our comprehensive knowledge base and FAQs.",
+    description: "Got questions about ATS resume optimization, PDF/Word exports, or privacy? Browse our comprehensive knowledge base and FAQs.",
     keywords: "froggie FAQ, ATS resume questions, how does ATS work, AI resume maker FAQ, free resume builder questions, ATS score calculation, resume export PDF Word",
     canonical: "https://froggie.site/faq",
     schema: {
@@ -163,18 +160,6 @@ const FaqPage = () => {
       })),
     },
   });
-
-  const handleAskCopilot = () => {
-    if (!user) {
-      toast.error("Please create a free account or sign in to chat with froggie AI Career Copilot!", {
-        icon: "🐸",
-        duration: 4000,
-      });
-      navigate("/login?state=register");
-      return;
-    }
-    openCopilot({ prompt: "I have a question about improving my resume." });
-  };
 
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -219,7 +204,7 @@ const FaqPage = () => {
             </h1>
 
             <p className="text-xs sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Find instant answers to common questions about our froggie ATS Resume Builder, Copilot, Exports, and Job Tools.
+              Find instant answers to common questions about our froggie ATS Resume Builder, AI Enhancements, Exports, and Job Tools.
             </p>
 
             {/* SEARCH INPUT */}
@@ -230,7 +215,7 @@ const FaqPage = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search questions (e.g., ATS, export, copilot, pdf)..."
+                  placeholder="Search questions (e.g., ATS, export, ai, pdf)..."
                   className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-400 shadow-2xs font-medium"
                 />
               </div>
@@ -253,7 +238,7 @@ const FaqPage = () => {
               <div className="relative overflow-hidden p-4 rounded-2xl glass-card-elevated bg-slate-50/80 border border-slate-200/90 group/card shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-blue-500/20 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover/card:scale-125 transition-transform" />
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Copilot</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Engine</span>
                   <div className="icon-3d-pod icon-3d-pod-blue p-1 rounded-lg">
                     <Sparkles size={14} className="lucide-3d text-white" />
                   </div>
@@ -322,7 +307,7 @@ const FaqPage = () => {
               <HelpCircle size={36} className="mx-auto text-slate-300" />
               <h3 className="text-base font-bold text-slate-800">No matching questions found</h3>
               <p className="text-xs text-slate-500">
-                Try searching with different keywords or ask froggie Copilot directly.
+                Try searching with different keywords or reset the filter.
               </p>
               <button
                 onClick={() => {
@@ -347,31 +332,31 @@ const FaqPage = () => {
             </div>
           )}
 
-          {/* ASK CAREER COPILOT BANNER */}
+          {/* START BUILDING CTA BANNER */}
           <div className="relative overflow-hidden mt-16 p-8 sm:p-10 rounded-3xl glass-dark-elevated bg-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800 group">
             {/* Half-circle colorful environment auras */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/20 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700 blur-xl" />
             <div className="absolute bottom-0 left-0 w-56 h-56 bg-gradient-to-tr from-blue-500/15 via-indigo-400/10 to-transparent rounded-tr-full pointer-events-none blur-xl" />
 
             <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-              <Copilot3DIcon size="md" />
+              <FrogFace size={44} />
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-500/30">
                   <Sparkles size={12} />
-                  Need Personalized Career Help?
+                  Ready to Craft Your Resume?
                 </div>
-                <h3 className="text-lg sm:text-2xl font-black tracking-tight">Ask froggie Career Copilot</h3>
+                <h3 className="text-lg sm:text-2xl font-black tracking-tight">Build 100% ATS-Friendly Resume</h3>
                 <p className="text-xs sm:text-sm text-slate-300 max-w-md">
-                  Get real-time answers tailored to your resume, career path, and target jobs.
+                  Choose from 7 modern recruiter-approved templates with real-time scoring.
                 </p>
               </div>
             </div>
 
             <button
-              onClick={handleAskCopilot}
+              onClick={() => navigate("/app")}
               className="shimmer-button relative z-10 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 shrink-0 cursor-pointer hover:scale-105 active:scale-95"
             >
-              <span>Ask froggie Now</span>
+              <span>Create Resume Free</span>
               <ArrowRight size={15} />
             </button>
           </div>

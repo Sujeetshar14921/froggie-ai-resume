@@ -205,7 +205,7 @@ export function initHeroAnimation(container) {
       });
     }
 
-    // Independent Float for Floating Badge 2 (AI Copilot) (if present)
+    // Independent Float for Floating Badge 2 (AI Badge) (if present)
     if (container.querySelector(".hero-badge-float-2")) {
       gsap.to(".hero-badge-float-2", {
         y: 8,

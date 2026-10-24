@@ -9,7 +9,7 @@ export const COOKIE_CONSENT_KEY = "froggie_cookie_consented";
 export const DEFAULT_COOKIE_PREFERENCES = {
   essential: true, // Required for login sessions, CSRF, security & theme
   analytics: true, // Anonymous ATS scanner performance & page telemetry
-  personalization: true, // Copilot AI prompt caching & custom workspace preferences
+  personalization: true, // AI prompt caching & custom workspace preferences
   marketing: false, // Optional recruiter network & talent discovery insights
 };
 

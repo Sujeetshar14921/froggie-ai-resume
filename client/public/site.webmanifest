@@ -1,7 +1,7 @@
 {
   "name": "froggie — AI ATS Resume Builder & Career Studio",
   "short_name": "froggie",
-  "description": "Build 100% ATS-compliant resumes in minutes with froggie AI. Real-time ATS scoring, AI career copilot, professional templates, instant PDF/Word export.",
+  "description": "Build 100% ATS-compliant resumes in minutes with froggie AI. Real-time ATS scoring, AI resume enhancer, professional templates, instant PDF/Word export.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

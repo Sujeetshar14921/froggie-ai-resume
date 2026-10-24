@@ -24,7 +24,7 @@ export const authLimiter = rateLimit({
   },
 });
 
-// Limiter for AI / Copilot / ATS parsing to avoid API abuse & excess token burns
+// Limiter for AI / ATS parsing to avoid API abuse & excess token burns
 export const aiLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 50,

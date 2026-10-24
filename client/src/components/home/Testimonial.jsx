@@ -53,7 +53,7 @@ const FALLBACK_TESTIMONIALS = [
     title: "Engineering Manager",
     rating: 5,
     feedback:
-      "Froggie Copilot helped me restructure 12 years of tech leadership experience into high-impact STAR bullet points. Recruiter response rate jumped to 65%.",
+      "Froggie AI Bullet Enhancer helped me restructure 12 years of tech leadership experience into high-impact STAR bullet points. Recruiter response rate jumped to 65%.",
   },
 ];
 

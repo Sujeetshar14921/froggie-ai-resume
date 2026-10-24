@@ -24,7 +24,7 @@ const pillars = [
   },
   {
     id: "optimize",
-    tag: "02 · AI Copilot",
+    tag: "02 · AI Enhancer",
     title: "STAR-Method & XYZ Bullet Enhancer",
     description:
       "Transform weak descriptions into quantified career achievements. Automatically incorporate impact numbers, action verbs, and role-specific competencies.",

@@ -5,8 +5,6 @@ import { authApi } from './api/authApi'
 import { login, setLoading } from './app/features/authSlice'
 import { FroggieToaster } from './components/notifications'
 import CookieConsent from './components/CookieConsent'
-import { CopilotProvider } from './context/CopilotContext'
-import { CopilotWidget, CopilotDrawer } from './components/copilot'
 import MobileBottomNav from './components/MobileBottomNav'
 import { initTheme } from './utils/theme'
 
@@ -65,7 +63,7 @@ const App = () => {
   }, [getUserData])
 
   return (
-    <CopilotProvider>
+    <>
       <FroggieToaster />
       <CookieConsent />
 
@@ -95,13 +93,9 @@ const App = () => {
         </Routes>
       </Suspense>
 
-      {/* GLOBAL FLOATING CAREER COPILOT 3D WIDGET & SLIDE-OVER DRAWER */}
-      <CopilotWidget />
-      {user && <CopilotDrawer />}
-
       {/* NATIVE MOBILE BOTTOM CONTROLS */}
       <MobileBottomNav />
-    </CopilotProvider>
+    </>
   )
 }
 

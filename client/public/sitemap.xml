@@ -13,7 +13,7 @@
     <image:image>
       <image:loc>https://froggie.site/og-image.png</image:loc>
       <image:title>froggie AI ATS Resume Builder &amp; Career Studio</image:title>
-      <image:caption>Build 100% ATS-compliant resumes with real-time scoring and AI copilot</image:caption>
+      <image:caption>Build 100% ATS-compliant resumes with real-time scoring and AI enhancement</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://froggie.site/favicon.svg</image:loc>
@@ -40,14 +40,6 @@
     <lastmod>2026-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
-  </url>
-
-  <!-- Support & Donations -->
-  <url>
-    <loc>https://froggie.site/donate</loc>
-    <lastmod>2026-09-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
   </url>
 
   <!-- Auth Portal -->

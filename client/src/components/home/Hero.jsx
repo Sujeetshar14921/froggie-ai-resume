@@ -172,7 +172,7 @@ const Hero = () => {
 
           <div className="hero-trust-item hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50/80 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300 shadow-2xs backdrop-blur-sm">
             <Sparkles size={14} className="text-emerald-600 dark:text-emerald-400" />
-            <span className="font-bold">AI Career Copilot Included</span>
+            <span className="font-bold">AI Content Enhancer Included</span>
           </div>
         </div>
 

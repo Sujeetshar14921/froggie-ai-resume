@@ -62,7 +62,7 @@ export const DONATION_CONFIG = {
     {
       percentage: "45%",
       label: "AI LLM Inference",
-      description: "OpenAI & Google Gemini tokens for Copilot chat, ATS scoring, and bullet generation.",
+      description: "OpenAI & Google Gemini tokens for ATS scoring, summary optimization, and STAR bullet generation.",
       icon: "Sparkles",
     },
     {

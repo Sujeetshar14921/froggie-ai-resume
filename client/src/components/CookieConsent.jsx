@@ -184,7 +184,7 @@ const CookieConsent = () => {
                 </button>
               </div>
 
-              {/* 3. FUNCTIONAL & AI COPILOT */}
+              {/* 3. FUNCTIONAL & AI ENHANCEMENTS */}
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/70 flex items-center justify-between gap-3">
                 <div className="space-y-0.5 pr-2">
                   <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ const CookieConsent = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Caches AI Copilot suggestions, workspace editor zoom, and personalized template preferences.
+                    Caches AI enhancement suggestions, workspace editor zoom, and personalized template preferences.
                   </p>
                 </div>
                 <button

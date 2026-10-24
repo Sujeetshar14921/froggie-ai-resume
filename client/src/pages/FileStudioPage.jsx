@@ -196,7 +196,7 @@ const FileStudioPage = () => {
   );
 
   useSEO({
-    title: "file studio | froggie AI",
+    title: "File Studio | froggie AI",
     description:
       "Free online media studio: Compress images & PDFs to exact KB/MB target limits (50KB, 100KB, 200KB), convert PDF ↔ Word DOCX, crop to passport 1:1 & circular shapes, and remove background with AI. No login or signup required.",
     keywords:
@@ -306,6 +306,16 @@ const FileStudioPage = () => {
     }
     return () => clearInterval(interval);
   }, [isRemovingBgCloud]);
+
+  // Close fullscreen on ESC key
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsFullscreen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
 
   // Format bytes helper
   const formatBytes = (bytes) => {
@@ -1204,20 +1214,31 @@ const FileStudioPage = () => {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     {fileMeta.isImage && (
-                      <button
-                        onClick={() => setShowOriginalComparison((v) => !v)}
-                        className={`text-[11px] font-bold px-2 py-1 rounded-lg border transition-all cursor-pointer ${
-                          showOriginalComparison
-                            ? "bg-amber-500 text-white border-amber-600"
-                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-                        }`}
-                        title="Toggle Original vs Processed"
-                      >
-                        <Eye size={12} className="inline mr-1" />
-                        {showOriginalComparison ? "Original" : "Result"}
-                      </button>
+                      <>
+                        <button
+                          onClick={() => setShowOriginalComparison((v) => !v)}
+                          className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                            showOriginalComparison
+                              ? "bg-amber-500 text-white border-amber-600 shadow-xs"
+                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                          }`}
+                          title="Toggle Original vs Processed"
+                        >
+                          <Eye size={12} className="inline mr-1" />
+                          {showOriginalComparison ? "Original" : "Result"}
+                        </button>
+
+                        <button
+                          onClick={() => setIsFullscreen(true)}
+                          className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-400/50 transition-all cursor-pointer"
+                          title="View in Full Screen (100% Unconstrained)"
+                        >
+                          <Maximize2 size={12} className="inline mr-1" />
+                          <span className="hidden sm:inline">Full View</span>
+                        </button>
+                      </>
                     )}
                     <button
                       onClick={() => {
@@ -1225,18 +1246,18 @@ const FileStudioPage = () => {
                         setPreviewUrl(null);
                         setProcessedUrl(null);
                       }}
-                      className="text-[11px] font-bold text-slate-500 hover:text-red-500 transition-colors cursor-pointer"
+                      className="text-[11px] font-bold text-slate-500 hover:text-red-500 px-2 py-1 transition-colors cursor-pointer"
                     >
                       Change
                     </button>
                   </div>
                 </div>
 
-                {/* PREVIEW CONTAINER */}
-                <div className="relative w-full h-72 sm:h-96 rounded-2xl bg-slate-900/10 dark:bg-black/40 border border-slate-200/70 dark:border-slate-800/80 overflow-hidden flex items-center justify-center p-3">
+                {/* PREVIEW CONTAINER: FULL-SIZE ADAPTIVE (NO INTERNAL OVERFLOW) */}
+                <div className="relative w-full rounded-2xl bg-slate-900/10 dark:bg-black/40 border border-slate-200/70 dark:border-slate-800/80 overflow-hidden flex items-center justify-center p-3 sm:p-5 min-h-[380px] sm:min-h-[500px] transition-all duration-300">
                   {/* Transparency checkerboard background */}
                   <div
-                    className="absolute inset-0 opacity-25"
+                    className="absolute inset-0 opacity-20 pointer-events-none"
                     style={{
                       backgroundImage:
                         "radial-gradient(#64748b 1px, transparent 1px), radial-gradient(#64748b 1px, transparent 1px)",
@@ -1248,7 +1269,7 @@ const FileStudioPage = () => {
                   {fileMeta.isImage ? (
                     <div
                       ref={imagePreviewBoxRef}
-                      className="relative max-h-full max-w-full flex items-center justify-center overflow-hidden rounded-xl select-none"
+                      className="relative max-w-full inline-flex items-center justify-center rounded-xl select-none"
                       style={{ touchAction: "none" }}
                     >
                       <img
@@ -1260,7 +1281,7 @@ const FileStudioPage = () => {
                             : processedUrl || previewUrl
                         }
                         alt="Studio Output"
-                        className={`max-h-full max-w-full object-contain rounded-lg shadow-lg transition-all duration-300 relative z-10 ${
+                        className={`w-auto h-auto max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl transition-all duration-300 relative z-10 ${
                           isRemovingBgCloud ? "brightness-90 contrast-105 scale-[0.98]" : ""
                         }`}
                       />
@@ -2439,6 +2460,72 @@ const FileStudioPage = () => {
         )}
         </main>
       </div>
+
+      {/* FULLSCREEN HIGH-RES INSPECTION MODAL */}
+      {isFullscreen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200 select-none"
+          onClick={() => setIsFullscreen(false)}
+        >
+          {/* Modal Top Bar */}
+          <div
+            className="flex items-center justify-between z-10 max-w-6xl w-full mx-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="font-black text-white text-sm sm:text-base truncate max-w-xs sm:max-w-md">
+                {fileMeta.name}
+              </span>
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 border border-emerald-500/30">
+                {fileMeta.width} × {fileMeta.height} px
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowOriginalComparison((v) => !v)}
+                className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                  showOriginalComparison
+                    ? "bg-amber-500 text-white border-amber-600 shadow-xs"
+                    : "bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700"
+                }`}
+              >
+                <Eye size={14} className="inline mr-1.5" />
+                {showOriginalComparison ? "Original" : "Result"}
+              </button>
+
+              <button
+                onClick={() => setIsFullscreen(false)}
+                className="p-2 rounded-xl bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
+                title="Close Full View (Esc)"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Center Image in Natural Full Resolution */}
+          <div
+            className="flex-1 flex items-center justify-center p-2 sm:p-6 min-h-0 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={showOriginalComparison ? previewUrl : processedUrl || previewUrl}
+              alt="Full View"
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl transition-transform"
+            />
+          </div>
+
+          {/* Modal Footer Info */}
+          <div
+            className="text-center text-xs text-slate-400 z-10 py-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span>Displaying in full resolution • Click outside or press Esc to close</span>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

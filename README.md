@@ -45,7 +45,7 @@
 
 **Froggie** is a next-generation, full-stack AI-powered career platform that empowers job seekers to build, audit, and export job-winning resumes tailored to bypass Applicant Tracking Systems (ATS). 
 
-Unlike conventional resume makers that lock features behind expensive paywalls, Froggie is built to be fast, free, and recruiter-focused. It pairs an intuitive real-time dual-pane editor with state-of-the-art **Google Gemini AI**, offering intelligent content rewriting, an automated PDF resume importer, a 7-factor ATS compatibility scanner, and a persistent **AI Career Copilot** for interview prep and personalized cover letters.
+Unlike conventional resume makers that lock features behind expensive paywalls, Froggie is built to be fast, free, and recruiter-focused. It pairs an intuitive real-time dual-pane editor with state-of-the-art **Google Gemini AI**, offering intelligent content rewriting, an automated PDF resume importer, a 7-factor ATS compatibility scanner, and instant exports.
 
 ### 🎯 What Froggie Does
 
@@ -56,7 +56,6 @@ Froggie is designed around one complete job-application workflow:
 3. Compare the resume with a target job description using the ATS checker.
 4. Fix missing keywords and weak sections using the generated report.
 5. Export the final resume as PDF, DOCX, JSON, or plain text.
-6. Use the Career Copilot for interview preparation, cover letters, LinkedIn content, and career coaching.
 
 The application has two independently deployable parts: a Vite-powered React client and an Express/MongoDB API server.
 
@@ -103,19 +102,6 @@ Ensures your resume lands on human recruiters' desks, not rejected by ATS filter
 - **Skill Gap & Missing Keyword Analysis**: Highlights exact missing keywords to inject into your resume.
 - **Actionable ATS Insights**: Concrete strengths, weaknesses, and step-by-step suggestions.
 - **Scan History**: Save, compare, and track ATS improvements across iterations.
-
----
-
-### 💬 4. AI Career Copilot
-- **Always-Available Floating Drawer**: Integrated directly into the user workspace.
-- **Context-Aware Assistance**: Automatically consumes the candidate's active resume and the targeted job listing to give hyper-personalized career advice.
-- **One-Click Quick Actions**:
-  - 🎯 **Interview Prep**: Generate role-specific behavioral (STAR method) and technical interview questions with model answers.
-  - ✉️ **Custom Cover Letter**: Draft tailored, persuasive cover letters based on your resume and job requirements.
-  - 🔍 **Resume Critique**: Receive an honest recruiter review detailing red flags and improvement opportunities.
-  - 💼 **LinkedIn Profile Enhancer**: Generate catchy headlines and an engaging "About" section.
-  - 💰 **Salary Negotiation**: Actionable strategies and benchmarks for compensation discussions.
-- **Conversation Persistence**: Chat sessions are stored in MongoDB and can be revisited anytime.
 
 ---
 
@@ -222,7 +208,6 @@ froggie/
 │   │   │   ├── aiApi.js        # AI enhancement & PDF parse endpoints
 │   │   │   ├── atsApi.js       # ATS checker & history endpoints
 │   │   │   ├── authApi.js      # User registration, login, profile endpoints
-│   │   │   ├── copilotApi.js   # AI Career Copilot messaging endpoints
 │   │   │   ├── resumeApi.js    # Resume CRUD operations
 │   │   │   └── testimonialApi.js
 │   │   ├── app/                # Redux Toolkit store and slices
@@ -231,14 +216,12 @@ froggie/
 │   │   ├── components/         # Reusable UI & Feature components
 │   │   │   ├── ats/            # ATS gauges, inputs, keyword badges, history
 │   │   │   ├── builder/        # Stepper, builder header, action toolbar
-│   │   │   ├── copilot/        # Floating widget, drawer, message list, actions
 │   │   │   ├── dashboard/      # Create resume modal, upload modal
 │   │   │   ├── home/           # Hero, Features, HowItWorks, Testimonials, Footer
 │   │   │   ├── resumes/        # Resume cards, grid list
 │   │   │   ├── templates/      # 7 ATS-friendly resume template implementations
 │   │   │   └── forms...        # PersonalInfo, Experience, Skills, Projects, etc.
 │   │   ├── constants/          # Templates meta, section orders, color palettes
-│   │   ├── context/            # Copilot context provider
 │   │   ├── hooks/              # Custom React hooks (e.g., useSEO)
 │   │   ├── pages/              # Top-level view routes
 │   │   │   ├── Home.jsx        # Landing page
@@ -266,7 +249,6 @@ froggie/
 │   ├── controllers/            # Controller logic
 │   │   ├── aiController.js     # Summary enhance, job desc enhance, PDF parse
 │   │   ├── atsController.js    # 7-factor ATS scoring algorithm & history
-│   │   ├── copilotController.js# Context-aware Career Copilot interactions
 │   │   ├── oauthController.js  # Social login callbacks (Google, GitHub, etc.)
 │   │   ├── resumeController.js # Resume CRUD operations
 │   │   ├── testimonialController.js
@@ -274,12 +256,10 @@ froggie/
 │   ├── middlewares/            # Auth JWT verification, Multer upload config
 │   ├── models/                 # Mongoose schemas
 │   │   ├── AtsReport.js        # ATS scan results and breakdown
-│   │   ├── CopilotChat.js      # Copilot conversations and messages
 │   │   ├── Resume.js           # Resume document schema
 │   │   ├── Testimonial.js      # User reviews & ratings
 │   │   └── User.js             # User accounts & OAuth profiles
 │   ├── routes/                 # Express API routes
-│   ├── services/copilot/       # Prompt engineering & smart fallbacks for Copilot
 │   ├── .env.example            # Server environment variables template
 │   ├── package.json
 │   └── server.js               # Server entrypoint and health routes
@@ -325,13 +305,6 @@ froggie/
 | `GET` | `/api/ats/report/:id` | Get detailed ATS report by ID | Yes (JWT) |
 | `DELETE` | `/api/ats/report/:id` | Delete an ATS report | Yes (JWT) |
 
-### 5. AI Career Copilot (`/api/copilot`)
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :---: |
-| `POST` | `/api/copilot/message` | Send prompt to Copilot with active resume & job context | Yes (JWT) |
-| `GET` | `/api/copilot/chats` | Retrieve user's previous Copilot chat sessions | Yes (JWT) |
-| `GET` | `/api/copilot/chat/:id` | Retrieve single chat conversation history | Yes (JWT) |
-| `DELETE` | `/api/copilot/chat/:id` | Delete a Copilot chat session | Yes (JWT) |
 
 ### 6. Health & System
 | Method | Endpoint | Description |

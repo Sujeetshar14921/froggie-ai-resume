@@ -9,7 +9,6 @@ import userRouter from "./routes/userRoutes.js";
 import resumeRouter from "./routes/resumeRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
 import atsRouter from "./routes/atsRoutes.js";
-import copilotRouter from "./routes/copilotRoutes.js";
 import testimonialRouter from "./routes/testimonialRoutes.js";
 import { generalLimiter } from "./middlewares/rateLimiter.js";
 
@@ -73,7 +72,6 @@ app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
 app.use("/api/ats", atsRouter);
-app.use("/api/copilot", copilotRouter);
 app.use("/api/testimonials", testimonialRouter);
 
 // Start server after connecting to database

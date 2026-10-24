@@ -216,7 +216,7 @@ const TalentPage = () => {
   }), [resumes]);
 
   useSEO({
-    title: "talent | froggie AI",
+    title: "Talent | froggie AI",
     description:
       "Discover and hire verified software engineers, full-stack developers, React engineers, and tech talent. Browse pre-screened ATS-compliant resumes, GitHub portfolios, and direct contact details. Free for hiring teams & recruiters.",
     keywords:
