@@ -134,6 +134,56 @@ const Navbar = () => {
     { name: "How It Works", href: "/#how-it-works", isRoute: false },
   ];
 
+  const userMenuItems = [
+    {
+      name: "Settings & Preferences",
+      href: "/app/settings",
+      icon: Settings,
+      isActive: location.pathname === "/app/settings",
+    },
+    {
+      name: "Dashboard",
+      href: "/app",
+      icon: LayoutDashboard,
+      isActive: location.pathname === "/app",
+    },
+    {
+      name: "My Resumes",
+      href: "/app/my-resumes",
+      icon: FileText,
+      isActive:
+        location.pathname === "/app/my-resumes" ||
+        location.pathname.startsWith("/app/resumes"),
+    },
+    {
+      name: "Job Tracker CRM",
+      href: "/app/applications",
+      icon: Briefcase,
+      isActive: location.pathname.startsWith("/app/applications"),
+    },
+    {
+      name: "ATS Resume Checker",
+      href: "/app/ats-checker",
+      icon: ShieldCheck,
+      badge: "AI",
+      isActive: location.pathname.startsWith("/app/ats-checker"),
+    },
+    {
+      name: "File & Media Studio",
+      href: "/file-studio",
+      icon: Sparkles,
+      badge: "STUDIO",
+      badgeColor: "indigo",
+      isActive: location.pathname.startsWith("/file-studio"),
+    },
+    {
+      name: "Support Froggie ☕",
+      href: "/donate",
+      icon: Coffee,
+      isActive: location.pathname === "/donate",
+    },
+  ];
+
   return (
     <>
       <header
@@ -189,7 +239,7 @@ const Navbar = () => {
                     to={link.href}
                     className={`nav-link-item text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
                       location.pathname === link.href
-                        ? "bg-slate-950 dark:bg-emerald-600 text-white shadow-2xs"
+                        ? "bg-slate-950 dark:bg-emerald-600 text-white"
                         : "text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-white dark:hover:bg-slate-800"
                     }`}
                   >
@@ -213,7 +263,7 @@ const Navbar = () => {
             {/* QUICK 1-CLICK THEME TOGGLE (DESKTOP ONLY) */}
             <button
               onClick={toggleTheme}
-              className="hidden lg:inline-flex p-2 sm:p-2.5 rounded-2xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer border border-slate-200/80 dark:border-slate-800/80 shadow-2xs"
+              className="hidden lg:inline-flex p-2 sm:p-2.5 rounded-2xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer border border-slate-200/80 dark:border-slate-800/80"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle Theme"
             >
@@ -232,7 +282,7 @@ const Navbar = () => {
               <div ref={profileDropdownRef} className="relative">
                 <button
                   onClick={() => setOpen(!open)}
-                  className="flex items-center gap-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 p-1.5 sm:pr-3 rounded-2xl shadow-xs hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/10 transition-all cursor-pointer group"
+                  className="flex items-center gap-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 p-1.5 sm:pr-3 rounded-2xl hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-colors cursor-pointer group"
                   aria-expanded={open}
                   aria-haspopup="true"
                 >
@@ -244,7 +294,7 @@ const Navbar = () => {
                         className="size-8 sm:size-9 rounded-xl object-cover ring-2 ring-emerald-500/30"
                       />
                     ) : (
-                      <div className="size-8 sm:size-9 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-xs group-hover:scale-105 transition-transform">
+                      <div className="size-8 sm:size-9 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white flex items-center justify-center font-black text-xs sm:text-sm">
                         {user?.name?.charAt(0)?.toUpperCase() || <User size={15} />}
                       </div>
                     )}
@@ -276,35 +326,39 @@ const Navbar = () => {
                       className="fixed inset-0 z-40"
                       onClick={() => setOpen(false)}
                     />
-                    <div className="absolute right-0 top-12 mt-2 w-72 bg-white/95 dark:bg-[#0c1222]/98 backdrop-blur-2xl border border-emerald-500/20 dark:border-slate-800 rounded-3xl shadow-2xl shadow-emerald-950/15 dark:shadow-[0_25px_60px_rgba(0,0,0,0.85)] z-50 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-12 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-900/10 dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] z-50 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-150">
                       
                       {/* USER SUMMARY HEADER */}
-                      <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800/80 bg-gradient-to-br from-emerald-50/80 via-slate-50/60 to-teal-50/40 dark:from-[#0f172a] dark:via-[#111c30] dark:to-[#0f172a] flex items-center gap-3">
+                      <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-800/40 flex items-center gap-3">
                         <div className="relative shrink-0">
                           {user?.image ? (
                             <img
                               src={user.image}
-                              alt={user.name}
-                              className="size-11 rounded-2xl object-cover ring-2 ring-emerald-500/40 shadow-xs"
+                              alt={user.name || "User Avatar"}
+                              className="size-10 rounded-xl object-cover ring-2 ring-emerald-500/30 shadow-2xs"
                             />
                           ) : (
-                            <div className="size-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                            <div className="size-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 text-white flex items-center justify-center font-bold text-sm shadow-2xs">
                               {user?.name?.charAt(0)?.toUpperCase() || <User size={16} />}
                             </div>
                           )}
-                          <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+                          <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900" />
                         </div>
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{user?.name}</p>
-                            <span className="px-1.5 py-0.2 text-[9px] font-black rounded-md bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                            <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                              {user?.name || "Candidate"}
+                            </p>
+                            <span className="px-1.5 py-0.5 text-[9px] font-black rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                               PRO
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user?.email}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                            {user?.email}
+                          </p>
                           {user?.profession && (
-                            <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100/70 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-500/30 truncate max-w-full">
+                            <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-500/30 truncate max-w-full">
                               <FrogFace size={10} />
                               <span className="truncate">{user.profession}</span>
                             </span>
@@ -312,204 +366,70 @@ const Navbar = () => {
                         </div>
                       </div>
 
-                      {/* SETTINGS QUICK BUTTON */}
-                      <div className="p-1.5">
-                        <Link
-                          to="/app/settings"
-                          onClick={() => setOpen(false)}
-                          className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl transition-all ${
-                            location.pathname === "/app/settings"
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 hover:bg-slate-50/80 dark:hover:bg-slate-800/80"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div
-                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                                location.pathname === "/app/settings"
-                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
+                      {/* NAVIGATION ITEMS */}
+                      <div className="p-1.5 space-y-0.5">
+                        {userMenuItems.map((item) => {
+                          const Icon = item.icon;
+                          const isSelected = item.isActive;
+
+                          return (
+                            <Link
+                              key={item.href}
+                              to={item.href}
+                              onClick={() => setOpen(false)}
+                              className={`group flex items-center justify-between px-3 py-2 rounded-xl transition-all text-sm font-semibold ${
+                                isSelected
+                                  ? "bg-emerald-50/90 dark:bg-emerald-950/50 text-emerald-950 dark:text-emerald-200 border border-emerald-500/30 shadow-2xs"
+                                  : "text-slate-700 dark:text-slate-200 hover:text-emerald-950 dark:hover:text-emerald-200 hover:bg-slate-100/80 dark:hover:bg-slate-800/70 border border-transparent"
                               }`}
                             >
-                              <Settings size={15} className={location.pathname === "/app/settings" ? "lucide-3d" : ""} />
-                            </div>
-                            <span>Settings & Preferences</span>
-                          </div>
-                          <ArrowRight size={13} className="text-slate-400 group-hover:text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                        </Link>
-                      </div>
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className={`size-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                                    isSelected
+                                      ? "bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-xs shadow-emerald-500/25"
+                                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/50 group-hover:text-emerald-600 dark:group-hover:text-emerald-300"
+                                  }`}
+                                >
+                                  <Icon size={16} />
+                                </div>
+                                <span className="truncate text-sm font-semibold">{item.name}</span>
+                              </div>
 
-                      {/* NAVIGATION LINKS */}
-                      <div className="px-1.5 space-y-1">
-                        {/* 1. DASHBOARD */}
-                        <Link
-                          to="/app"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname === "/app"
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div
-                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                              location.pathname === "/app"
-                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
-                            }`}
-                          >
-                            <LayoutDashboard size={15} className={location.pathname === "/app" ? "lucide-3d" : ""} />
-                          </div>
-                          <span>Dashboard</span>
-                        </Link>
-
-                        {/* 2. MY RESUMES */}
-                        <Link
-                          to="/app/my-resumes"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes")
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div
-                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                              location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes")
-                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
-                            }`}
-                          >
-                            <FileText size={15} className={location.pathname === "/app/my-resumes" || location.pathname.startsWith("/app/resumes") ? "lucide-3d" : ""} />
-                          </div>
-                          <span>My Resumes</span>
-                        </Link>
-
-                        {/* 3. JOB TRACKER CRM */}
-                        <Link
-                          to="/app/applications"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname.startsWith("/app/applications")
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div
-                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                              location.pathname.startsWith("/app/applications")
-                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
-                            }`}
-                          >
-                            <Briefcase size={15} className={location.pathname.startsWith("/app/applications") ? "lucide-3d" : ""} />
-                          </div>
-                          <span>Job Tracker CRM</span>
-                        </Link>
-
-                        {/* 4. ATS RESUME CHECKER */}
-                        <Link
-                          to="/app/ats-checker"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname.startsWith("/app/ats-checker")
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                                location.pathname.startsWith("/app/ats-checker")
-                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 text-slate-500 dark:text-slate-400 group-hover:text-emerald-700 dark:group-hover:text-emerald-300"
-                              }`}
-                            >
-                              <ShieldCheck size={15} className={location.pathname.startsWith("/app/ats-checker") ? "lucide-3d" : ""} />
-                            </div>
-                            <span>ATS Resume Checker</span>
-                          </div>
-                          <span
-                            className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md tracking-wider ${
-                              location.pathname.startsWith("/app/ats-checker")
-                                ? "bg-emerald-700 text-white shadow-2xs"
-                                : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-700"
-                            }`}
-                          >
-                            AI
-                          </span>
-                        </Link>
-
-                        {/* 5. SMART FILE & MEDIA STUDIO */}
-                        <Link
-                          to="/file-studio"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname.startsWith("/file-studio")
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                                location.pathname.startsWith("/file-studio")
-                                  ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                  : "bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/40 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
-                              }`}
-                            >
-                              <Sparkles size={15} className={location.pathname.startsWith("/file-studio") ? "lucide-3d" : ""} />
-                            </div>
-                            <span>File & Media Studio</span>
-                          </div>
-                          <span
-                            className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md tracking-wider ${
-                              location.pathname.startsWith("/file-studio")
-                                ? "bg-indigo-600 text-white shadow-2xs"
-                                : "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/40"
-                            }`}
-                          >
-                            Studio
-                          </span>
-                        </Link>
-
-                        {/* 5. SUPPORT FROGGIE LINK */}
-                        <Link
-                          to="/donate"
-                          onClick={() => setOpen(false)}
-                          className={`flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all ${
-                            location.pathname === "/donate"
-                              ? "dropdown-item-3d-selected font-black"
-                              : "dropdown-item-3d text-slate-700 dark:text-slate-300 hover:text-emerald-950 dark:hover:text-emerald-300 font-semibold"
-                          }`}
-                        >
-                          <div
-                            className={`size-7 rounded-lg flex items-center justify-center transition-all ${
-                              location.pathname === "/donate"
-                                ? "icon-3d-pod icon-3d-pod-emerald text-white"
-                                : "bg-slate-100 dark:bg-slate-800 group-hover:bg-amber-50 dark:group-hover:bg-amber-950/40 text-slate-500 dark:text-slate-400 group-hover:text-amber-700 dark:group-hover:text-amber-300"
-                            }`}
-                          >
-                            <Coffee size={15} className={location.pathname === "/donate" ? "lucide-3d" : ""} />
-                          </div>
-                          <span>Support Froggie ☕</span>
-                        </Link>
+                              {item.badge ? (
+                                <span
+                                  className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md tracking-wider shrink-0 ${
+                                    isSelected
+                                      ? "bg-emerald-600 text-white"
+                                      : item.badgeColor === "indigo"
+                                      ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/40"
+                                      : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              ) : isSelected ? (
+                                <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
+                              ) : null}
+                            </Link>
+                          );
+                        })}
                       </div>
 
                       {/* DIVIDER */}
-                      <div className="border-t border-slate-100 dark:border-slate-800/80 my-1.5" />
+                      <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
 
-                      {/* SIGN OUT (PERMANENT 3D BUTTON) */}
-                      <div className="p-2 pt-1">
+                      {/* SIGN OUT */}
+                      <div className="p-1.5 pt-0.5">
                         <button
+                          type="button"
                           onClick={logoutUser}
-                          className="btn-3d-signout w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-2xl font-black text-xs text-rose-600 dark:text-rose-400 cursor-pointer shadow-xs"
-                          title="Sign Out of Froggie"
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer border border-transparent hover:border-rose-200/70 dark:hover:border-rose-900/40 group"
                         >
-                          <div className="icon-3d-pod icon-3d-pod-rose size-6 rounded-lg flex items-center justify-center text-rose-600 dark:text-rose-400 shrink-0">
-                            <LogOut size={13} className="lucide-3d" />
+                          <div className="size-8 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 group-hover:bg-rose-100 dark:group-hover:bg-rose-900/60 transition-colors">
+                            <LogOut size={16} />
                           </div>
-                          <span>Sign Out</span>
+                          <span className="text-sm font-semibold">Sign Out</span>
                         </button>
                       </div>
 
@@ -530,7 +450,7 @@ const Navbar = () => {
 
                 <Link
                   to="/login?state=register"
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 text-xs font-extrabold bg-slate-950 hover:bg-slate-900 text-white rounded-xl shadow-md transition-all border border-emerald-500/40 hover:scale-102 active:scale-98"
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 text-xs font-bold bg-slate-950 hover:bg-slate-900 text-white rounded-xl transition-colors border border-emerald-500/40"
                 >
                   <Sparkles size={13} className="text-emerald-400" />
                   <span>Post Your Resume</span>
@@ -541,13 +461,13 @@ const Navbar = () => {
               <div className="flex items-center gap-2.5">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50/60 rounded-xl transition-all"
+                  className="px-4 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-700 hover:bg-emerald-50/60 rounded-xl transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/login?state=register"
-                  className="shimmer-button inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 text-xs font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-md shadow-emerald-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                  className="shimmer-button inline-flex items-center gap-1.5 px-4 sm:px-5 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors cursor-pointer"
                 >
                   <Sparkles size={14} />
                   <span>Get Started Free</span>

@@ -17,7 +17,7 @@ const Home = () => {
     description: "Build 100% ATS-compliant resumes in minutes with froggie 3.0 AI Studio. Features real-time ATS scoring, AI resume enhancer, 6+ modern designer templates, instant PDF and Word export. Free forever.",
     keywords: "froggie, froggie 3.0, froggie resume, AI resume builder, ATS resume builder, free resume maker, ATS score checker, ATS resume scanner, professional resume templates, CV maker, job resume generator, ATS friendly resume, resume editor, download resume PDF, resume enhancer, resume optimizer, best resume builder 2026",
     canonical: "https://froggie.site/",
-    ogImage: "https://froggie.site/og-image.png",
+    ogImage: "https://froggie.site/froggie_banner.jpg",
   });
 
   const progressBarRef = useRef(null);

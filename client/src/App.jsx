@@ -23,6 +23,7 @@ const DonatePage = lazy(() => import('./pages/DonatePage'))
 const TalentPage = lazy(() => import('./pages/TalentPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const FileStudioPage = lazy(() => import('./pages/FileStudioPage'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Minimalist fallback loader
 const PageLoader = () => (
@@ -90,6 +91,9 @@ const App = () => {
           </Route>
 
           <Route path='view/:resumeId' element={<Preview />} />
+
+          {/* 404 NOT FOUND CATCH-ALL */}
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </Suspense>
 

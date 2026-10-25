@@ -46,6 +46,14 @@ body,
   input:not([type="checkbox"]) {
     @apply outline-none transition-all duration-200;
   }
+  /* Disable Microsoft Edge / IE password reveal & clear buttons to prevent clash with custom eye toggle */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+  }
   textarea {
     @apply outline-none transition-all duration-200 resize-none;
   }
@@ -152,31 +160,44 @@ body,
 }
 
 /* ==========================================================================
-   GLOSSY & 3D TACTILE BUTTON SYSTEM (PREMIUM PHYSICAL DEPTH & SMOOTH MOTION)
-   Clean single-surface volumetric depth — zero ghosting / zero duplicate slabs
+   MODERN FLAT & MINIMALIST BUTTON SYSTEM (CLEAN, SHADOWLESS, HIGH-PERFORMANCE)
+   Zero 3D bevels, zero physical drop-shadows, smooth color transitions
    ========================================================================== */
 
-/* Universal Button Baseline for Smooth Tactile Animation */
+/* Universal Button Baseline: Flat, Crisp, Fast */
 button:not(:disabled),
 a[role="button"],
 a.hero-cta-btn,
 .shimmer-button,
-.btn-glossy-3d {
+.btn-glossy-3d,
+.btn-flat {
   position: relative;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.2s ease,
-              border-color 0.2s ease,
-              filter 0.2s ease !important;
-  will-change: transform, box-shadow;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease !important;
+  will-change: auto;
 }
 
-/* Global 3D Tactile Active Press for all buttons */
-button:not(:disabled):not(.bg-transparent):active,
+/* Universal Button Hover & Focus: Strictly flat, zero 3D jumps or drop-shadows */
+button:not(:disabled):hover,
+a[role="button"]:hover,
+a.hero-cta-btn:hover,
+.shimmer-button:hover,
+.btn-glossy-3d:hover,
+.btn-flat:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Global Crisp Active Press: Pure opacity feedback without 3D displacement */
+button:not(:disabled):active,
+a[role="button"]:active,
 a.hero-cta-btn:active,
 .shimmer-button:active,
 .btn-glossy-3d:active {
-  transform: translateY(1.5px) scale(0.985) !important;
+  transform: none !important;
+  opacity: 0.9 !important;
+  box-shadow: none !important;
 }
 
 /* 1. Dark Slate Buttons (e.g. bg-slate-950, bg-slate-900, bg-slate-800, bg-black) */
@@ -187,13 +208,9 @@ button:not(:disabled).bg-black,
 a.hero-cta-btn.bg-slate-950,
 a.bg-slate-950,
 .btn-3d-dark {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.25) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.6),
-    0 2px 5px -1px rgba(0, 0, 0, 0.3),
-    0 6px 16px -2px rgba(0, 0, 0, 0.4);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled).bg-slate-950:hover,
@@ -203,13 +220,9 @@ button:not(:disabled).bg-black:hover,
 a.hero-cta-btn.bg-slate-950:hover,
 a.bg-slate-950:hover,
 .btn-3d-dark:hover {
-  transform: translateY(-2px);
-  border-color: rgba(52, 211, 153, 0.5);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.6),
-    0 4px 10px -2px rgba(0, 0, 0, 0.35),
-    0 12px 28px -4px rgba(16, 185, 129, 0.35);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 button:not(:disabled).bg-slate-950:active,
@@ -219,10 +232,9 @@ button:not(:disabled).bg-black:active,
 a.hero-cta-btn.bg-slate-950:active,
 a.bg-slate-950:active,
 .btn-3d-dark:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.7),
-    0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
 /* 2. Vibrant Emerald / Green Buttons (e.g. bg-emerald-600, bg-emerald-500, bg-teal-600) */
@@ -232,13 +244,9 @@ button:not(:disabled).bg-teal-600,
 a.bg-emerald-600,
 a.bg-emerald-500,
 .btn-3d-emerald {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.18) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 2px 6px -1px rgba(5, 150, 105, 0.35),
-    0 6px 18px -2px rgba(16, 185, 129, 0.35);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled).bg-emerald-600:hover,
@@ -247,13 +255,9 @@ button:not(:disabled).bg-teal-600:hover,
 a.bg-emerald-600:hover,
 a.bg-emerald-500:hover,
 .btn-3d-emerald:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 4px 12px -2px rgba(5, 150, 105, 0.4),
-    0 14px 28px -4px rgba(16, 185, 129, 0.5);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 button:not(:disabled).bg-emerald-600:active,
@@ -262,10 +266,9 @@ button:not(:disabled).bg-teal-600:active,
 a.bg-emerald-600:active,
 a.bg-emerald-500:active,
 .btn-3d-emerald:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.4),
-    0 1px 2px 0 rgba(5, 150, 105, 0.2);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
 /* 3. White & Slate-100 Light Buttons (e.g. bg-white, bg-slate-100, bg-slate-50) */
@@ -275,13 +278,9 @@ button:not(:disabled).bg-slate-50,
 a.hero-cta-btn.bg-white,
 a.bg-white,
 .btn-3d-light {
-  background-image: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  box-shadow: 
-    inset 0 1px 0 0 #ffffff,
-    inset 0 -1px 0 0 rgba(203, 213, 225, 0.7),
-    0 1px 3px 0 rgba(0, 0, 0, 0.05),
-    0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled).bg-white:hover,
@@ -290,13 +289,8 @@ button:not(:disabled).bg-slate-50:hover,
 a.hero-cta-btn.bg-white:hover,
 a.bg-white:hover,
 .btn-3d-light:hover {
-  transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.45);
-  box-shadow: 
-    inset 0 1px 0 0 #ffffff,
-    inset 0 -1px 0 0 rgba(203, 213, 225, 0.7),
-    0 4px 10px -2px rgba(0, 0, 0, 0.08),
-    0 10px 24px -3px rgba(16, 185, 129, 0.18);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 button:not(:disabled).bg-white:active,
@@ -305,10 +299,9 @@ button:not(:disabled).bg-slate-50:active,
 a.hero-cta-btn.bg-white:active,
 a.bg-white:active,
 .btn-3d-light:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 1.5px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
 /* 4. Royal Blue & Indigo Buttons (e.g. bg-blue-600, bg-indigo-600, bg-sky-500) */
@@ -318,13 +311,9 @@ button:not(:disabled)[class*="bg-sky-"],
 a[class*="bg-blue-"],
 a[class*="bg-indigo-"],
 .btn-3d-blue {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.2) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 2px 6px -1px rgba(37, 99, 235, 0.35),
-    0 6px 18px -2px rgba(37, 99, 235, 0.35);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled)[class*="bg-blue-"]:hover,
@@ -333,13 +322,9 @@ button:not(:disabled)[class*="bg-sky-"]:hover,
 a[class*="bg-blue-"]:hover,
 a[class*="bg-indigo-"]:hover,
 .btn-3d-blue:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 4px 12px -2px rgba(37, 99, 235, 0.4),
-    0 14px 28px -4px rgba(37, 99, 235, 0.5);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 button:not(:disabled)[class*="bg-blue-"]:active,
@@ -348,26 +333,25 @@ button:not(:disabled)[class*="bg-sky-"]:active,
 a[class*="bg-blue-"]:active,
 a[class*="bg-indigo-"]:active,
 .btn-3d-blue:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.4),
-    0 1px 2px 0 rgba(37, 99, 235, 0.2);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
-/* 5. Rose & Red Buttons & Dedicated 3D Delete Buttons (e.g. bg-rose-600, bg-red-600) */
+/* 5. Rose & Red Buttons & Delete Actions */
 button:not(:disabled)[class*="bg-rose-"],
 button:not(:disabled)[class*="bg-red-"],
 a[class*="bg-rose-"],
 a[class*="bg-red-"],
 .btn-3d-rose,
-.btn-3d-delete-solid {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.22) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.65),
-    inset 0 -2px 1.5px 0 rgba(136, 19, 55, 0.45),
-    0 2px 6px -1px rgba(225, 29, 72, 0.35),
-    0 6px 18px -2px rgba(225, 29, 72, 0.38);
+.btn-3d-delete-solid,
+.btn-3d-delete,
+.btn-3d-signout,
+button:not(:disabled)[title*="Delete"],
+button:not(:disabled)[title*="Trash"] {
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled)[class*="bg-rose-"]:hover,
@@ -375,14 +359,14 @@ button:not(:disabled)[class*="bg-red-"]:hover,
 a[class*="bg-rose-"]:hover,
 a[class*="bg-red-"]:hover,
 .btn-3d-rose:hover,
-.btn-3d-delete-solid:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -2px 1.5px 0 rgba(136, 19, 55, 0.5),
-    0 4px 12px -2px rgba(225, 29, 72, 0.45),
-    0 14px 28px -4px rgba(225, 29, 72, 0.55);
+.btn-3d-delete-solid:hover,
+.btn-3d-delete:hover,
+.btn-3d-signout:hover,
+button:not(:disabled)[title*="Delete"]:hover,
+button:not(:disabled)[title*="Trash"]:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 button:not(:disabled)[class*="bg-rose-"]:active,
@@ -390,139 +374,25 @@ button:not(:disabled)[class*="bg-red-"]:active,
 a[class*="bg-rose-"]:active,
 a[class*="bg-red-"]:active,
 .btn-3d-rose:active,
-.btn-3d-delete-solid:active {
-  transform: translateY(2px) scale(0.975);
-  box-shadow: 
-    inset 0 2.5px 4px 0 rgba(136, 19, 55, 0.7),
-    0 1px 2px 0 rgba(225, 29, 72, 0.2);
-}
-
-/* ==========================================================================
-   ULTRA-TACTILE 3D DELETE & TRASH ACTION BUTTON SYSTEM
-   ========================================================================== */
-
-/* 1. Tactile 3D Soft-Ruby Delete & Sign Out Button */
-.btn-3d-delete,
-.btn-3d-signout,
-button:not(:disabled)[title*="Delete"],
-button:not(:disabled)[title*="Trash"] {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%) !important;
-  color: #e11d48 !important;
-  border: 1px solid rgba(244, 63, 94, 0.45) !important;
-  border-radius: 0.85rem;
-  box-shadow: 
-    inset 0 1px 0 0 #ffffff,
-    inset 0 -2px 0 0 rgba(225, 29, 72, 0.25),
-    0 2px 6px -1px rgba(225, 29, 72, 0.15);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              background 0.2s ease !important;
-  cursor: pointer;
-  will-change: transform, box-shadow;
-}
-
-.btn-3d-delete::before,
-.btn-3d-signout::before,
-.btn-3d-delete-solid::before {
-  display: none !important;
-}
-
-.btn-3d-delete:hover,
-.btn-3d-signout:hover,
-button:not(:disabled)[title*="Delete"]:hover,
-button:not(:disabled)[title*="Trash"]:hover {
-  transform: translateY(-1.5px);
-  background: linear-gradient(180deg, #ffe4e6 0%, #fecdd3 100%) !important;
-  border-color: rgba(225, 29, 72, 0.75) !important;
-  color: #be123c !important;
-  box-shadow: 
-    inset 0 1px 0 0 #ffffff,
-    inset 0 -2px 0 0 rgba(190, 18, 60, 0.35),
-    0 6px 18px -2px rgba(225, 29, 72, 0.3) !important;
-}
-
-.btn-3d-delete:hover svg,
-.btn-3d-signout:hover svg,
-button:not(:disabled)[title*="Delete"]:hover svg,
-button:not(:disabled)[title*="Trash"]:hover svg {
-  transform: scale(1.15) rotate(6deg);
-  filter: drop-shadow(0 2px 4px rgba(225, 29, 72, 0.4));
-}
-
+.btn-3d-delete-solid:active,
 .btn-3d-delete:active,
 .btn-3d-signout:active,
 button:not(:disabled)[title*="Delete"]:active,
 button:not(:disabled)[title*="Trash"]:active {
-  transform: translateY(1.5px) scale(0.98);
-  background: linear-gradient(180deg, #fecdd3 0%, #fda4af 100%) !important;
-  border-color: #be123c !important;
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(159, 18, 57, 0.4),
-    0 1px 2px 0 rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
-/* 2. Solid Crimson Jewel 3D Button (For Destructive Confirmations & Empty Trash) */
-.btn-3d-delete-solid {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, #f43f5e 0%, #e11d48 48%, #be123c 100%) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  border-radius: 0.8rem;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -3px 2px 0 rgba(136, 19, 55, 0.85),
-    0 4px 14px -2px rgba(225, 29, 72, 0.4),
-    0 8px 20px -4px rgba(225, 29, 72, 0.3) !important;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease !important;
-  cursor: pointer;
-  will-change: transform, box-shadow;
-}
-
-.btn-3d-delete-solid:hover {
-  transform: translateY(-2px) scale(1.03) !important;
-  border-color: rgba(255, 255, 255, 0.7) !important;
-  box-shadow: 
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -3px 2px 0 rgba(136, 19, 55, 0.9),
-    0 6px 18px -2px rgba(225, 29, 72, 0.65),
-    0 16px 32px -4px rgba(225, 29, 72, 0.5) !important;
-}
-
-.btn-3d-delete-solid:hover svg {
-  transform: scale(1.16) rotate(6deg);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-.btn-3d-delete-solid:active {
-  transform: translateY(2.5px) scale(0.95) !important;
-  box-shadow: 
-    inset 0 3px 6px 0 rgba(136, 19, 55, 0.95),
-    0 1px 3px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
-/* 6. Amber, Orange & Gold Buttons (e.g. bg-amber-500, bg-orange-500) */
+/* 6. Amber, Orange & Gold Buttons */
 button:not(:disabled)[class*="bg-amber-"],
 button:not(:disabled)[class*="bg-orange-"],
 a[class*="bg-amber-"],
 a[class*="bg-orange-"],
 .btn-3d-amber {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.15) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.3),
-    0 2px 6px -1px rgba(245, 158, 11, 0.35),
-    0 6px 18px -2px rgba(245, 158, 11, 0.35);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled)[class*="bg-amber-"]:hover,
@@ -530,13 +400,9 @@ button:not(:disabled)[class*="bg-orange-"]:hover,
 a[class*="bg-amber-"]:hover,
 a[class*="bg-orange-"]:hover,
 .btn-3d-amber:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.3),
-    0 4px 12px -2px rgba(245, 158, 11, 0.4),
-    0 14px 28px -4px rgba(245, 158, 11, 0.48);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 button:not(:disabled)[class*="bg-amber-"]:active,
@@ -544,25 +410,20 @@ button:not(:disabled)[class*="bg-orange-"]:active,
 a[class*="bg-amber-"]:active,
 a[class*="bg-orange-"]:active,
 .btn-3d-amber:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.4),
-    0 1px 2px 0 rgba(245, 158, 11, 0.2);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.88;
 }
 
-/* 7. Purple & Violet Buttons (e.g. bg-purple-600, bg-violet-600) */
+/* 7. Purple & Violet Buttons */
 button:not(:disabled)[class*="bg-purple-"],
 button:not(:disabled)[class*="bg-violet-"],
 a[class*="bg-purple-"],
 a[class*="bg-violet-"],
 .btn-3d-purple {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.2) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 2px 6px -1px rgba(124, 58, 237, 0.35),
-    0 6px 18px -2px rgba(124, 58, 237, 0.35);
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled)[class*="bg-purple-"]:hover,
@@ -570,74 +431,42 @@ button:not(:disabled)[class*="bg-violet-"]:hover,
 a[class*="bg-purple-"]:hover,
 a[class*="bg-violet-"]:hover,
 .btn-3d-purple:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.35),
-    0 4px 12px -2px rgba(124, 58, 237, 0.4),
-    0 14px 28px -4px rgba(124, 58, 237, 0.5);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
-button:not(:disabled)[class*="bg-purple-"]:active,
-button:not(:disabled)[class*="bg-violet-"]:active,
-a[class*="bg-purple-"]:active,
-a[class*="bg-violet-"]:active,
-.btn-3d-purple:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.4),
-    0 1px 2px 0 rgba(124, 58, 237, 0.2);
-}
-
-/* 8. Vibrant Multi-Color Gradient Buttons */
+/* 8. Gradient Buttons */
 button:not(:disabled)[class*="bg-gradient-to-"],
 a[class*="bg-gradient-to-"],
 .btn-3d-gradient {
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.3),
-    0 3px 8px -1px rgba(16, 185, 129, 0.35),
-    0 8px 20px -2px rgba(16, 185, 129, 0.35);
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 button:not(:disabled)[class*="bg-gradient-to-"]:hover,
 a[class*="bg-gradient-to-"]:hover,
 .btn-3d-gradient:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.3),
-    0 4px 14px -2px rgba(16, 185, 129, 0.4),
-    0 16px 32px -4px rgba(16, 185, 129, 0.5);
-}
-
-button:not(:disabled)[class*="bg-gradient-to-"]:active,
-a[class*="bg-gradient-to-"]:active,
-.btn-3d-gradient:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.35),
-    0 1px 3px 0 rgba(16, 185, 129, 0.25);
+  transform: none !important;
+  box-shadow: none !important;
+  opacity: 0.94;
 }
 
 /* 9. Target Role Chips & Interactive Pills (hero-chip) */
 .hero-chip {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.2s ease,
-              border-color 0.2s ease !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
 }
 
 .hero-chip:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .hero-chip:active {
-  transform: translateY(1px) scale(0.98);
+  transform: none !important;
+  opacity: 0.9;
 }
 
 /* 10. Enhanced Shimmer Sweep on Glossy 3D Buttons */
@@ -670,294 +499,205 @@ a[class*="bg-gradient-to-"]:active,
 }
 
 /* ==========================================================================
-   3D TACTILE ICON PODS & LUCIDE 3D EMBOSSED SYSTEM FOR ALL CARDS
+   MODERN MINIMALIST ICON PODS & ICONS (CLEAN, FLAT, NO 3D)
    ========================================================================== */
 
-/* Extruded 3D lighting filter for Lucide SVG icons */
+/* Clean, crisp Lucide SVG icons */
 .lucide-3d {
-  filter: drop-shadow(0 2.5px 3.5px rgba(0, 0, 0, 0.24)) drop-shadow(0 1px 0.5px rgba(255, 255, 255, 0.85));
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), filter 0.28s ease;
-  will-change: transform, filter;
+  filter: none !important;
+  transform: none !important;
+  transition: opacity 0.15s ease, color 0.15s ease !important;
 }
 
 .group:hover .lucide-3d,
 .hover-3d-icon:hover .lucide-3d,
 button:hover .lucide-3d,
 a:hover .lucide-3d {
-  transform: scale(1.12) rotate(4deg);
-  filter: drop-shadow(0 4.5px 7px rgba(0, 0, 0, 0.32)) drop-shadow(0 1px 1px rgba(255, 255, 255, 0.95));
+  transform: none !important;
+  filter: none !important;
 }
 
-/* Base 3D Sculpted Icon Pod */
+/* Base Modern Icon Pod */
 .icon-3d-pod {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
-  will-change: transform, box-shadow;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
 }
 
 .group:hover .icon-3d-pod,
 .icon-3d-pod:hover {
-  transform: translateY(-2px) scale(1.06);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* 1. Emerald 3D Icon Pod */
+/* 1. Emerald Icon Pod */
 .icon-3d-pod-emerald {
-  background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 60%, #a7f3d0 100%);
-  border: 1px solid rgba(52, 211, 153, 0.55);
-  color: #047857;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(5, 150, 105, 0.3),
-    0 4px 12px -2px rgba(16, 185, 129, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  color: #047857 !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-emerald,
 .icon-3d-pod-emerald:hover {
-  border-color: rgba(16, 185, 129, 0.75);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(5, 150, 105, 0.35),
-    0 8px 20px -2px rgba(16, 185, 129, 0.4),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #6ee7b7 !important;
+  box-shadow: none !important;
 }
 
-/* 2. Teal & Cyan 3D Icon Pod */
+/* 2. Teal & Cyan Icon Pod */
 .icon-3d-pod-teal {
-  background: linear-gradient(145deg, #f0fdfa 0%, #ccfbf1 60%, #99f6e4 100%);
-  border: 1px solid rgba(45, 212, 191, 0.55);
-  color: #0f766e;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(13, 148, 136, 0.3),
-    0 4px 12px -2px rgba(20, 184, 166, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #f0fdfa !important;
+  border: 1px solid #99f6e4 !important;
+  color: #0f766e !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-teal,
 .icon-3d-pod-teal:hover {
-  border-color: rgba(20, 184, 166, 0.75);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(13, 148, 136, 0.35),
-    0 8px 20px -2px rgba(20, 184, 166, 0.4),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #5eead4 !important;
+  box-shadow: none !important;
 }
 
-/* 3. Blue & Indigo 3D Icon Pod */
+/* 3. Blue & Indigo Icon Pod */
 .icon-3d-pod-blue {
-  background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 60%, #bfdbfe 100%);
-  border: 1px solid rgba(96, 165, 250, 0.55);
-  color: #1d4ed8;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(37, 99, 235, 0.3),
-    0 4px 12px -2px rgba(59, 130, 246, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #eff6ff !important;
+  border: 1px solid #bfdbfe !important;
+  color: #1d4ed8 !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-blue,
 .icon-3d-pod-blue:hover {
-  border-color: rgba(59, 130, 246, 0.75);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(37, 99, 235, 0.35),
-    0 8px 20px -2px rgba(59, 130, 246, 0.4),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #93c5fd !important;
+  box-shadow: none !important;
 }
 
-/* 4. Amber & Gold 3D Icon Pod */
+/* 4. Amber & Gold Icon Pod */
 .icon-3d-pod-amber {
-  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 60%, #fde68a 100%);
-  border: 1px solid rgba(251, 191, 36, 0.65);
-  color: #b45309;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(217, 119, 6, 0.3),
-    0 4px 12px -2px rgba(245, 158, 11, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #fffbeb !important;
+  border: 1px solid #fde68a !important;
+  color: #b45309 !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-amber,
 .icon-3d-pod-amber:hover {
-  border-color: rgba(245, 158, 11, 0.85);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(217, 119, 6, 0.35),
-    0 8px 20px -2px rgba(245, 158, 11, 0.4),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #fcd34d !important;
+  box-shadow: none !important;
 }
 
-/* 5. Purple & Violet 3D Icon Pod */
+/* 5. Purple & Violet Icon Pod */
 .icon-3d-pod-purple {
-  background: linear-gradient(145deg, #faf5ff 0%, #f3e8ff 60%, #e9d5ff 100%);
-  border: 1px solid rgba(192, 132, 252, 0.55);
-  color: #7e22ce;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(147, 51, 234, 0.3),
-    0 4px 12px -2px rgba(168, 85, 247, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #faf5ff !important;
+  border: 1px solid #e9d5ff !important;
+  color: #7e22ce !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-purple,
 .icon-3d-pod-purple:hover {
-  border-color: rgba(168, 85, 247, 0.75);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(147, 51, 234, 0.35),
-    0 8px 20px -2px rgba(168, 85, 247, 0.4),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #d8b4fe !important;
+  box-shadow: none !important;
 }
 
-/* 6. Dark Obsidian Metallic 3D Icon Pod */
+/* 6. Dark Obsidian Metallic Icon Pod */
 .icon-3d-pod-dark {
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 60%, #020617 100%);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  color: #34d399;
-  box-shadow: 
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -2px 2px 0 rgba(0, 0, 0, 0.8),
-    0 4px 14px -2px rgba(0, 0, 0, 0.4),
-    0 8px 20px -2px rgba(16, 185, 129, 0.25);
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  color: #34d399 !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-dark,
 .icon-3d-pod-dark:hover {
-  border-color: rgba(52, 211, 153, 0.7);
-  box-shadow: 
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 -2px 2px 0 rgba(0, 0, 0, 0.85),
-    0 6px 18px -2px rgba(0, 0, 0, 0.5),
-    0 12px 28px -4px rgba(16, 185, 129, 0.45);
+  border-color: #475569 !important;
+  box-shadow: none !important;
 }
 
-/* 7. Crimson & Rose 3D Icon Pod (For Delete / Danger / Trash Actions) */
+/* 7. Crimson & Rose Icon Pod */
 .icon-3d-pod-rose {
-  background: linear-gradient(145deg, #fff1f2 0%, #ffe4e6 60%, #fecdd3 100%);
-  border: 1px solid rgba(244, 63, 94, 0.55);
-  color: #e11d48;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(225, 29, 72, 0.3),
-    0 4px 12px -2px rgba(225, 29, 72, 0.25),
-    0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  background: #fff1f2 !important;
+  border: 1px solid #fecdd3 !important;
+  color: #e11d48 !important;
+  box-shadow: none !important;
 }
 
 .group:hover .icon-3d-pod-rose,
 .icon-3d-pod-rose:hover {
-  border-color: rgba(225, 29, 72, 0.85);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(225, 29, 72, 0.38),
-    0 8px 20px -2px rgba(225, 29, 72, 0.45),
-    0 2px 6px 0 rgba(0, 0, 0, 0.06);
+  border-color: #fda4af !important;
+  box-shadow: none !important;
 }
 
-/* Clean 3D icon pods without cloudy reflection arcs */
 .icon-3d-pod::after {
   display: none !important;
 }
 
 /* ==========================================================================
-   3D TACTILE DROPDOWNS & SELECT OPTIONS SYSTEM
+   MODERN MINIMALIST DROPDOWNS & SELECT OPTIONS (CLEAN, SHADOWLESS)
    ========================================================================== */
 
-/* 1. Native <select> Elements with 3D Tactile Styling */
+/* 1. Native <select> Elements */
 select,
 .select-3d {
   position: relative;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid rgba(203, 213, 225, 0.95);
-  border-radius: 0.85rem;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(203, 213, 225, 0.65),
-    0 2px 6px -1px rgba(0, 0, 0, 0.05),
-    0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              background 0.2s ease;
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
   cursor: pointer;
-  will-change: transform, box-shadow;
 }
 
 select:hover,
 .select-3d:hover {
-  transform: translateY(-1.5px);
-  border-color: rgba(16, 185, 129, 0.65);
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -1.5px 1px 0 rgba(16, 185, 129, 0.25),
-    0 4px 14px -2px rgba(16, 185, 129, 0.2),
-    0 2px 4px 0 rgba(0, 0, 0, 0.04);
+  transform: none !important;
+  border-color: #94a3b8 !important;
+  box-shadow: none !important;
 }
 
 select:focus,
 .select-3d:focus,
 select:active,
 .select-3d:active {
-  transform: translateY(-0.5px);
+  transform: none !important;
   border-color: #10b981 !important;
   outline: none;
-  box-shadow: 
-    inset 0 1.5px 1px 0 #ffffff,
-    inset 0 -2px 1.5px 0 rgba(5, 150, 105, 0.35),
-    0 0 0 3.5px rgba(16, 185, 129, 0.16),
-    0 6px 18px -2px rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
 }
 
-/* 2. Options inside native <select> when selected / active */
+/* 2. Options inside native <select> */
 select option {
   padding: 10px 14px;
   background: #ffffff;
   color: #0f172a;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 select option:checked,
 select option[selected] {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  background-color: #10b981 !important;
   color: #ffffff !important;
-  font-weight: 800 !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
 }
 
-/* 3. Custom Dropdown Selected Item (Ultra-3D Extruded Pill Card) */
+/* 3. Custom Dropdown Selected Item */
 .dropdown-item-3d-selected {
   position: relative;
-  background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 45%, #bbf7d0 100%) !important;
-  border: 1.5px solid rgba(16, 185, 129, 0.9) !important;
-  box-shadow: 
-    inset 0 2px 1.5px 0 #ffffff,
-    inset 0 -3.5px 2px 0 rgba(4, 120, 87, 0.45),
-    0 10px 25px -3px rgba(16, 185, 129, 0.38),
-    0 3px 6px 0 rgba(0, 0, 0, 0.05) !important;
-  transform: translateY(-2.5px) scale(1.02);
-  color: #064e3b !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  color: #065f46 !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
 
-/* Left glowing metallic 3D accent indicator */
-.dropdown-item-3d-selected::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 60%;
-  border-radius: 9999px;
-  background: linear-gradient(180deg, #34d399 0%, #059669 100%);
-  box-shadow: 0 0 8px 1px rgba(16, 185, 129, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  z-index: 2;
-}
-
+.dropdown-item-3d-selected::before,
 .dropdown-item-3d-selected::after {
   display: none !important;
 }
@@ -965,27 +705,22 @@ select option[selected] {
 /* Non-selected interactive dropdown items */
 .dropdown-item-3d {
   position: relative;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              background 0.2s ease,
-              border-color 0.2s ease;
-  will-change: transform, box-shadow;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
 
 .dropdown-item-3d:hover:not(.dropdown-item-3d-selected) {
-  transform: translateY(-1.5px);
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
-  border-color: rgba(16, 185, 129, 0.45) !important;
-  box-shadow: 
-    inset 0 1px 0 0 #ffffff,
-    inset 0 -1.5px 0 0 rgba(203, 213, 225, 0.6),
-    0 4px 14px -2px rgba(0, 0, 0, 0.08) !important;
+  transform: none !important;
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: none !important;
 }
 
 .dropdown-item-3d:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.15) !important;
+  transform: none !important;
+  opacity: 0.9 !important;
+  box-shadow: none !important;
 }
 
 /* Hide scrollbar while preserving smooth scrolling */
@@ -1306,16 +1041,15 @@ html.dark textarea::placeholder {
   color: #64748b !important;
 }
 
-/* 3D Tactile Native Dropdown and Select in Dark Mode */
+/* Modern Native Dropdown and Select in Dark Mode */
 html.dark select,
 html.dark .select-3d {
-  background: linear-gradient(180deg, #162033 0%, #0f172a 100%) !important;
+  background-color: #0f172a !important;
+  background-image: none !important;
   border-color: rgba(51, 65, 85, 0.9) !important;
   color: #f8fafc !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.6),
-    0 2px 6px -1px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark select option {
@@ -1324,17 +1058,16 @@ html.dark select option {
 }
 
 html.dark .dropdown-item-3d:hover:not(.dropdown-item-3d-selected) {
-  background: linear-gradient(180deg, #1e293b 0%, #162033 100%) !important;
+  background-color: #1e293b !important;
+  background-image: none !important;
   border-color: rgba(52, 211, 153, 0.45) !important;
   color: #f8fafc !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
-    0 4px 14px -2px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* ==========================================================================
-   UNIVERSAL DARK MODE BUTTONS & SMALL ACTION CONTROLS ENGINE
+   UNIVERSAL DARK MODE BUTTONS (CLEAN, FLAT, NO 3D)
    ========================================================================== */
 
 /* 1. All Light, White, Slate, and Gray Buttons in Dark Mode */
@@ -1359,14 +1092,12 @@ html.dark a[class*="bg-slate-100"],
 html.dark a[class*="bg-slate-50"],
 html.dark .btn-3d-white,
 html.dark .btn-3d-light {
-  background-image: linear-gradient(180deg, #1e293b 0%, #111a2e 100%) !important;
-  background-color: #111a2e !important;
+  background-image: none !important;
+  background-color: #1e293b !important;
   color: #f1f5f9 !important;
   border-color: rgba(51, 65, 85, 0.85) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.6),
-    0 2px 6px -1px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Hover State for Dark Mode Light / Slate / Secondary Buttons */
@@ -1388,15 +1119,12 @@ html.dark a.bg-white:hover:not([class*="bg-emerald-"]):not([class*="bg-rose-"]),
 html.dark a[class*="bg-white"]:hover:not([class*="bg-emerald-"]):not([class*="bg-rose-"]),
 html.dark .btn-3d-white:hover,
 html.dark .btn-3d-light:hover {
-  background-image: linear-gradient(180deg, #28374f 0%, #18233c 100%) !important;
-  background-color: #18233c !important;
+  background-image: none !important;
+  background-color: #334155 !important;
   color: #ffffff !important;
   border-color: rgba(52, 211, 153, 0.45) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.7),
-    0 6px 16px -2px rgba(0, 0, 0, 0.5),
-    0 0 12px -2px rgba(16, 185, 129, 0.18) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Active State for Dark Mode Light / Slate / Secondary Buttons */
@@ -1408,10 +1136,9 @@ html.dark button:not(:disabled)[class*="bg-white"]:active,
 html.dark button:not(:disabled)[class*="bg-slate-"]:active,
 html.dark .btn-3d-white:active,
 html.dark .btn-3d-light:active {
-  transform: translateY(1.5px) scale(0.985);
-  box-shadow: 
-    inset 0 2px 4px 0 rgba(0, 0, 0, 0.6),
-    0 1px 2px 0 rgba(0, 0, 0, 0.4) !important;
+  transform: none !important;
+  opacity: 0.9 !important;
+  box-shadow: none !important;
 }
 
 /* 2. All Delete, Trash, and Destructive Buttons in Dark Mode */
@@ -1421,13 +1148,11 @@ html.dark button:not(:disabled)[title*="Delete"],
 html.dark button:not(:disabled)[title*="Trash"],
 html.dark button:not(:disabled)[title*="delete"],
 html.dark button:not(:disabled)[title*="trash"] {
-  background: linear-gradient(180deg, #24131d 0%, #150912 100%) !important;
+  background: rgba(225, 29, 72, 0.15) !important;
   color: #fb7185 !important;
   border: 1px solid rgba(244, 63, 94, 0.4) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-    inset 0 -2px 0 0 rgba(0, 0, 0, 0.7),
-    0 3px 8px -1px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .btn-3d-delete::before,
@@ -1442,21 +1167,20 @@ html.dark button:not(:disabled)[title*="Delete"]:hover,
 html.dark button:not(:disabled)[title*="Trash"]:hover,
 html.dark button:not(:disabled)[title*="delete"]:hover,
 html.dark button:not(:disabled)[title*="trash"]:hover {
-  background: linear-gradient(180deg, #351627 0%, #1e0b19 100%) !important;
+  background: rgba(225, 29, 72, 0.25) !important;
   border-color: rgba(244, 63, 94, 0.75) !important;
   color: #fecdd3 !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
-    inset 0 -2px 0 0 rgba(0, 0, 0, 0.8),
-    0 6px 18px -2px rgba(225, 29, 72, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .btn-3d-delete:active,
 html.dark .btn-3d-signout:active,
 html.dark button:not(:disabled)[title*="Delete"]:active,
 html.dark button:not(:disabled)[title*="Trash"]:active {
-  transform: translateY(1.5px) scale(0.985) !important;
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.9) !important;
+  transform: none !important;
+  opacity: 0.9 !important;
+  box-shadow: none !important;
 }
 
 /* 3. Subtle Tint Buttons in Dark Mode (Emerald / Amber / Blue chips & buttons) */
@@ -1464,35 +1188,40 @@ html.dark button:not(:disabled)[class*="bg-emerald-50"],
 html.dark button:not(:disabled)[class*="bg-emerald-100"],
 html.dark a[class*="bg-emerald-50"],
 html.dark a[class*="bg-emerald-100"] {
-  background: linear-gradient(180deg, rgba(6, 78, 59, 0.45) 0%, rgba(6, 95, 70, 0.3) 100%) !important;
+  background: rgba(6, 78, 59, 0.3) !important;
   color: #6ee7b7 !important;
   border-color: rgba(52, 211, 153, 0.35) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
-    0 2px 6px -1px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark button:not(:disabled)[class*="bg-emerald-50"]:hover,
 html.dark button:not(:disabled)[class*="bg-emerald-100"]:hover,
 html.dark a[class*="bg-emerald-50"]:hover,
 html.dark a[class*="bg-emerald-100"]:hover {
-  background: linear-gradient(180deg, rgba(6, 95, 70, 0.65) 0%, rgba(4, 120, 87, 0.45) 100%) !important;
+  background: rgba(6, 78, 59, 0.5) !important;
   color: #a7f3d0 !important;
   border-color: rgba(52, 211, 153, 0.65) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark button:not(:disabled)[class*="bg-amber-50"],
 html.dark button:not(:disabled)[class*="bg-amber-100"] {
-  background: linear-gradient(180deg, rgba(120, 53, 15, 0.45) 0%, rgba(69, 26, 3, 0.3) 100%) !important;
+  background: rgba(120, 53, 15, 0.3) !important;
   color: #fcd34d !important;
   border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark button:not(:disabled)[class*="bg-blue-50"],
 html.dark button:not(:disabled)[class*="bg-blue-100"] {
-  background: linear-gradient(180deg, rgba(30, 58, 138, 0.45) 0%, rgba(23, 37, 84, 0.3) 100%) !important;
+  background: rgba(30, 58, 138, 0.3) !important;
   color: #93c5fd !important;
   border-color: rgba(59, 130, 246, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* 4. Small Chips, Badges, and Pods in Dark Mode */
@@ -1549,76 +1278,62 @@ html.dark .dropdown-item-3d:not(.dropdown-item-3d-selected):hover div[class*="bg
   color: #34d399 !important;
 }
 
-/* 3D Selected Dropdown Item in Dark Mode */
+/* Modern Selected Dropdown Item in Dark Mode */
 html.dark .dropdown-item-3d-selected {
-  background: linear-gradient(145deg, rgba(6, 78, 59, 0.45) 0%, rgba(6, 95, 70, 0.55) 100%) !important;
-  border: 1.5px solid rgba(52, 211, 153, 0.65) !important;
+  background: rgba(6, 78, 59, 0.45) !important;
+  border: 1px solid rgba(52, 211, 153, 0.5) !important;
   color: #34d399 !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
-    inset 0 -2px 0 0 rgba(0, 0, 0, 0.6),
-    0 6px 18px -3px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
-/* 3D Icon Pods in Dark Mode (Vibrant & Metallic Depth) */
+/* Modern Icon Pods in Dark Mode (Clean Flat Tints) */
 html.dark .icon-3d-pod-emerald {
-  background: linear-gradient(145deg, rgba(6, 78, 59, 0.55) 0%, rgba(6, 95, 70, 0.65) 60%, rgba(4, 120, 87, 0.75) 100%) !important;
-  border-color: rgba(52, 211, 153, 0.5) !important;
+  background: rgba(6, 78, 59, 0.4) !important;
+  border-color: rgba(52, 211, 153, 0.4) !important;
   color: #34d399 !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.65),
-    0 4px 12px -2px rgba(16, 185, 129, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .icon-3d-pod-blue {
-  background: linear-gradient(145deg, rgba(30, 58, 138, 0.55) 0%, rgba(29, 78, 216, 0.6) 60%, rgba(37, 99, 235, 0.7) 100%) !important;
-  border-color: rgba(96, 165, 250, 0.5) !important;
+  background: rgba(30, 58, 138, 0.4) !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
   color: #60a5fa !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.65),
-    0 4px 12px -2px rgba(37, 99, 235, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .icon-3d-pod-amber {
-  background: linear-gradient(145deg, rgba(120, 53, 15, 0.55) 0%, rgba(180, 83, 9, 0.6) 60%, rgba(217, 119, 6, 0.7) 100%) !important;
-  border-color: rgba(251, 191, 36, 0.5) !important;
+  background: rgba(120, 53, 15, 0.4) !important;
+  border-color: rgba(251, 191, 36, 0.4) !important;
   color: #fbbf24 !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.65),
-    0 4px 12px -2px rgba(245, 158, 11, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .icon-3d-pod-purple {
-  background: linear-gradient(145deg, rgba(88, 28, 135, 0.55) 0%, rgba(109, 40, 217, 0.6) 60%, rgba(124, 58, 237, 0.7) 100%) !important;
-  border-color: rgba(192, 132, 252, 0.5) !important;
+  background: rgba(88, 28, 135, 0.4) !important;
+  border-color: rgba(192, 132, 252, 0.4) !important;
   color: #c084fc !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.65),
-    0 4px 12px -2px rgba(124, 58, 237, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .icon-3d-pod-rose {
-  background: linear-gradient(145deg, rgba(136, 19, 55, 0.5) 0%, rgba(88, 12, 34, 0.65) 100%) !important;
-  border-color: rgba(244, 63, 94, 0.45) !important;
+  background: rgba(136, 19, 55, 0.4) !important;
+  border-color: rgba(244, 63, 94, 0.4) !important;
   color: #fb7185 !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.65),
-    0 2px 6px -1px rgba(225, 29, 72, 0.25) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .icon-3d-pod-teal {
-  background: linear-gradient(145deg, rgba(19, 78, 74, 0.55) 0%, rgba(15, 118, 110, 0.6) 60%, rgba(13, 148, 136, 0.7) 100%) !important;
-  border-color: rgba(45, 212, 191, 0.5) !important;
+  background: rgba(19, 78, 74, 0.4) !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
   color: #2dd4bf !important;
-  box-shadow: 
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px 0 rgba(0, 0, 0, 0.65),
-    0 4px 12px -2px rgba(20, 184, 166, 0.35) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Glass Panels in Dark Mode */
@@ -1663,26 +1378,28 @@ html.dark .bg-emerald-50\/80 {
   border-color: rgba(16, 185, 129, 0.35) !important;
 }
 
-/* 3D Settings Tab Item */
+/* Modern Settings Tab Item */
 .settings-tab-btn {
   position: relative;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none !important;
+  transform: none !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
 }
 
 .settings-tab-btn-active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%) !important;
-  border-color: rgba(16, 185, 129, 0.6) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
-    0 4px 14px -2px rgba(16, 185, 129, 0.15) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+  color: #047857 !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 html.dark .settings-tab-btn-active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 78, 59, 0.1) 100%) !important;
-  border-color: rgba(52, 211, 153, 0.5) !important;
-  box-shadow: 
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-    0 4px 20px -2px rgba(0, 0, 0, 0.4) !important;
+  background: rgba(16, 185, 129, 0.16) !important;
+  border-color: rgba(52, 211, 153, 0.4) !important;
+  color: #34d399 !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Mini Theme Mockup UI Styles */

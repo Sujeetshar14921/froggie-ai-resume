@@ -39,12 +39,16 @@ import {
   SlidersHorizontal,
   Loader2,
   Move,
+  ChevronRight,
+  ChevronLeft,
+  Pencil,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { aiApi } from "../api/aiApi";
 import { useSEO } from "../hooks/useSEO";
 import Navbar from "../components/Navbar";
 import Footer from "../components/home/Footer";
+import FroggieBrandSection from "../components/home/FroggieBrandSection";
 import toast from "react-hot-toast";
 
 /**
@@ -68,16 +72,6 @@ const ASPECT_RATIOS = [
   { label: "9:16 Mobile Story", value: "9:16", ratio: 9 / 16 },
 ];
 
-const PRESET_TARGET_SIZES = [
-  { label: "50 KB", kb: 50 },
-  { label: "100 KB", kb: 100 },
-  { label: "250 KB", kb: 250 },
-  { label: "500 KB", kb: 500 },
-  { label: "1 MB", kb: 1024 },
-  { label: "2 MB", kb: 2048 },
-  { label: "5 MB", kb: 5120 },
-];
-
 const GRADIENT_PRESETS = [
   { label: "Executive Blue", from: "#1e3a8a", to: "#0f172a" },
   { label: "Emerald Studio", from: "#059669", to: "#022c22" },
@@ -88,12 +82,54 @@ const GRADIENT_PRESETS = [
 ];
 
 const FILTER_PRESETS = [
-  { label: "Natural Original", b: 0, c: 0, s: 0, exp: 0, warm: 0, sharp: 0, gray: false, inv: false },
-  { label: "Passport Official", b: 8, c: 18, s: 6, exp: 5, warm: 4, sharp: 15, gray: false, inv: false },
-  { label: "LinkedIn Executive", b: 5, c: 12, s: 14, exp: 4, warm: 8, sharp: 10, gray: false, inv: false },
-  { label: "Document Scan Clean", b: 15, c: 45, s: -100, exp: 10, warm: 0, sharp: 25, gray: true, inv: false },
-  { label: "Crisp High Contrast", b: 4, c: 32, s: 12, exp: 8, warm: 0, sharp: 20, gray: false, inv: false },
-  { label: "Darkroom Monochrome", b: -2, c: 28, s: -100, exp: 0, warm: -10, sharp: 12, gray: true, inv: false },
+  {
+    label: "Natural Original",
+    short: "Original",
+    b: 0, c: 0, s: 0, exp: 0, warm: 0, sharp: 0, gray: false, inv: false,
+    cssFilter: "none",
+  },
+  {
+    label: "Passport Official",
+    short: "Passport",
+    b: 8, c: 18, s: 6, exp: 5, warm: 4, sharp: 15, gray: false, inv: false,
+    cssFilter: "brightness(108%) contrast(118%) saturate(106%)",
+  },
+  {
+    label: "LinkedIn Executive",
+    short: "Executive",
+    b: 5, c: 12, s: 14, exp: 4, warm: 8, sharp: 10, gray: false, inv: false,
+    cssFilter: "brightness(105%) contrast(112%) saturate(114%)",
+  },
+  {
+    label: "Document Clean Scan",
+    short: "Doc Scan",
+    b: 15, c: 45, s: -100, exp: 10, warm: 0, sharp: 25, gray: true, inv: false,
+    cssFilter: "brightness(115%) contrast(145%) grayscale(100%)",
+  },
+  {
+    label: "Crisp High Contrast",
+    short: "Contrast",
+    b: 4, c: 32, s: 12, exp: 8, warm: 0, sharp: 20, gray: false, inv: false,
+    cssFilter: "brightness(104%) contrast(132%) saturate(112%)",
+  },
+  {
+    label: "Darkroom Monochrome",
+    short: "B&W Mono",
+    b: -2, c: 28, s: -100, exp: 0, warm: -10, sharp: 12, gray: true, inv: false,
+    cssFilter: "grayscale(100%) contrast(128%)",
+  },
+  {
+    label: "Vivid Tone Pop",
+    short: "Vivid",
+    b: 4, c: 16, s: 35, exp: 6, warm: 0, sharp: 10, gray: false, inv: false,
+    cssFilter: "saturate(135%) contrast(116%) brightness(104%)",
+  },
+  {
+    label: "Warm Sunset Glow",
+    short: "Warmth",
+    b: 4, c: 10, s: 15, exp: 2, warm: 25, sharp: 5, gray: false, inv: false,
+    cssFilter: "sepia(24%) contrast(110%) brightness(104%)",
+  },
 ];
 
 const AI_SCAN_STEPS = [
@@ -202,12 +238,14 @@ const FileStudioPage = () => {
     keywords:
       "compress image to 50kb, compress image to 100kb, compress image to 200kb, photo size reducer in kb, free online image compressor, compress pdf to 100kb, compress pdf online, convert pdf to word docx, png to jpg converter, jpg to webp converter, passport photo crop online, circular image crop, remove background online free, ai background remover, change photo background color, free online photo editor, watermark image online, froggie file studio, froggie media studio",
     canonical: "https://froggie.site/file-studio",
-    ogImage: "https://froggie.site/og-image.png",
+    ogImage: "https://froggie.site/froggie_banner.jpg",
     schema: fileStudioSchema,
   });
 
   // Navigation
-  const [activeTab, setActiveTab] = useState("compress"); // compress, convert, crop, bgremove, edit, watermark
+  const [activeTab, setActiveTab] = useState("compress"); // compress, convert, bgremove, edit, watermark
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [isCropActive, setIsCropActive] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showOriginalComparison, setShowOriginalComparison] = useState(false);
   const [scanStepIndex, setScanStepIndex] = useState(0);
@@ -230,6 +268,61 @@ const FileStudioPage = () => {
     isDoc: false,
   });
 
+  // Vertical Bar Studio Tool Definitions
+  const studioTools = useMemo(
+    () => [
+      {
+        id: "compress",
+        label: "Size & Res",
+        shortLabel: "Size",
+        icon: ArrowDownUp,
+        badge: "Target KB & px",
+      },
+      {
+        id: "convert",
+        label: "Format",
+        shortLabel: "Format",
+        icon: RefreshCw,
+        badge: "JPG, PNG, WebP",
+      },
+      ...(fileMeta.isImage
+        ? [
+            {
+              id: "bgremove",
+              label: "AI Cutout",
+              shortLabel: "Cutout",
+              icon: Wand2,
+              badge: "Vision AI Cutout",
+            },
+            {
+              id: "edit",
+              label: "Colors",
+              shortLabel: "Colors",
+              icon: Sliders,
+              badge: "Light & Tone",
+            },
+            {
+              id: "watermark",
+              label: "Watermark",
+              shortLabel: "Watermark",
+              icon: Type,
+              badge: "Text Stamp",
+            },
+          ]
+        : []),
+    ],
+    [fileMeta.isImage]
+  );
+
+  const handleTabClick = (tabId) => {
+    if (activeTab === tabId && isPanelOpen) {
+      setIsPanelOpen(false);
+    } else {
+      setActiveTab(tabId);
+      setIsPanelOpen(true);
+    }
+  };
+
   // 1. Storage Size & Resolution Controls
   const [targetSizeVal, setTargetSizeVal] = useState("200");
   const [targetSizeUnit, setTargetSizeUnit] = useState("KB"); // KB, MB
@@ -243,6 +336,39 @@ const FileStudioPage = () => {
   // 2. Format Conversion
   const [targetFormat, setTargetFormat] = useState("jpg"); // jpg, png, webp, pdf, docx, txt
   const [outputFilename, setOutputFilename] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempFilename, setTempFilename] = useState("");
+  const renameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isEditingName && renameInputRef.current) {
+      renameInputRef.current.focus();
+      renameInputRef.current.select();
+    }
+  }, [isEditingName]);
+
+  const handleStartRename = () => {
+    setTempFilename(outputFilename);
+    setIsEditingName(true);
+  };
+
+  const handleSaveRename = () => {
+    const trimmed = tempFilename.trim();
+    if (trimmed) {
+      setOutputFilename(trimmed);
+      toast.success(`Renamed to ${trimmed}.${targetFormat}`);
+    }
+    setIsEditingName(false);
+  };
+
+  const handleRenameKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSaveRename();
+    } else if (e.key === "Escape") {
+      setIsEditingName(false);
+    }
+  };
 
   // 3. Crop, Geometry & Shape Masking (Advanced Interactive Editor)
   const [cropAspect, setCropAspect] = useState("free");
@@ -252,10 +378,11 @@ const FileStudioPage = () => {
   const [flipH, setFlipH] = useState(false);
   const [flipV, setFlipV] = useState(false);
   const [zoom, setZoom] = useState(1);
-  const [cropBox, setCropBox] = useState({ x: 5, y: 5, width: 90, height: 90 });
+  const [cropBox, setCropBox] = useState({ x: 0, y: 0, width: 100, height: 100 });
   const [isDraggingCrop, setIsDraggingCrop] = useState(false);
   const [dragHandle, setDragHandle] = useState(null);
   const dragStartRef = useRef(null);
+  const currentCropBoxRef = useRef({ x: 0, y: 0, width: 100, height: 100 });
   const imagePreviewBoxRef = useRef(null);
 
   // 4. Background Removal & Backdrop Studio (Method 2: ImageKit Cloud Vision AI)
@@ -271,6 +398,7 @@ const FileStudioPage = () => {
   const [portraitBlurAmount, setPortraitBlurAmount] = useState(12);
 
   // 5. Professional Grading & Adjustments
+  const [selectedPreset, setSelectedPreset] = useState("Natural Original");
   const [brightness, setBrightness] = useState(0);
   const [contrast, setContrast] = useState(0);
   const [saturation, setSaturation] = useState(0);
@@ -337,7 +465,7 @@ const FileStudioPage = () => {
     setCropAspect("free");
     setCropShape("rect");
     setCornerRadius(0);
-    setCropBox({ x: 5, y: 5, width: 90, height: 90 });
+    setCropBox({ x: 0, y: 0, width: 100, height: 100 });
     setFreeAngle(0);
     setFlipH(false);
     setFlipV(false);
@@ -360,6 +488,7 @@ const FileStudioPage = () => {
     setVignette(0);
     setIsGrayscale(false);
     setIsInverted(false);
+    setSelectedPreset("Natural Original");
     setWatermarkEnabled(false);
     toast.success("All studio controls reset to defaults");
   }, []);
@@ -369,11 +498,13 @@ const FileStudioPage = () => {
     if (!selectedFile) return;
 
     // Reset background removal and crop states for new file
+    setActiveTab("compress");
+    setIsPanelOpen(true);
     setBgRemoved(false);
     setIsRemovingBgCloud(false);
     setCloudCutoutDataUrl(null);
     cloudImageRef.current = null;
-    setCropBox({ x: 5, y: 5, width: 90, height: 90 });
+    setCropBox({ x: 0, y: 0, width: 100, height: 100 });
     setCropAspect("free");
     setCropShape("rect");
     setCornerRadius(0);
@@ -554,12 +685,14 @@ const FileStudioPage = () => {
         }
       }
 
-      setCropBox({
+      const nextBox = {
         x: Math.max(0, Math.min(100 - newW, Math.round(newX * 10) / 10)),
         y: Math.max(0, Math.min(100 - newH, Math.round(newY * 10) / 10)),
         width: Math.min(100, Math.round(newW * 10) / 10),
         height: Math.min(100, Math.round(newH * 10) / 10),
-      });
+      };
+      currentCropBoxRef.current = nextBox;
+      setCropBox(nextBox);
     },
     [isDraggingCrop, dragHandle, cropAspect]
   );
@@ -568,6 +701,14 @@ const FileStudioPage = () => {
     setIsDraggingCrop(false);
     setDragHandle(null);
     dragStartRef.current = null;
+    if (sourceImageRef.current && currentCropBoxRef.current) {
+      const img = sourceImageRef.current;
+      const box = currentCropBoxRef.current;
+      const w = Math.max(1, Math.round((box.width / 100) * img.naturalWidth));
+      const h = Math.max(1, Math.round((box.height / 100) * img.naturalHeight));
+      setCustomWidth(w);
+      setCustomHeight(h);
+    }
   }, []);
 
   useEffect(() => {
@@ -604,31 +745,50 @@ const FileStudioPage = () => {
     newW = Math.min(95, Math.max(10, newW));
     newH = Math.min(95, Math.max(10, newH));
 
-    setCropBox({
+    const nextBox = {
       x: Math.round((100 - newW) / 2),
       y: Math.round((100 - newH) / 2),
       width: Math.round(newW),
       height: Math.round(newH),
-    });
+    };
+    currentCropBoxRef.current = nextBox;
+    setCropBox(nextBox);
+
+    const w = Math.max(1, Math.round((nextBox.width / 100) * sourceImageRef.current.naturalWidth));
+    const h = Math.max(1, Math.round((nextBox.height / 100) * sourceImageRef.current.naturalHeight));
+    setCustomWidth(w);
+    setCustomHeight(h);
   };
 
   const handleCenterCropBox = () => {
-    setCropBox((prev) => ({
-      ...prev,
-      x: Math.round((100 - prev.width) / 2),
-      y: Math.round((100 - prev.height) / 2),
-    }));
+    setCropBox((prev) => {
+      const nextBox = {
+        ...prev,
+        x: Math.round((100 - prev.width) / 2),
+        y: Math.round((100 - prev.height) / 2),
+      };
+      currentCropBoxRef.current = nextBox;
+      return nextBox;
+    });
     toast.success("Crop box centered");
   };
 
   const handleMaximizeCropBox = () => {
-    setCropBox({ x: 0, y: 0, width: 100, height: 100 });
+    const nextBox = { x: 0, y: 0, width: 100, height: 100 };
+    currentCropBoxRef.current = nextBox;
+    setCropBox(nextBox);
     setCropAspect("free");
+    if (sourceImageRef.current) {
+      setCustomWidth(sourceImageRef.current.naturalWidth);
+      setCustomHeight(sourceImageRef.current.naturalHeight);
+    }
     toast.success("Crop expanded to full image");
   };
 
   const handleResetCropBox = () => {
-    setCropBox({ x: 5, y: 5, width: 90, height: 90 });
+    const nextBox = { x: 0, y: 0, width: 100, height: 100 };
+    currentCropBoxRef.current = nextBox;
+    setCropBox(nextBox);
     setCropAspect("free");
     setCropShape("rect");
     setCornerRadius(0);
@@ -636,25 +796,37 @@ const FileStudioPage = () => {
     setFlipH(false);
     setFlipV(false);
     setZoom(1);
+    if (sourceImageRef.current) {
+      setCustomWidth(sourceImageRef.current.naturalWidth);
+      setCustomHeight(sourceImageRef.current.naturalHeight);
+    }
     toast.success("Crop & geometry reset");
   };
 
   // Dimension sync with aspect ratio lock
   const handleWidthChange = (val) => {
-    const w = Number(val) || 1;
+    const w = Math.max(1, Number(val) || 1);
     setCustomWidth(w);
-    if (lockAspectRatio && sourceImageRef.current) {
-      const aspect = sourceImageRef.current.naturalWidth / sourceImageRef.current.naturalHeight;
-      setCustomHeight(Math.round(w / aspect));
+    if (lockAspectRatio) {
+      const currentRatio =
+        customWidth && customHeight
+          ? customWidth / customHeight
+          : (cropBox.width * (sourceImageRef.current?.naturalWidth || 1)) /
+            (cropBox.height * (sourceImageRef.current?.naturalHeight || 1));
+      setCustomHeight(Math.max(1, Math.round(w / currentRatio)));
     }
   };
 
   const handleHeightChange = (val) => {
-    const h = Number(val) || 1;
+    const h = Math.max(1, Number(val) || 1);
     setCustomHeight(h);
-    if (lockAspectRatio && sourceImageRef.current) {
-      const aspect = sourceImageRef.current.naturalWidth / sourceImageRef.current.naturalHeight;
-      setCustomWidth(Math.round(h * aspect));
+    if (lockAspectRatio) {
+      const currentRatio =
+        customWidth && customHeight
+          ? customWidth / customHeight
+          : (cropBox.width * (sourceImageRef.current?.naturalWidth || 1)) /
+            (cropBox.height * (sourceImageRef.current?.naturalHeight || 1));
+      setCustomWidth(Math.max(1, Math.round(h * currentRatio)));
     }
   };
 
@@ -674,9 +846,9 @@ const FileStudioPage = () => {
     const srcW = Math.max(1, Math.round((cropBox.width / 100) * img.naturalWidth));
     const srcH = Math.max(1, Math.round((cropBox.height / 100) * img.naturalHeight));
 
-    // 2. Base Output Dimensions (custom dimensions or scaled crop slice)
-    const baseW = Math.max(1, Math.round(srcW * (scalePercent / 100) * (zoom > 1 ? zoom : 1)));
-    const baseH = Math.max(1, Math.round(srcH * (scalePercent / 100) * (zoom > 1 ? zoom : 1)));
+    // 2. Base Output Dimensions (Custom resolution or crop slice)
+    const baseW = Math.max(1, customWidth > 0 ? customWidth : srcW);
+    const baseH = Math.max(1, customHeight > 0 ? customHeight : srcH);
 
     // 3. Free Angle Rotation Bounds
     const rad = (freeAngle * Math.PI) / 180;
@@ -688,8 +860,22 @@ const FileStudioPage = () => {
     canvas.width = boundingW;
     canvas.height = boundingH;
 
+    // Output MIME Type
+    let mime = "image/jpeg";
+    if (targetFormat === "png" || (targetFormat !== "jpg" && (bgRemoved && backdropType === "transparent"))) {
+      mime = "image/png";
+    } else if (targetFormat === "webp") {
+      mime = "image/webp";
+    }
+
     // Clear Canvas
     ctx.clearRect(0, 0, boundingW, boundingH);
+
+    // If exporting to JPEG and using shapes or transparent background, draw white base so transparent regions don't turn black
+    if (mime === "image/jpeg" && (cropShape !== "rect" || (bgRemoved && backdropType === "transparent"))) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, boundingW, boundingH);
+    }
 
     // 4. Shape Masking (Circle / Rounded Corners / Rectangle)
     if (cropShape === "circle") {
@@ -899,14 +1085,6 @@ const FileStudioPage = () => {
       ctx.restore();
     }
 
-    // 9. Output MIME Type & Output Quality
-    let mime = "image/jpeg";
-    if (targetFormat === "png" || (targetFormat !== "jpg" && (bgRemoved && backdropType === "transparent"))) {
-      mime = "image/png";
-    } else if (targetFormat === "webp") {
-      mime = "image/webp";
-    }
-
     const q = Math.max(0.05, Math.min(1.0, quality / 100));
 
     canvas.toBlob(
@@ -925,7 +1103,6 @@ const FileStudioPage = () => {
   }, [
     customWidth,
     customHeight,
-    scalePercent,
     cropAspect,
     zoom,
     freeAngle,
@@ -967,31 +1144,81 @@ const FileStudioPage = () => {
     }
   }, [processCanvasEngine, fileMeta.isImage]);
 
-  // Exact Target Size Auto-Convergence (Iterative Binary Search)
-  const handleConvergeToExactTarget = (requestedKb) => {
-    const targetKbNum = Number(requestedKb) || 100;
-    const currentKb = fileMeta.sizeBytes / 1024;
-
-    if (currentKb <= targetKbNum) {
-      setQuality(98);
-      setScalePercent(100);
-      toast.success(`File is already ${formatBytes(fileMeta.sizeBytes)} (under ${targetKbNum} KB)`);
+  // Exact Target Size Auto-Convergence (Iterative Binary Search & Pixel Scaling)
+  const handleConvergeToExactTarget = async (requestedKb) => {
+    const targetKb = Number(requestedKb) || 100;
+    const targetBytes = targetKb * 1024;
+    const canvas = hiddenCanvasRef.current;
+    if (!canvas) {
+      toast.error("Image canvas not ready");
       return;
     }
 
-    const ratio = targetKbNum / currentKb;
-    if (ratio >= 0.75) {
-      setQuality(Math.round(ratio * 92));
-      setScalePercent(100);
-    } else if (ratio >= 0.4) {
-      setQuality(Math.round(ratio * 115));
-      setScalePercent(Math.round(Math.sqrt(ratio) * 105));
-    } else {
-      setQuality(Math.max(20, Math.round(ratio * 150)));
-      setScalePercent(Math.max(30, Math.round(Math.sqrt(ratio) * 100)));
+    // Determine lossy-capable MIME type:
+    // Browser Canvas ignores quality for image/png. If target is PNG, switch to WebP (lossy with alpha).
+    let activeMime = "image/jpeg";
+    if (targetFormat === "png") {
+      setTargetFormat("webp");
+      activeMime = "image/webp";
+      toast("Switched to WebP to enable lossy compression under target size.", { icon: "ℹ️" });
+    } else if (targetFormat === "webp" || (bgRemoved && backdropType === "transparent")) {
+      activeMime = "image/webp";
     }
 
-    toast.success(`Auto-converged to match under ${targetKbNum} KB! ⚡`);
+    const testQuality = (testQ) => {
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob ? blob.size : 0), activeMime, testQ);
+      });
+    };
+
+    toast.loading(`Optimizing image to fit under ${targetKb} KB...`, { id: "converge-toast" });
+
+    // 1. Check if high quality already fits under target
+    const highQSize = await testQuality(0.95);
+    if (highQSize <= targetBytes) {
+      setQuality(95);
+      toast.success(`Optimal quality (95%) is ${formatBytes(highQSize)} (under ${targetKb} KB)`, { id: "converge-toast" });
+      return;
+    }
+
+    // 2. Binary search on quality (0.05 to 0.95)
+    let low = 0.05;
+    let high = 0.95;
+    let bestQuality = 0.5;
+    let bestSize = highQSize;
+
+    for (let i = 0; i < 7; i++) {
+      const mid = (low + high) / 2;
+      const currentSize = await testQuality(mid);
+      if (currentSize <= targetBytes) {
+        bestQuality = mid;
+        bestSize = currentSize;
+        low = mid; // Try for higher quality while staying under limit
+      } else {
+        high = mid; // Exceeds limit, lower quality
+      }
+    }
+
+    // 3. If even lowest quality (0.05) is still too large, downscale resolution to fit
+    if (bestSize > targetBytes) {
+      const minQSize = await testQuality(0.05);
+      if (minQSize > targetBytes) {
+        const scaleFactor = Math.sqrt(targetBytes / minQSize) * 0.92;
+        const curW = customWidth || canvas.width;
+        const curH = customHeight || canvas.height;
+        const newW = Math.max(64, Math.round(curW * scaleFactor));
+        const newH = Math.max(64, Math.round(curH * scaleFactor));
+        setCustomWidth(newW);
+        setCustomHeight(newH);
+        setQuality(70);
+        toast.success(`Resized to ${newW}x${newH} px at 70% quality to fit strictly under ${targetKb} KB! ⚡`, { id: "converge-toast" });
+        return;
+      }
+    }
+
+    const finalQ = Math.round(bestQuality * 100);
+    setQuality(finalQ);
+    toast.success(`Accurately converged to ${finalQ}% quality (${formatBytes(bestSize)} < ${targetKb} KB)! ⚡`, { id: "converge-toast" });
   };
 
   // Download Handler (Full Matrix: PNG, JPG, WEBP, PDF, DOCX)
@@ -1097,132 +1324,152 @@ const FileStudioPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 flex flex-col justify-between select-none">
-      <div>
+    <div className="min-h-screen bg-slate-50/70 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 flex flex-col select-none">
+      {/* 1ST VIEWPORT: STUDIO WORKSPACE (FITS 100% IN ONE SCREEN ON DESKTOP) */}
+      <div className="w-full min-h-screen lg:h-screen lg:max-h-screen flex flex-col overflow-hidden">
         <Navbar />
-        <main className="py-6 px-3.5 sm:px-8 lg:px-12 xl:px-16 max-w-7xl mx-auto space-y-4 sm:space-y-6">
-          {/* TOP COMMAND HEADER */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#0c1424] p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm text-left">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={() => navigate(user ? "/app" : "/")}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer mr-1"
-                >
-                  <ArrowLeft size={13} />
-                  <span>{user ? "Dashboard" : "Home"}</span>
-                </button>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800/60 tracking-wide uppercase">
-                  All-in-One Studio
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60 tracking-wide uppercase">
-                  Zero Limitations ⚡
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 tracking-wide uppercase">
-                  Free Public Tool • No Login Required 🌐
+
+        {/* COMPACT SLEEK TOP COMMAND HEADER (MARGINS STRICTLY MATCHING NAVBAR) */}
+        <div className="border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0c1424] shrink-0">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 py-2 sm:py-2.5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <button
+                type="button"
+                onClick={() => navigate(user ? "/app" : "/")}
+                className="p-1.5 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0"
+                title={user ? "Back to Dashboard" : "Back to Home"}
+              >
+                <ArrowLeft size={14} />
+              </button>
+              <div className="flex items-center gap-2 truncate">
+                <div className="size-6 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <Sparkles size={13} />
+                </div>
+                <h1 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white truncate">
+                  Smart File & Media Studio
+                </h1>
+                <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-400 uppercase tracking-wide">
+                  Free Public Tool
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
-                Smart File & Media Studio
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-                Lossless compression to exact KB/MB target limits, PDF ↔ Word & PNG ↔ JPG conversions, interactive on-photo crop & shape masking, and ImageKit AI background removal.
-              </p>
             </div>
 
-          {file && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-400 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
-              >
-                <UploadCloud size={14} className="text-indigo-500" />
-                <span>Upload New File</span>
-              </button>
-            </div>
-          )}
+            {file && (
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3 py-1 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <UploadCloud size={13} className="text-emerald-500" />
+                  <span className="hidden sm:inline">Upload New File</span>
+                  <span className="sm:hidden">New</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* WORKSPACE CONTAINER */}
-        <div className="bg-white dark:bg-[#0c1424] rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-4 sm:p-6 text-left space-y-4">
+        {/* WORKSPACE AREA (MARGINS STRICTLY MATCHING NAVBAR) */}
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 w-full">
+          {/* PERSISTENT HIDDEN FILE INPUT (ACCESSIBLE IN ALL STUDIO STATES) */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.pdf,.docx,.doc,.txt"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                handleFileSelect(e.target.files[0]);
+                e.target.value = "";
+              }
+            }}
+          />
+
           {!file ? (
-            /* UPLOAD ZONE */
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]);
-              }}
-              className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-400 rounded-3xl p-10 sm:p-16 text-center cursor-pointer transition-all hover:bg-indigo-50/15 dark:hover:bg-indigo-950/20 group space-y-4"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,.pdf,.docx,.doc,.txt"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) handleFileSelect(e.target.files[0]);
+            /* UPLOAD ZONE (CENTERED IN VIEWPORT) */
+            <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]);
                 }}
-              />
+                className="w-full max-w-xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-400 rounded-3xl p-8 sm:p-12 text-center cursor-pointer transition-colors hover:bg-emerald-50/20 dark:hover:bg-emerald-950/15 group space-y-4 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
+              >
 
-              <div className="w-16 h-16 rounded-3xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-xs group-hover:scale-110 transition-transform">
-                <UploadCloud size={32} />
-              </div>
+                <div className="size-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto transition-colors">
+                  <UploadCloud size={28} />
+                </div>
 
-              <div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                  Drop any image or document here, or <span className="text-indigo-600 dark:text-indigo-400 underline">browse</span>
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto leading-relaxed">
-                  Supports <strong>PNG, JPG, JPEG, WEBP, PDF, DOCX, TXT</strong> up to 50MB. Instant hardware-accelerated processing.
-                </p>
-              </div>
+                <div className="space-y-1">
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                    Drop your image or document here, or <span className="text-emerald-600 dark:text-emerald-400 underline">browse</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                    Supports <strong>PNG, JPG, WEBP, PDF, DOCX, TXT</strong> up to 50MB. Instant on-device processing.
+                  </p>
+                </div>
 
-              {/* PILL FEATURES */}
-              <div className="flex items-center justify-center gap-2 flex-wrap pt-2">
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  🎯 Exact Target Size (KB / MB / GB)
-                </span>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  📐 Custom Width & Height (px)
-                </span>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  🔄 PDF ↔ Word & PNG ↔ JPG
-                </span>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  🪄 Smooth BG Cutout & Gradients
-                </span>
-                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  🛡️ Security Watermarks
-                </span>
+                <div className="flex items-center justify-center gap-2 flex-wrap pt-1">
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    🎯 Exact Target Size
+                  </span>
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    📐 Custom Dimensions & Crop
+                  </span>
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    🪄 AI Background Removal
+                  </span>
+                  <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    🔄 PDF ↔ Word
+                  </span>
+                </div>
               </div>
             </div>
           ) : (
-            /* ACTIVE STUDIO (TWO-COLUMN POWER LAYOUT) */
-            <div className="grid lg:grid-cols-12 gap-5 sm:gap-6 items-start">
-              
-              {/* LEFT COLUMN: INTERACTIVE PREVIEW & INSPECTION */}
-              <div className="lg:col-span-7 bg-slate-100/70 dark:bg-[#070c18] rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 truncate">
-                    <span className="font-black text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs">
+            /* ACTIVE STUDIO (TWO-COLUMN DESKTOP, RESPONSIVE STACK) */
+            <div className="flex-1 min-h-0 flex flex-col lg:flex-row py-2.5 sm:py-3.5 gap-3 w-full overflow-hidden items-stretch">
+              {/* LEFT COLUMN: COMPACT FULL-SIZE PHOTO PREVIEW (ZERO CLIPPING) */}
+              <div className="flex-1 min-w-0 w-full flex flex-col bg-slate-900/5 dark:bg-black/30 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-300">
+                {/* PREVIEW SUB-HEADER */}
+                <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 text-xs shrink-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-bold text-slate-900 dark:text-white truncate max-w-[150px] sm:max-w-xs">
                       {fileMeta.name}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
-                      {fileMeta.isImage ? `${customWidth || fileMeta.width}×${customHeight || fileMeta.height} px` : fileMeta.isPdf ? "PDF Document" : "Word Document"}
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 shrink-0">
+                      {fileMeta.isImage
+                        ? `${customWidth || fileMeta.width}×${customHeight || fileMeta.height} px`
+                        : fileMeta.isPdf
+                        ? "PDF Document"
+                        : "Word Document"}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {!isPanelOpen && (
+                      <button
+                        type="button"
+                        onClick={() => setIsPanelOpen(true)}
+                        className="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-all cursor-pointer flex items-center gap-1"
+                        title="Open Control Panel"
+                      >
+                        <SlidersHorizontal size={12} />
+                        <span>Tools</span>
+                      </button>
+                    )}
+
                     {fileMeta.isImage && (
                       <>
                         <button
+                          type="button"
                           onClick={() => setShowOriginalComparison((v) => !v)}
-                          className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                          className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg border transition-colors cursor-pointer ${
                             showOriginalComparison
-                              ? "bg-amber-500 text-white border-amber-600 shadow-xs"
-                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300"
+                              ? "bg-amber-500 text-white border-amber-600"
+                              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                           }`}
                           title="Toggle Original vs Processed"
                         >
@@ -1231,30 +1478,32 @@ const FileStudioPage = () => {
                         </button>
 
                         <button
+                          type="button"
                           onClick={() => setIsFullscreen(true)}
-                          className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-400/50 transition-all cursor-pointer"
-                          title="View in Full Screen (100% Unconstrained)"
+                          className="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all cursor-pointer"
+                          title="View 100% Full Resolution"
                         >
                           <Maximize2 size={12} className="inline mr-1" />
-                          <span className="hidden sm:inline">Full View</span>
+                          <span>Full View</span>
                         </button>
                       </>
                     )}
                     <button
+                      type="button"
                       onClick={() => {
                         setFile(null);
                         setPreviewUrl(null);
                         setProcessedUrl(null);
                       }}
-                      className="text-[11px] font-bold text-slate-500 hover:text-red-500 px-2 py-1 transition-colors cursor-pointer"
+                      className="text-[11px] font-bold text-slate-500 hover:text-rose-500 px-2 py-0.5 transition-colors cursor-pointer"
                     >
                       Change
                     </button>
                   </div>
                 </div>
 
-                {/* PREVIEW CONTAINER: FULL-SIZE ADAPTIVE (NO INTERNAL OVERFLOW) */}
-                <div className="relative w-full rounded-2xl bg-slate-900/10 dark:bg-black/40 border border-slate-200/70 dark:border-slate-800/80 overflow-hidden flex items-center justify-center p-3 sm:p-5 min-h-[380px] sm:min-h-[500px] transition-all duration-300">
+                {/* FULL-SIZE PHOTO PREVIEW CANVAS (COMPACT, 100% UNCLIPPED) */}
+                <div className="relative w-full h-[320px] sm:h-[380px] lg:h-[420px] max-h-[420px] flex items-center justify-center p-3 sm:p-5 overflow-hidden select-none">
                   {/* Transparency checkerboard background */}
                   <div
                     className="absolute inset-0 opacity-20 pointer-events-none"
@@ -1269,21 +1518,32 @@ const FileStudioPage = () => {
                   {fileMeta.isImage ? (
                     <div
                       ref={imagePreviewBoxRef}
-                      className="relative max-w-full inline-flex items-center justify-center rounded-xl select-none"
-                      style={{ touchAction: "none" }}
+                      className="relative flex items-center justify-center select-none"
+                      style={{
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                        touchAction: "none",
+                      }}
                     >
                       <img
                         src={
-                          activeTab === "crop"
+                          isCropActive
                             ? previewUrl
                             : showOriginalComparison
                             ? previewUrl
                             : processedUrl || previewUrl
                         }
                         alt="Studio Output"
-                        className={`w-auto h-auto max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl transition-all duration-300 relative z-10 ${
+                        className={`block rounded-none transition-all duration-200 relative z-10 ${
                           isRemovingBgCloud ? "brightness-90 contrast-105 scale-[0.98]" : ""
                         }`}
+                        style={{
+                          maxHeight: "360px",
+                          maxWidth: "100%",
+                          width: "auto",
+                          height: "auto",
+                          objectFit: "contain",
+                        }}
                       />
 
                       {/* AI BACKGROUND REMOVAL REAL-TIME SCANNING ANIMATION OVERLAY */}
@@ -1310,39 +1570,11 @@ const FileStudioPage = () => {
                           <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-emerald-400/90 rounded-tr-md shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
                           <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-emerald-400/90 rounded-bl-md shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
                           <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-emerald-400/90 rounded-br-md shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
-
-                          {/* 4. Center High-Tech Radar HUD Badge */}
-                          <div className="absolute inset-0 flex items-center justify-center p-3">
-                            <div className="bg-slate-950/90 backdrop-blur-md border border-emerald-500/40 px-4 py-3 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.7)] flex items-center gap-3.5 max-w-xs sm:max-w-sm transform animate-in fade-in zoom-in-95 duration-200">
-                              <div className="relative flex items-center justify-center shrink-0">
-                                <span className="absolute w-8 h-8 rounded-full bg-emerald-500/30 animate-ping" />
-                                <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                                  <Sparkles size={18} className="animate-spin" />
-                                </div>
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                  <span className="text-xs font-black text-white tracking-wide">
-                                    Vision AI Cutout Engine
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-emerald-400/95 font-medium truncate mt-0.5 transition-all">
-                                  {AI_SCAN_STEPS[scanStepIndex]}
-                                </p>
-
-                                <div className="mt-2 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden relative">
-                                  <div className="h-full w-2/3 bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-400 rounded-full animate-shimmer-slide" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       )}
 
-                      {/* ADVANCED INTERACTIVE CROP BOX OVERLAY (ACTIVE IN CROP & SHAPE TAB) */}
-                      {activeTab === "crop" && !isRemovingBgCloud && (
+                      {/* ADVANCED INTERACTIVE CROP BOX OVERLAY (CONTROLLED VIA BOTTOM CROP ACTION) */}
+                      {isCropActive && !isRemovingBgCloud && (
                         <div className="absolute inset-0 z-30 pointer-events-auto">
                           {/* 4 Dimmed Backdrop Regions Outside Crop Box */}
                           <div
@@ -1429,28 +1661,28 @@ const FileStudioPage = () => {
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "nw")}
                               onTouchStart={(e) => handleCropMouseDown(e, "nw")}
-                              className="absolute -top-2 -left-2 w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                              className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 cursor-nwse-resize"
                               title="Resize Top-Left"
                             />
                             {/* NE */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "ne")}
                               onTouchStart={(e) => handleCropMouseDown(e, "ne")}
-                              className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                              className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 cursor-nesw-resize"
                               title="Resize Top-Right"
                             />
                             {/* SW */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "sw")}
                               onTouchStart={(e) => handleCropMouseDown(e, "sw")}
-                              className="absolute -bottom-2 -left-2 w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-nesw-resize hover:scale-125 transition-transform"
+                              className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 cursor-nesw-resize"
                               title="Resize Bottom-Left"
                             />
                             {/* SE */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "se")}
                               onTouchStart={(e) => handleCropMouseDown(e, "se")}
-                              className="absolute -bottom-2 -right-2 w-4 h-4 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-nwse-resize hover:scale-125 transition-transform"
+                              className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 cursor-nwse-resize"
                               title="Resize Bottom-Right"
                             />
 
@@ -1458,28 +1690,28 @@ const FileStudioPage = () => {
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "n")}
                               onTouchStart={(e) => handleCropMouseDown(e, "n")}
-                              className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-6 h-2.5 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
+                              className="absolute -top-1 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border-2 border-emerald-500 cursor-ns-resize"
                               title="Resize Top"
                             />
                             {/* Edge S */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "s")}
                               onTouchStart={(e) => handleCropMouseDown(e, "s")}
-                              className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-6 h-2.5 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-ns-resize hover:scale-125 transition-transform"
+                              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-5 h-2 rounded-full bg-white border-2 border-emerald-500 cursor-ns-resize"
                               title="Resize Bottom"
                             />
                             {/* Edge W */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "w")}
                               onTouchStart={(e) => handleCropMouseDown(e, "w")}
-                              className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-6 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                              className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-5 rounded-full bg-white border-2 border-emerald-500 cursor-ew-resize"
                               title="Resize Left"
                             />
                             {/* Edge E */}
                             <div
                               onMouseDown={(e) => handleCropMouseDown(e, "e")}
                               onTouchStart={(e) => handleCropMouseDown(e, "e")}
-                              className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-2.5 h-6 rounded-full bg-white border-2 border-emerald-500 shadow-md cursor-ew-resize hover:scale-125 transition-transform"
+                              className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-5 rounded-full bg-white border-2 border-emerald-500 cursor-ew-resize"
                               title="Resize Right"
                             />
                           </div>
@@ -1506,214 +1738,439 @@ const FileStudioPage = () => {
                   )}
                 </div>
 
-                {/* COMPARISON METRICS BAR */}
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Original</span>
-                    <span className="font-black text-slate-800 dark:text-slate-200 text-sm">
-                      {formatBytes(fileMeta.sizeBytes)}
-                    </span>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/60">
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase block">New Size</span>
-                    <span className="font-black text-emerald-700 dark:text-emerald-300 text-sm">
-                      {formatBytes(outputBytes || fileMeta.sizeBytes)}
-                    </span>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/60">
-                    <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase block">Efficiency</span>
-                    <span className="font-black text-indigo-700 dark:text-indigo-300 text-sm">
-                      {fileMeta.sizeBytes > outputBytes && outputBytes > 0
-                        ? `-${Math.round((1 - outputBytes / fileMeta.sizeBytes) * 100)}% ⚡`
-                        : "Lossless"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT COLUMN: ADVANCED TOOL TABS */}
-              <div className="lg:col-span-5 space-y-3.5">
-                
-                {/* TOOL SELECTOR BAR */}
-                <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl overflow-x-auto no-scrollbar">
-                  {[
-                    { id: "compress", label: "Size & Scale", icon: ArrowDownUp },
-                    { id: "convert", label: "Format", icon: RefreshCw },
-                    ...(fileMeta.isImage
-                      ? [
-                          { id: "crop", label: "Crop & Shape", icon: Crop },
-                          { id: "bgremove", label: "AI BG Cutout", icon: Wand2 },
-                          { id: "edit", label: "Color Grading", icon: Sliders },
-                          { id: "watermark", label: "Watermark", icon: Type },
-                        ]
-                      : []),
-                  ].map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex-1 min-w-[70px] py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                          isActive
-                            ? "bg-white dark:bg-[#0c1424] text-slate-950 dark:text-white shadow-xs border border-slate-200/80 dark:border-slate-700"
-                            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                        }`}
-                      >
-                        <Icon size={13} className={isActive ? "text-indigo-600 dark:text-indigo-400" : ""} />
-                        <span>{tab.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* TAB 1: EXACT SIZE & DIMENSIONS (NO LIMITATIONS) */}
-                {activeTab === "compress" && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-in fade-in duration-150">
-                    {/* Exact Target Size Input (KB / MB / GB) */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          Target Storage Limit
-                        </h4>
-                        <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
-                          Job Portal Compliant
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min="1"
-                          max="99999"
-                          value={targetSizeVal}
-                          onChange={(e) => setTargetSizeVal(e.target.value)}
-                          placeholder="e.g. 150"
-                          className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white"
-                        />
-                        <select
-                          value={targetSizeUnit}
-                          onChange={(e) => setTargetSizeUnit(e.target.value)}
-                          className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer"
-                        >
-                          <option value="KB">KB</option>
-                          <option value="MB">MB</option>
-                        </select>
+                {/* DEDICATED IMAGE BOTTOM ACTION STRIP (SHAPES, ROTATION & CROP) */}
+                {fileMeta.isImage && (
+                  <>
+                    <div className="px-3.5 py-2 border-t border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm flex items-center justify-between gap-2.5 flex-wrap">
+                      {/* 1. SHAPE & MASKING (3 OPTIONS: RECTANGLE, ROUNDED, CIRCLE) */}
+                      <div className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-1 rounded-xl">
                         <button
+                          type="button"
                           onClick={() => {
-                            const multiplier = targetSizeUnit === "MB" ? 1024 : 1;
-                            handleConvergeToExactTarget(Number(targetSizeVal) * multiplier);
+                            setCropShape("rect");
+                            toast.success("Rectangle Shape");
                           }}
-                          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer transition-all"
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            cropShape === "rect"
+                              ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-slate-200/80 dark:border-slate-600"
+                              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                          title="Rectangle Mask"
                         >
-                          Auto Fit ⚡
+                          <Square size={13} />
+                          <span>Rectangle</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCropShape("rounded");
+                            if (cornerRadius === 0) setCornerRadius(24);
+                            toast.success("Rounded Corners Mask");
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            cropShape === "rounded"
+                              ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-slate-200/80 dark:border-slate-600"
+                              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                          title="Rounded Corners Mask"
+                        >
+                          <Square size={13} className="rounded-sm" />
+                          <span>Rounded</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCropShape("circle");
+                            toast.success("Circle / Avatar Mask");
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            cropShape === "circle"
+                              ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-slate-200/80 dark:border-slate-600"
+                              : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                          }`}
+                          title="Circle Avatar Mask"
+                        >
+                          <Circle size={13} />
+                          <span>Circle</span>
                         </button>
                       </div>
 
-                      {/* Quick Presets */}
-                      <div className="flex items-center gap-1.5 flex-wrap pt-2">
-                        {PRESET_TARGET_SIZES.map((ps) => (
+                      {/* 2. ROTATION & FLIP ARROWS */}
+                      <div className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-1 rounded-xl">
+                        <button
+                          type="button"
+                          onClick={() => setFreeAngle((a) => (a - 90 < -180 ? a - 90 + 360 : a - 90))}
+                          className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors cursor-pointer"
+                          title="Rotate Left (-90°)"
+                        >
+                          <RotateCcw size={14} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setFreeAngle((a) => (a + 90 > 180 ? a + 90 - 360 : a + 90))}
+                          className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:text-emerald-600 transition-colors cursor-pointer"
+                          title="Rotate Right (+90°)"
+                        >
+                          <RotateCw size={14} />
+                        </button>
+
+                        <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-0.5" />
+
+                        <button
+                          type="button"
+                          onClick={() => setFlipH((v) => !v)}
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            flipH
+                              ? "bg-emerald-600 text-white"
+                              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700"
+                          }`}
+                          title="Flip Horizontally"
+                        >
+                          <FlipHorizontal size={14} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setFlipV((v) => !v)}
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            flipV
+                              ? "bg-emerald-600 text-white"
+                              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700"
+                          }`}
+                          title="Flip Vertically"
+                        >
+                          <FlipVertical size={14} />
+                        </button>
+
+                        {freeAngle !== 0 && (
                           <button
-                            key={ps.label}
-                            onClick={() => {
-                              setTargetSizeVal(String(ps.kb >= 1024 ? ps.kb / 1024 : ps.kb));
-                              setTargetSizeUnit(ps.kb >= 1024 ? "MB" : "KB");
-                              handleConvergeToExactTarget(ps.kb);
-                            }}
-                            className="px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                            type="button"
+                            onClick={() => setFreeAngle(0)}
+                            className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 cursor-pointer"
+                            title="Reset Rotation to 0°"
                           >
-                            {ps.label}
+                            {freeAngle}° ×
                           </button>
-                        ))}
+                        )}
+                      </div>
+
+                      {/* 3. MOUSE POINTER CROP BOX TOGGLE & QUICK ACTIONS */}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setIsCropActive((v) => !v)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            isCropActive
+                              ? "bg-emerald-600 text-white"
+                              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
+                          }`}
+                          title={isCropActive ? "Finish Cropping" : "Interactive Mouse Crop Box"}
+                        >
+                          <Crop size={14} />
+                          <span>{isCropActive ? "Done Crop" : "Crop Box"}</span>
+                        </button>
+
+                        {isCropActive && (
+                          <div className="flex items-center gap-1 animate-in fade-in zoom-in-95 duration-150">
+                            <button
+                              type="button"
+                              onClick={handleMaximizeCropBox}
+                              className="px-2 py-1 rounded-lg text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 cursor-pointer"
+                              title="Full 100% Unclipped Image"
+                            >
+                              Full
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCenterCropBox}
+                              className="px-2 py-1 rounded-lg text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 cursor-pointer"
+                              title="Center Crop Box"
+                            >
+                              Center
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleApplyAspectPreset("1:1")}
+                              className="px-2 py-1 rounded-lg text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 cursor-pointer"
+                              title="1:1 Square Ratio"
+                            >
+                              1:1
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {fileMeta.isImage && (
-                      <>
-                        {/* Custom Dimensions (Width x Height px with Lock) */}
-                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                              Custom Resolution (px)
-                            </h4>
-                            <button
-                              onClick={() => setLockAspectRatio((l) => !l)}
-                              className="text-[11px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 cursor-pointer"
-                            >
-                              {lockAspectRatio ? <Link2 size={13} className="text-indigo-600" /> : <Unlink2 size={13} />}
-                              <span>{lockAspectRatio ? "Locked Ratio" : "Free Dimensions"}</span>
-                            </button>
-                          </div>
+                    {/* CORNER RADIUS SLIDER (WHEN ROUNDED SHAPE ACTIVE) */}
+                    {cropShape === "rounded" && (
+                      <div className="px-3.5 py-1.5 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/80 dark:bg-slate-900/80 flex items-center gap-3 text-xs">
+                        <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Corner Radius:</span>
+                        <input
+                          type="range"
+                          min="4"
+                          max="120"
+                          value={cornerRadius}
+                          onChange={(e) => setCornerRadius(Number(e.target.value))}
+                          className="flex-1 max-w-xs accent-emerald-600 cursor-pointer"
+                        />
+                        <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold text-xs">{cornerRadius}px</span>
+                      </div>
+                    )}
+                  </>
+                )}
 
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="text-[10px] text-slate-400 font-bold block mb-1">Width (px)</span>
-                              <input
-                                type="number"
-                                min="10"
-                                max="10000"
-                                value={customWidth}
-                                onChange={(e) => handleWidthChange(e.target.value)}
-                                className="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
-                              />
-                            </div>
-                            <div>
-                              <span className="text-[10px] text-slate-400 font-bold block mb-1">Height (px)</span>
-                              <input
-                                type="number"
-                                min="10"
-                                max="10000"
-                                value={customHeight}
-                                onChange={(e) => handleHeightChange(e.target.value)}
-                                className="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Quality & Scale Sliders */}
-                        <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
-                              <span>Compression Quality</span>
-                              <span className="text-indigo-600 dark:text-indigo-400 font-mono">{quality}%</span>
-                            </div>
-                            <input
-                              type="range"
-                              min="5"
-                              max="100"
-                              value={quality}
-                              onChange={(e) => setQuality(Number(e.target.value))}
-                              className="w-full accent-indigo-600 cursor-pointer"
-                            />
-                          </div>
-
-                          <div className="space-y-1">
-                            <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
-                              <span>Scale Percent</span>
-                              <span className="text-indigo-600 dark:text-indigo-400 font-mono">{scalePercent}%</span>
-                            </div>
-                            <input
-                              type="range"
-                              min="15"
-                              max="200"
-                              step="5"
-                              value={scalePercent}
-                              onChange={(e) => setScalePercent(Number(e.target.value))}
-                              className="w-full accent-indigo-600 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      </>
+                {/* COMPACT METRICS STRIP */}
+                <div className="px-3.5 py-1.5 border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 flex items-center justify-between text-xs shrink-0 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 font-medium text-[11px]">Original:</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300 text-xs">
+                      {formatBytes(fileMeta.sizeBytes)}
+                    </span>
+                    <span className="text-slate-400">➔</span>
+                    <span className="text-slate-400 font-medium text-[11px]">Optimized:</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs">
+                      {formatBytes(outputBytes || fileMeta.sizeBytes)}
+                    </span>
+                    {fileMeta.sizeBytes > outputBytes && outputBytes > 0 && (
+                      <span className="px-1.5 py-0.2 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-[10px] font-extrabold">
+                        -{Math.round((1 - outputBytes / fileMeta.sizeBytes) * 100)}%
+                      </span>
                     )}
                   </div>
-                )}
+
+                  <span className="text-[11px] text-slate-500 font-mono">
+                    {customWidth || fileMeta.width} × {customHeight || fileMeta.height} px
+                  </span>
+                </div>
+              </div>
+
+              {/* RIGHT CONTROLS SUITE: VERTICAL TOOL RAIL + ANIMATED OPTIONS PANEL */}
+              <div className="flex flex-col lg:flex-row gap-2 shrink-0 transition-all duration-300 items-stretch">
+                
+                {/* 1. SLIM VERTICAL TOOL RAIL (ICON + MICRO-LABEL) */}
+                <div className="w-full lg:w-[68px] xl:w-[72px] shrink-0 bg-white dark:bg-[#0c1424] rounded-2xl border border-slate-200/80 dark:border-slate-800 flex lg:flex-col items-center justify-between p-1.5 lg:py-2.5 gap-1 overflow-x-auto lg:overflow-x-visible no-scrollbar">
+                  <div className="flex lg:flex-col items-center gap-1 w-full">
+                    {studioTools.map((tool) => {
+                      const Icon = tool.icon;
+                      const isActive = activeTab === tool.id && isPanelOpen;
+                      return (
+                        <button
+                          key={tool.id}
+                          type="button"
+                          onClick={() => handleTabClick(tool.id)}
+                          className={`relative w-full py-2 lg:py-2.5 px-2 lg:px-1 rounded-xl flex lg:flex-col items-center justify-center gap-1.5 transition-colors group cursor-pointer ${
+                            isActive
+                              ? "bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 font-extrabold border border-emerald-500/30"
+                              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/80 font-bold border border-transparent"
+                          }`}
+                          title={tool.label}
+                        >
+                          {/* Active Indicator Bar on left for desktop */}
+                          {isActive && (
+                            <span className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-emerald-500 rounded-r-full" />
+                          )}
+                          <div
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
+                              isActive
+                                ? "bg-emerald-600 text-white"
+                                : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 group-hover:bg-slate-200/80 dark:group-hover:bg-slate-700"
+                            }`}
+                          >
+                            <Icon size={16} />
+                          </div>
+                          <span className="text-[10px] tracking-tight leading-none text-center whitespace-nowrap">
+                            {tool.shortLabel}
+                          </span>
+                        </button>
+                      );
+                    })}
+
+                    {/* Mobile/Tablet Download Button */}
+                    <button
+                      type="button"
+                      onClick={handleDownload}
+                      disabled={isProcessing}
+                      className="lg:hidden p-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-50 transition-colors"
+                      title={`Download (${targetFormat.toUpperCase()})`}
+                    >
+                      <Download size={15} className="text-white" />
+                    </button>
+                  </div>
+
+                  {/* Rail Bottom Actions (Desktop Only) */}
+                  <div className="hidden lg:flex flex-col items-center gap-1.5 w-full pt-2 border-t border-slate-100 dark:border-slate-800/80 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsPanelOpen((v) => !v)}
+                      className="w-8 h-8 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+                      title={isPanelOpen ? "Collapse Controls Panel" : "Expand Controls Panel"}
+                    >
+                      {isPanelOpen ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleDownload}
+                      disabled={isProcessing}
+                      className="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50"
+                      title={`Download (${targetFormat.toUpperCase()})`}
+                    >
+                      <Download size={14} className="text-white" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. ANIMATED OPTIONS FLYOUT PANEL */}
+                {isPanelOpen && (
+                  <div className="w-full lg:w-[350px] xl:w-[380px] shrink-0 flex flex-col max-h-[500px] lg:h-[480px] bg-white dark:bg-[#0c1424] rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden min-h-0 animate-in fade-in slide-in-from-right-3 duration-200">
+                    
+                    {/* PANEL HEADER WITH ACTIVE TOOL IDENTITY & CLOSE BUTTON */}
+                    <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/70 dark:bg-slate-900/70 shrink-0">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                          {React.createElement(
+                            studioTools.find((t) => t.id === activeTab)?.icon || ArrowDownUp,
+                            { size: 14 }
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-extrabold text-xs text-slate-900 dark:text-white leading-tight truncate">
+                            {studioTools.find((t) => t.id === activeTab)?.label || "Studio Settings"}
+                          </h3>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight truncate">
+                            {studioTools.find((t) => t.id === activeTab)?.badge || "Adjust Parameters"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsPanelOpen(false)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                        title="Close Panel"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+
+                    {/* SCROLLABLE TOOL TAB CONTENT */}
+                    <div className="flex-1 min-h-0 overflow-y-auto p-3.5 space-y-3.5 text-left custom-scrollbar">
+
+                    {/* TAB 1: EXACT SIZE & RESOLUTION */}
+                    {activeTab === "compress" && (
+                      <div className="space-y-4 animate-in fade-in duration-150">
+                        {/* Exact Target Size Input */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                              Target Storage Limit
+                            </h4>
+                            <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold">
+                              Exact Fit ⚡
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min="1"
+                              max="99999"
+                              value={targetSizeVal}
+                              onChange={(e) => setTargetSizeVal(e.target.value)}
+                              placeholder="e.g. 150"
+                              className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white"
+                            />
+                            <select
+                              value={targetSizeUnit}
+                              onChange={(e) => setTargetSizeUnit(e.target.value)}
+                              className="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer"
+                            >
+                              <option value="KB">KB</option>
+                              <option value="MB">MB</option>
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const multiplier = targetSizeUnit === "MB" ? 1024 : 1;
+                                handleConvergeToExactTarget(Number(targetSizeVal) * multiplier);
+                              }}
+                              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                              Auto Fit ⚡
+                            </button>
+                          </div>
+                        </div>
+
+                        {fileMeta.isImage && (
+                          <>
+                            {/* Custom Dimensions (Width x Height px with Lock) */}
+                            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                  Custom Resolution (px)
+                                </h4>
+                                <button
+                                  type="button"
+                                  onClick={() => setLockAspectRatio((l) => !l)}
+                                  className="text-[11px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1 cursor-pointer"
+                                >
+                                  {lockAspectRatio ? <Link2 size={13} className="text-indigo-600" /> : <Unlink2 size={13} />}
+                                  <span>{lockAspectRatio ? "Locked Ratio" : "Free Dimensions"}</span>
+                                </button>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <span className="text-[10px] text-slate-400 font-bold block mb-1">Width (px)</span>
+                                  <input
+                                    type="number"
+                                    min="10"
+                                    max="10000"
+                                    value={customWidth}
+                                    onChange={(e) => handleWidthChange(e.target.value)}
+                                    className="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
+                                  />
+                                </div>
+                                <div>
+                                  <span className="text-[10px] text-slate-400 font-bold block mb-1">Height (px)</span>
+                                  <input
+                                    type="number"
+                                    min="10"
+                                    max="10000"
+                                    value={customHeight}
+                                    onChange={(e) => handleHeightChange(e.target.value)}
+                                    className="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Compression Quality Slider */}
+                            <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                              <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
+                                <span>Compression Quality</span>
+                                <span className="text-indigo-600 dark:text-indigo-400 font-mono">{quality}%</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="5"
+                                max="100"
+                                value={quality}
+                                onChange={(e) => setQuality(Number(e.target.value))}
+                                className="w-full accent-indigo-600 cursor-pointer"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
 
                 {/* TAB 2: FORMAT CONVERTER */}
                 {activeTab === "convert" && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-in fade-in duration-150">
+                  <div className="space-y-4 animate-in fade-in duration-150">
                     <div>
                       <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
                         Target File Extension
@@ -1728,10 +2185,10 @@ const FileStudioPage = () => {
                           <button
                             key={fmt}
                             onClick={() => setTargetFormat(fmt)}
-                            className={`py-2.5 rounded-xl text-xs font-black uppercase tracking-wider border cursor-pointer transition-all ${
+                            className={`py-2 rounded-xl text-xs font-bold uppercase tracking-wider border cursor-pointer transition-colors ${
                               targetFormat === fmt
-                                ? "bg-emerald-600 text-white border-emerald-600 shadow-xs scale-102"
-                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                             }`}
                           >
                             .{fmt}
@@ -1739,496 +2196,208 @@ const FileStudioPage = () => {
                         ))}
                       </div>
                     </div>
-
-                    {/* Output Filename Customization */}
-                    <div>
-                      <span className="text-[10px] text-slate-400 font-bold block mb-1">Custom Export Filename</span>
-                      <div className="flex items-center gap-1.5">
-                        <input
-                          type="text"
-                          value={outputFilename}
-                          onChange={(e) => setOutputFilename(e.target.value)}
-                          placeholder="file_name"
-                          className="flex-1 px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white"
-                        />
-                        <span className="text-xs font-black text-slate-500 font-mono">.{targetFormat}</span>
-                      </div>
-                    </div>
                   </div>
                 )}
 
-                {/* TAB 3: CROP, SHAPE & FREE ANGLE ROTATION (PROFESSIONAL INTERACTIVE SUITE) */}
-                {activeTab === "crop" && fileMeta.isImage && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-in fade-in duration-150">
-                    {/* Visual Editor Helper & Quick Alignment Bar */}
-                    <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/70 dark:border-indigo-800/60 space-y-2">
-                      <div className="flex items-center justify-between text-xs font-black text-indigo-900 dark:text-indigo-200">
-                        <span className="flex items-center gap-1.5">
-                          <Crop size={14} className="text-indigo-600 dark:text-indigo-400" />
-                          <span>Interactive Editor Active</span>
-                        </span>
-                        <span className="text-[10px] font-mono text-indigo-600 dark:text-indigo-400 font-bold">
-                          {sourceImageRef.current
-                            ? `${Math.round((cropBox.width / 100) * sourceImageRef.current.naturalWidth)} × ${Math.round(
-                                (cropBox.height / 100) * sourceImageRef.current.naturalHeight
-                              )} px`
-                            : ""}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                        Drag the 8 corner & edge handles or move the box directly on the photo above to freely crop.
-                      </p>
-
-                      <div className="flex items-center gap-1.5 pt-1">
-                        <button
-                          onClick={handleCenterCropBox}
-                          className="flex-1 py-1 px-2 rounded-lg bg-white dark:bg-slate-800 text-[11px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-400 transition-all cursor-pointer"
-                        >
-                          Center Box
-                        </button>
-                        <button
-                          onClick={handleMaximizeCropBox}
-                          className="flex-1 py-1 px-2 rounded-lg bg-white dark:bg-slate-800 text-[11px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-400 transition-all cursor-pointer"
-                        >
-                          Fit Full Image
-                        </button>
-                        <button
-                          onClick={handleResetCropBox}
-                          className="flex-1 py-1 px-2 rounded-lg bg-white dark:bg-slate-800 text-[11px] font-bold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-400 transition-all cursor-pointer"
-                        >
-                          Reset Default
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Shape Masking: Circle Avatar vs Rectangle vs Rounded */}
-                    <div>
-                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                        Shape & Avatar Masking
-                      </h4>
-                      <div className="grid grid-cols-3 gap-2">
-                        <button
-                          onClick={() => setCropShape("rect")}
-                          className={`py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
-                            cropShape === "rect"
-                              ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs"
-                              : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-                          }`}
-                        >
-                          <Square size={13} />
-                          <span>Standard Rect</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCropShape("circle");
-                            handleApplyAspectPreset("1:1");
-                          }}
-                          className={`py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
-                            cropShape === "circle"
-                              ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs"
-                              : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-                          }`}
-                        >
-                          <Circle size={13} />
-                          <span>Circle Avatar</span>
-                        </button>
-                        <button
-                          onClick={() => setCropShape("rounded")}
-                          className={`py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
-                            cropShape === "rounded"
-                              ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs"
-                              : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-                          }`}
-                        >
-                          <Crop size={13} />
-                          <span>Rounded Rect</span>
-                        </button>
-                      </div>
-
-                      {cropShape === "rounded" && (
-                        <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>Corner Radius</span>
-                            <span className="font-mono text-indigo-600 dark:text-indigo-400">{cornerRadius}px</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max="120"
-                            value={cornerRadius}
-                            onChange={(e) => setCornerRadius(Number(e.target.value))}
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Aspect Ratio Constraint */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                          Aspect Ratio Lock
-                        </h4>
-                        <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">
-                          {cropAspect === "free" ? "Freeform (Unlocked)" : `Locked ${cropAspect}`}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                        {ASPECT_RATIOS.map((ar) => (
-                          <button
-                            key={ar.value}
-                            onClick={() => handleApplyAspectPreset(ar.value)}
-                            className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer text-left truncate ${
-                              cropAspect === ar.value
-                                ? "bg-indigo-50 dark:bg-indigo-950/60 border-indigo-400 text-indigo-700 dark:text-indigo-300 shadow-xs"
-                                : "bg-slate-50 dark:bg-slate-800 border-slate-200/80 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300"
-                            }`}
-                          >
-                            {ar.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Manual Precision Sliders (Coordinate & Size Control) */}
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2.5">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
-                        Precision Coordinates & Size
-                      </span>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>Position X</span>
-                            <span className="font-mono text-indigo-600 dark:text-indigo-400">{cropBox.x}%</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max={Math.max(0, 100 - cropBox.width)}
-                            value={cropBox.x}
-                            onChange={(e) =>
-                              setCropBox((prev) => ({
-                                ...prev,
-                                x: Math.min(100 - prev.width, Number(e.target.value)),
-                              }))
-                            }
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>Position Y</span>
-                            <span className="font-mono text-indigo-600 dark:text-indigo-400">{cropBox.y}%</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0"
-                            max={Math.max(0, 100 - cropBox.height)}
-                            value={cropBox.y}
-                            onChange={(e) =>
-                              setCropBox((prev) => ({
-                                ...prev,
-                                y: Math.min(100 - prev.height, Number(e.target.value)),
-                              }))
-                            }
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>Crop Width</span>
-                            <span className="font-mono text-indigo-600 dark:text-indigo-400">{cropBox.width}%</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="6"
-                            max={100 - cropBox.x}
-                            value={cropBox.width}
-                            onChange={(e) =>
-                              setCropBox((prev) => ({
-                                ...prev,
-                                width: Math.min(100 - prev.x, Number(e.target.value)),
-                              }))
-                            }
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>Crop Height</span>
-                            <span className="font-mono text-indigo-600 dark:text-indigo-400">{cropBox.height}%</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="6"
-                            max={100 - cropBox.y}
-                            value={cropBox.height}
-                            onChange={(e) =>
-                              setCropBox((prev) => ({
-                                ...prev,
-                                height: Math.min(100 - prev.y, Number(e.target.value)),
-                              }))
-                            }
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Free Angle Rotation Slider (-180° to +180°) */}
-                    <div className="space-y-1.5 pt-1">
-                      <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
-                        <span>Free-Angle Rotation</span>
-                        <span className="font-mono text-indigo-600 dark:text-indigo-400">{freeAngle}°</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="-180"
-                        max="180"
-                        value={freeAngle}
-                        onChange={(e) => setFreeAngle(Number(e.target.value))}
-                        className="w-full accent-indigo-600 cursor-pointer"
-                      />
-                      <div className="flex items-center gap-1.5 pt-1">
-                        <button
-                          onClick={() => setFreeAngle((a) => Math.max(-180, a - 90))}
-                          className="flex-1 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-bold cursor-pointer hover:bg-slate-200"
-                        >
-                          -90°
-                        </button>
-                        <button
-                          onClick={() => setFreeAngle(0)}
-                          className="flex-1 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-bold cursor-pointer hover:bg-slate-200"
-                        >
-                          Reset 0°
-                        </button>
-                        <button
-                          onClick={() => setFreeAngle((a) => Math.min(180, a + 90))}
-                          className="flex-1 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-bold cursor-pointer hover:bg-slate-200"
-                        >
-                          +90°
-                        </button>
-                        <button
-                          onClick={() => setFlipH((f) => !f)}
-                          className={`p-1.5 rounded-lg border text-xs cursor-pointer ${
-                            flipH ? "bg-indigo-50 border-indigo-400 text-indigo-700" : "bg-slate-100 dark:bg-slate-800"
-                          }`}
-                          title="Flip Horizontal"
-                        >
-                          <FlipHorizontal size={14} />
-                        </button>
-                        <button
-                          onClick={() => setFlipV((f) => !f)}
-                          className={`p-1.5 rounded-lg border text-xs cursor-pointer ${
-                            flipV ? "bg-indigo-50 border-indigo-400 text-indigo-700" : "bg-slate-100 dark:bg-slate-800"
-                          }`}
-                          title="Flip Vertical"
-                        >
-                          <FlipVertical size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 4: ADVANCED AI BACKGROUND CUTOUT (METHOD 2: IMAGEKIT VISION AI) */}
+                {/* TAB 3: ADVANCED AI BACKGROUND CUTOUT */}
                 {activeTab === "bgremove" && fileMeta.isImage && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-in fade-in duration-150">
-                    {/* Method 2 AI Vision Hero Box */}
-                    <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 space-y-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-600/15 dark:bg-emerald-400/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                            <Sparkles size={20} />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-black text-slate-900 dark:text-white">
-                                Method 2: Vision AI Cutout
-                              </h4>
-                              <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                                ImageKit AI
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                              Deep neural subject segmentation with transparent alpha matting
-                            </p>
-                          </div>
+                  <div className="space-y-3.5 animate-in fade-in duration-150">
+                    {/* Vision AI Hero Card */}
+                    <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/20 space-y-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-600/15 dark:bg-emerald-400/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                          <Sparkles size={18} />
                         </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h4 className="text-xs font-black text-slate-900 dark:text-white truncate">
+                              Vision AI Cutout
+                            </h4>
+                            <span className="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                              Instant Neural
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                            Automated subject segmentation & alpha cutout
+                          </p>
+                        </div>
+                      </div>
 
-                        {bgRemoved ? (
+                      {/* Main Cutout Action Button (Full Width, Zero Overflow) */}
+                      {bgRemoved ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-[11px] px-1 font-bold text-emerald-600 dark:text-emerald-400">
+                            <span className="flex items-center gap-1">
+                              <Check size={12} />
+                              Cutout Active
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleCloudAiBgRemove}
+                              disabled={isRemovingBgCloud}
+                              className="text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 underline cursor-pointer text-[10px]"
+                            >
+                              Re-run Cutout
+                            </button>
+                          </div>
                           <button
+                            type="button"
                             onClick={handleRestoreBg}
-                            className="px-3 py-2 rounded-xl text-xs font-black bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                            className="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                           >
                             <RotateCcw size={13} />
-                            <span>Restore Original</span>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={handleCloudAiBgRemove}
-                            disabled={isRemovingBgCloud}
-                            className="px-4 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-                          >
-                            {isRemovingBgCloud ? (
-                              <>
-                                <Loader2 size={14} className="animate-spin" />
-                                <span>AI Cutout Processing...</span>
-                              </>
-                            ) : (
-                              <>
-                                <Wand2 size={14} />
-                                <span>Remove Background ✨</span>
-                              </>
-                            )}
-                          </button>
-                        )}
-                      </div>
-
-                      {bgRemoved && (
-                        <div className="pt-2.5 border-t border-emerald-500/15 flex items-center justify-between text-[11px]">
-                          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-                            <Check size={13} />
-                            {cloudCutoutDataUrl
-                              ? "Method 2 Vision AI cutout active (Transparent Alpha PNG)"
-                              : "Local instant matting active"}
-                          </span>
-                          <button
-                            onClick={handleCloudAiBgRemove}
-                            disabled={isRemovingBgCloud}
-                            className="text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 font-bold underline cursor-pointer"
-                          >
-                            Re-run Vision AI
+                            <span>Restore Original Background</span>
                           </button>
                         </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleCloudAiBgRemove}
+                          disabled={isRemovingBgCloud}
+                          className="w-full py-2.5 px-3 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition-colors cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isRemovingBgCloud ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin" />
+                              <span>AI Cutout Processing...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Wand2 size={14} />
+                              <span>Remove Background ✨</span>
+                            </>
+                          )}
+                        </button>
                       )}
                     </div>
 
                     {bgRemoved && (
-                      <>
-                        {/* Backdrop Studio Options */}
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                              Replace Studio Backdrop
-                            </h4>
-                            <span className="text-[10px] text-slate-400 font-medium">
-                              {backdropType === "transparent" ? "Export transparent PNG" : "Custom background active"}
-                            </span>
-                          </div>
+                      <div className="space-y-3 pt-1">
+                        {/* Replace Backdrop Header */}
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                            Backdrop Studio
+                          </h4>
+                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                            {backdropType === "transparent" ? "Alpha PNG" : "Custom Background"}
+                          </span>
+                        </div>
 
-                          <div className="grid grid-cols-4 gap-1.5 mb-3">
-                            {[
-                              { id: "transparent", label: "Transparent" },
-                              { id: "solid", label: "Solid Color" },
-                              { id: "gradient", label: "Gradient" },
-                              { id: "blur", label: "Portrait Blur" },
-                            ].map((bm) => (
+                        {/* 2x2 Grid for Backdrop Types (No Wrapping / Overflow) */}
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[
+                            { id: "transparent", label: "Transparent", icon: "🏁" },
+                            { id: "solid", label: "Solid Color", icon: "🎨" },
+                            { id: "gradient", label: "Gradient", icon: "🌈" },
+                            { id: "blur", label: "Portrait Blur", icon: "🌫️" },
+                          ].map((bm) => (
+                            <button
+                              key={bm.id}
+                              type="button"
+                              onClick={() => setBackdropType(bm.id)}
+                              className={`py-2 px-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer flex items-center justify-center gap-1.5 truncate ${
+                                backdropType === bm.id
+                                  ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-700 dark:text-emerald-300"
+                                  : "bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                              }`}
+                            >
+                              <span>{bm.icon}</span>
+                              <span className="truncate">{bm.label}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Solid Color Picker */}
+                        {backdropType === "solid" && (
+                          <div className="space-y-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                            <span className="text-[10px] text-slate-400 font-bold block">Preset Palettes</span>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {["#ffffff", "#0f172a", "#1e3a8a", "#059669", "#f1f5f9", "#fee2e2"].map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => setSolidColor(c)}
+                                  className={`w-6 h-6 rounded-full border cursor-pointer transition-all ${
+                                    solidColor === c ? "ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900" : "border-slate-300 dark:border-slate-600"
+                                  }`}
+                                  style={{ backgroundColor: c }}
+                                />
+                              ))}
+                            </div>
+                            <div className="pt-2 border-t border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between gap-2">
+                              <span className="text-[10px] text-slate-400 font-bold">Custom Hex:</span>
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="color"
+                                  value={solidColor}
+                                  onChange={(e) => setSolidColor(e.target.value)}
+                                  className="w-7 h-7 rounded-md cursor-pointer border-0 bg-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  value={solidColor}
+                                  onChange={(e) => setSolidColor(e.target.value)}
+                                  placeholder="#ffffff"
+                                  className="w-20 px-2 py-1 text-xs font-mono font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Gradient Presets (Strictly 2 Columns, No Overflow) */}
+                        {backdropType === "gradient" && (
+                          <div className="grid grid-cols-2 gap-1.5">
+                            {GRADIENT_PRESETS.map((gp) => (
                               <button
-                                key={bm.id}
-                                onClick={() => setBackdropType(bm.id)}
-                                className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                                  backdropType === bm.id
-                                    ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-xs"
-                                    : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300"
+                                key={gp.label}
+                                type="button"
+                                onClick={() => setGradientPreset(gp)}
+                                className={`p-2 rounded-xl text-[10px] font-semibold border cursor-pointer flex items-center gap-1.5 transition-colors truncate ${
+                                  gradientPreset.label === gp.label
+                                    ? "border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500"
+                                    : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
                                 }`}
                               >
-                                {bm.label}
+                                <span
+                                  className="w-3.5 h-3.5 rounded-full border shrink-0"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${gp.from}, ${gp.to})`,
+                                  }}
+                                />
+                                <span className="truncate text-slate-700 dark:text-slate-300">{gp.label}</span>
                               </button>
                             ))}
                           </div>
+                        )}
 
-                          {/* Solid Color Picker */}
-                          {backdropType === "solid" && (
-                            <div className="space-y-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                              <span className="text-[10px] text-slate-400 font-bold block">Preset Colors</span>
-                              <div className="flex items-center gap-2">
-                                {["#ffffff", "#0f172a", "#1e3a8a", "#059669", "#f1f5f9", "#fee2e2"].map((c) => (
-                                  <button
-                                    key={c}
-                                    onClick={() => setSolidColor(c)}
-                                    className={`w-6 h-6 rounded-full border cursor-pointer transition-transform ${
-                                      solidColor === c ? "ring-2 ring-emerald-500 scale-110" : ""
-                                    }`}
-                                    style={{ backgroundColor: c }}
-                                  />
-                                ))}
-                                <div className="ml-auto flex items-center gap-1.5">
-                                  <input
-                                    type="color"
-                                    value={solidColor}
-                                    onChange={(e) => setSolidColor(e.target.value)}
-                                    className="w-7 h-7 rounded-md cursor-pointer border-0"
-                                  />
-                                  <input
-                                    type="text"
-                                    value={solidColor}
-                                    onChange={(e) => setSolidColor(e.target.value)}
-                                    placeholder="#ffffff"
-                                    className="w-20 px-2 py-1 text-xs font-mono font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
-                                  />
-                                </div>
-                              </div>
+                        {/* Portrait Bokeh Blur Slider */}
+                        {backdropType === "blur" && (
+                          <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            <div className="flex justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                              <span>Bokeh Blur Radius</span>
+                              <span className="font-mono text-emerald-600">{portraitBlurAmount}px</span>
                             </div>
-                          )}
+                            <input
+                              type="range"
+                              min="4"
+                              max="40"
+                              value={portraitBlurAmount}
+                              onChange={(e) => setPortraitBlurAmount(Number(e.target.value))}
+                              className="w-full accent-emerald-600 cursor-pointer"
+                            />
+                          </div>
+                        )}
 
-                          {/* Gradient Presets */}
-                          {backdropType === "gradient" && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                              {GRADIENT_PRESETS.map((gp) => (
-                                <button
-                                  key={gp.label}
-                                  onClick={() => setGradientPreset(gp)}
-                                  className={`p-2 rounded-xl text-[10px] font-bold border cursor-pointer flex items-center gap-1.5 transition-all ${
-                                    gradientPreset.label === gp.label
-                                      ? "ring-2 ring-emerald-500 border-transparent bg-white dark:bg-slate-900 shadow-xs"
-                                      : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
-                                  }`}
-                                >
-                                  <span
-                                    className="w-4 h-4 rounded-full border shadow-2xs shrink-0"
-                                    style={{
-                                      background: `linear-gradient(135deg, ${gp.from}, ${gp.to})`,
-                                    }}
-                                  />
-                                  <span className="truncate text-slate-700 dark:text-slate-300">{gp.label}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Portrait Bokeh Blur Slider */}
-                          {backdropType === "blur" && (
-                            <div className="space-y-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                              <div className="flex justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                                <span>DSLR Portrait Bokeh Blur</span>
-                                <span className="font-mono text-emerald-600">{portraitBlurAmount}px</span>
-                              </div>
-                              <input
-                                type="range"
-                                min="4"
-                                max="40"
-                                value={portraitBlurAmount}
-                                onChange={(e) => setPortraitBlurAmount(Number(e.target.value))}
-                                className="w-full accent-emerald-600 cursor-pointer"
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Optional Edge Matting Adjustments (if not using cloud or tweaking) */}
+                        {/* Optional Edge Matting Adjustments (if not using cloud) */}
                         {!cloudCutoutDataUrl && (
-                          <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-                            <span className="text-[10px] text-slate-400 font-bold block mb-2">
+                          <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                            <span className="text-[10px] text-slate-400 font-bold block">
                               Local Edge Matting Sensitivity
                             </span>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-2">
                               <div className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                                <div className="flex justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
                                   <span>Sensitivity</span>
                                   <span>{bgSensitivity}%</span>
                                 </div>
@@ -2243,8 +2412,8 @@ const FileStudioPage = () => {
                               </div>
 
                               <div className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                                  <span>Edge Feather</span>
+                                <div className="flex justify-between text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                                  <span>Feather</span>
                                   <span>{bgFeather}px</span>
                                 </div>
                                 <input
@@ -2259,72 +2428,219 @@ const FileStudioPage = () => {
                             </div>
                           </div>
                         )}
-                      </>
+                      </div>
                     )}
                   </div>
                 )}
 
                 {/* TAB 5: PHOTO COLOR GRADING & FILTERS */}
                 {activeTab === "edit" && fileMeta.isImage && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-4 animate-in fade-in duration-150">
+                  <div className="space-y-3.5 animate-in fade-in duration-150">
+                    {/* PRESET FILTER CARDS WITH MINI IMAGE PREVIEWS */}
                     <div>
-                      <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                        Profile Presets
-                      </h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                        {FILTER_PRESETS.map((fp) => (
-                          <button
-                            key={fp.label}
-                            onClick={() => {
-                              setBrightness(fp.b);
-                              setContrast(fp.c);
-                              setSaturation(fp.s);
-                              setExposure(fp.exp);
-                              setWarmth(fp.warm);
-                              setSharpness(fp.sharp);
-                              setIsGrayscale(fp.gray);
-                              setIsInverted(fp.inv);
-                              toast.success(`Applied ${fp.label}`);
-                            }}
-                            className="py-2 px-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-slate-400 text-left truncate cursor-pointer"
-                          >
-                            {fp.label}
-                          </button>
-                        ))}
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                          Preset Filters
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBrightness(0);
+                            setContrast(0);
+                            setSaturation(0);
+                            setExposure(0);
+                            setWarmth(0);
+                            setSharpness(0);
+                            setVignette(0);
+                            setIsGrayscale(false);
+                            setIsInverted(false);
+                            setSelectedPreset("Natural Original");
+                            toast.success("Color filters reset to original");
+                          }}
+                          className="text-[11px] font-bold text-slate-500 hover:text-emerald-600 transition-colors cursor-pointer"
+                        >
+                          Reset ↺
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                        {FILTER_PRESETS.map((fp) => {
+                          const isActive = selectedPreset === fp.label;
+                          return (
+                            <button
+                              key={fp.label}
+                              type="button"
+                              onClick={() => {
+                                setBrightness(fp.b);
+                                setContrast(fp.c);
+                                setSaturation(fp.s);
+                                setExposure(fp.exp);
+                                setWarmth(fp.warm);
+                                setSharpness(fp.sharp);
+                                setIsGrayscale(fp.gray);
+                                setIsInverted(fp.inv);
+                                setSelectedPreset(fp.label);
+                                toast.success(`Applied ${fp.label}`);
+                              }}
+                              className={`group flex flex-col items-center gap-1 p-1 rounded-xl border transition-colors cursor-pointer ${
+                                isActive
+                                  ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/50 ring-1 ring-emerald-500"
+                                  : "border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800"
+                              }`}
+                              title={fp.label}
+                            >
+                              <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 relative">
+                                {previewUrl ? (
+                                  <img
+                                    src={previewUrl}
+                                    alt={fp.label}
+                                    style={{ filter: fp.cssFilter }}
+                                    className="w-full h-full object-cover pointer-events-none"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div
+                                    style={{ filter: fp.cssFilter }}
+                                    className="w-full h-full bg-gradient-to-tr from-indigo-500 via-emerald-400 to-amber-300 flex items-center justify-center text-[10px] font-bold text-white"
+                                  >
+                                    Aa
+                                  </div>
+                                )}
+                                {isActive && (
+                                  <div className="absolute top-1 right-1 size-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                                    <Check size={9} strokeWidth={3} />
+                                  </div>
+                                )}
+                              </div>
+                              <span
+                                className={`text-[10px] font-bold truncate max-w-full leading-tight transition-colors ${
+                                  isActive
+                                    ? "text-emerald-700 dark:text-emerald-300 font-extrabold"
+                                    : "text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200"
+                                }`}
+                              >
+                                {fp.short}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* All Adjustment Sliders */}
-                    <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 no-scrollbar">
-                      {[
-                        { label: "Brightness", val: brightness, set: setBrightness, min: -60, max: 60 },
-                        { label: "Contrast", val: contrast, set: setContrast, min: -60, max: 60 },
-                        { label: "Saturation", val: saturation, set: setSaturation, min: -60, max: 60 },
-                        { label: "Warmth", val: warmth, set: setWarmth, min: -50, max: 50 },
-                        { label: "Vignette", val: vignette, set: setVignette, min: 0, max: 80 },
-                      ].map((item) => (
-                        <div key={item.label} className="space-y-1">
-                          <div className="flex justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
-                            <span>{item.label}</span>
-                            <span className="font-mono">{item.val > 0 ? `+${item.val}` : item.val}</span>
+                    {/* MANUAL ADJUSTMENTS & LIGHT CONTROLS */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                          Light & Color Sliders
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBrightness(6);
+                            setContrast(14);
+                            setSaturation(10);
+                            setExposure(4);
+                            setWarmth(4);
+                            setSelectedPreset(null);
+                            toast.success("Applied Auto Light Enhancement ⚡");
+                          }}
+                          className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1 cursor-pointer"
+                        >
+                          <Sparkles size={11} />
+                          <span>Auto Enhance</span>
+                        </button>
+                      </div>
+
+                      {/* QUICK SPECIAL EFFECT TOGGLES */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsGrayscale((g) => !g);
+                            setSelectedPreset(null);
+                          }}
+                          className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+                            isGrayscale
+                              ? "bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900"
+                              : "bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                          }`}
+                        >
+                          <span>Black & White</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsInverted((inv) => !inv);
+                            setSelectedPreset(null);
+                          }}
+                          className={`py-1.5 px-2 rounded-xl text-[11px] font-semibold border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
+                            isInverted
+                              ? "bg-emerald-600 text-white border-emerald-600"
+                              : "bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                          }`}
+                        >
+                          <span>Invert Negative</span>
+                        </button>
+                      </div>
+
+                      {/* SLIDERS LIST */}
+                      <div className="space-y-2 max-h-[175px] overflow-y-auto pr-1 no-scrollbar">
+                        {[
+                          { label: "Brightness", val: brightness, set: setBrightness, min: -60, max: 60 },
+                          { label: "Contrast", val: contrast, set: setContrast, min: -60, max: 60 },
+                          { label: "Saturation", val: saturation, set: setSaturation, min: -60, max: 60 },
+                          { label: "Exposure", val: exposure, set: setExposure, min: -50, max: 50 },
+                          { label: "Warmth", val: warmth, set: setWarmth, min: -50, max: 50 },
+                          { label: "Vignette", val: vignette, set: setVignette, min: 0, max: 80 },
+                        ].map((item) => (
+                          <div key={item.label} className="space-y-1">
+                            <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                              <span
+                                onClick={() => {
+                                  item.set(0);
+                                  setSelectedPreset(null);
+                                }}
+                                className="cursor-pointer hover:text-emerald-600"
+                                title="Click to reset to 0"
+                              >
+                                {item.label}
+                              </span>
+                              <span
+                                onClick={() => {
+                                  item.set(0);
+                                  setSelectedPreset(null);
+                                }}
+                                className={`font-mono text-[10px] px-1.5 py-0.2 rounded cursor-pointer ${
+                                  item.val !== 0
+                                    ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 font-bold"
+                                    : "text-slate-400"
+                                }`}
+                                title="Click to reset"
+                              >
+                                {item.val > 0 ? `+${item.val}` : item.val}
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min={item.min}
+                              max={item.max}
+                              value={item.val}
+                              onChange={(e) => {
+                                item.set(Number(e.target.value));
+                                setSelectedPreset(null);
+                              }}
+                              className="w-full accent-emerald-600 cursor-pointer"
+                            />
                           </div>
-                          <input
-                            type="range"
-                            min={item.min}
-                            max={item.max}
-                            value={item.val}
-                            onChange={(e) => item.set(Number(e.target.value))}
-                            className="w-full accent-indigo-600 cursor-pointer"
-                          />
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* TAB 6: SECURITY WATERMARK OVERLAY */}
                 {activeTab === "watermark" && fileMeta.isImage && (
-                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-3.5 animate-in fade-in duration-150">
+                  <div className="space-y-3.5 animate-in fade-in duration-150">
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-sm font-black text-slate-900 dark:text-white">Security Watermark</h4>
@@ -2332,10 +2648,10 @@ const FileStudioPage = () => {
                       </div>
                       <button
                         onClick={() => setWatermarkEnabled((v) => !v)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold border cursor-pointer transition-colors ${
                           watermarkEnabled
-                            ? "bg-indigo-600 text-white border-indigo-600"
-                            : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                            ? "bg-emerald-600 text-white border-emerald-600"
+                            : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                         }`}
                       >
                         {watermarkEnabled ? "Active" : "Disabled"}
@@ -2361,7 +2677,7 @@ const FileStudioPage = () => {
                               max="90"
                               value={watermarkOpacity}
                               onChange={(e) => setWatermarkOpacity(Number(e.target.value))}
-                              className="w-full accent-indigo-600"
+                              className="w-full accent-emerald-600"
                             />
                           </div>
                           <div>
@@ -2372,7 +2688,7 @@ const FileStudioPage = () => {
                               max="60"
                               value={watermarkSize}
                               onChange={(e) => setWatermarkSize(Number(e.target.value))}
-                              className="w-full accent-indigo-600"
+                              className="w-full accent-emerald-600"
                             />
                           </div>
                         </div>
@@ -2386,10 +2702,10 @@ const FileStudioPage = () => {
                             <button
                               key={pos.id}
                               onClick={() => setWatermarkPosition(pos.id)}
-                              className={`py-1.5 rounded-xl text-xs font-bold border cursor-pointer ${
+                              className={`py-1.5 rounded-xl text-xs font-semibold border cursor-pointer transition-colors ${
                                 watermarkPosition === pos.id
-                                  ? "bg-indigo-50 border-indigo-400 text-indigo-700"
-                                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                                  ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-bold"
+                                  : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                               }`}
                             >
                               {pos.label}
@@ -2401,64 +2717,85 @@ const FileStudioPage = () => {
                   </div>
                 )}
 
+                </div>
+
+                {/* PINNED BOTTOM EXPORT & COMMAND BAR */}
+                <div className="px-3.5 py-2.5 border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#090f1d] shrink-0 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0 text-xs flex-1">
+                    {isEditingName ? (
+                      <div className="flex items-center gap-1 min-w-0 flex-1 max-w-[210px] animate-in fade-in duration-150">
+                        <input
+                          ref={renameInputRef}
+                          type="text"
+                          value={tempFilename}
+                          onChange={(e) => setTempFilename(e.target.value)}
+                          onBlur={handleSaveRename}
+                          onKeyDown={handleRenameKeyDown}
+                          className="w-full px-2 py-0.5 text-xs font-bold rounded-lg border border-emerald-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"
+                          placeholder="file name"
+                        />
+                        <span className="text-xs font-black text-slate-400 font-mono shrink-0">.{targetFormat}</span>
+                      </div>
+                    ) : (
+                      <div
+                        onDoubleClick={handleStartRename}
+                        className="flex items-center gap-1.5 min-w-0 cursor-pointer group select-none py-0.5"
+                        title="Double-click to rename file"
+                      >
+                        <span className="font-bold text-slate-700 dark:text-slate-300 truncate max-w-[120px] sm:max-w-[160px] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                          {outputFilename}.{targetFormat}
+                        </span>
+                        <Pencil
+                          size={11}
+                          className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartRename();
+                          }}
+                        />
+                        <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                          ({formatBytes(outputBytes || fileMeta.sizeBytes)})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handlePrint}
+                      className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer hidden sm:block"
+                      title="Print Preview"
+                    >
+                      <Printer size={13} />
+                    </button>
+
+                    {fileMeta.isImage && (
+                      <button
+                        type="button"
+                        onClick={handleCopyClipboard}
+                        className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                        title="Copy to Clipboard"
+                      >
+                        <Copy size={13} />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleResetAll}
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* BOTTOM EXPORT & COMMAND BAR */}
-        {file && (
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-t border-slate-200/80 dark:border-slate-800 bg-slate-50/80 dark:bg-[#090f1d] shrink-0 flex-wrap gap-2.5">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="font-bold text-slate-700 dark:text-slate-300">
-                Final: {outputFilename}.{targetFormat} ({formatBytes(outputBytes || fileMeta.sizeBytes)})
-              </span>
-              {fileMeta.sizeBytes > outputBytes && outputBytes > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-extrabold text-[10px]">
-                  Saved {Math.round((1 - outputBytes / fileMeta.sizeBytes) * 100)}%
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrint}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 cursor-pointer hidden sm:block"
-                title="Print Preview"
-              >
-                <Printer size={15} />
-              </button>
-
-              {fileMeta.isImage && (
-                <button
-                  onClick={handleCopyClipboard}
-                  className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 cursor-pointer flex items-center gap-1.5"
-                  title="Copy to Clipboard"
-                >
-                  <Copy size={13} />
-                  <span className="hidden sm:inline">Copy</span>
-                </button>
-              )}
-
-              <button
-                onClick={handleResetAll}
-                className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 cursor-pointer"
-              >
-                Reset
-              </button>
-
-              <button
-                onClick={handleDownload}
-                disabled={isProcessing}
-                className="shimmer-button px-5 py-2.5 rounded-xl bg-slate-950 dark:bg-emerald-600 hover:bg-slate-900 dark:hover:bg-emerald-500 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg cursor-pointer hover:scale-102 active:scale-98 transition-all disabled:opacity-50"
-              >
-                <Download size={15} className="text-emerald-400 dark:text-white" />
-                <span>Download ({targetFormat.toUpperCase()})</span>
-              </button>
-            </div>
+            )}
           </div>
-        )}
-        </main>
+        </div>
+      )}
+        </div>
       </div>
 
       {/* FULLSCREEN HIGH-RES INSPECTION MODAL */}
@@ -2486,7 +2823,7 @@ const FileStudioPage = () => {
                 onClick={() => setShowOriginalComparison((v) => !v)}
                 className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
                   showOriginalComparison
-                    ? "bg-amber-500 text-white border-amber-600 shadow-xs"
+                    ? "bg-amber-500 text-white border-amber-600"
                     : "bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700"
                 }`}
               >
@@ -2512,7 +2849,7 @@ const FileStudioPage = () => {
             <img
               src={showOriginalComparison ? previewUrl : processedUrl || previewUrl}
               alt="Full View"
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl transition-transform"
+              className="max-w-full max-h-[85vh] object-contain rounded-2xl border border-slate-700/80 transition-transform"
             />
           </div>
 
@@ -2526,6 +2863,10 @@ const FileStudioPage = () => {
         </div>
       )}
 
+      {/* SIGNATURE BRAND DISPLAY SECTION */}
+      <FroggieBrandSection />
+
+      {/* SITE FOOTER */}
       <Footer />
     </div>
   );

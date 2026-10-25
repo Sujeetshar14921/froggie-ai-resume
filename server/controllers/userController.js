@@ -1,4 +1,6 @@
 import User from "../models/User.js";
+import Otp from "../models/Otp.js";
+import { sendSignupOtp, sendResetPasswordOtp } from "../services/emailService.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Resume from "../models/Resume.js";
@@ -48,9 +50,11 @@ export const registerUser = async (req, res) => {
 
          // return success message
          const token = generateToken(newUser._id)
-         newUser.password = undefined;
+         const userObj = newUser.toObject();
+         userObj.hasPassword = true;
+         delete userObj.password;
 
-         return res.status(201).json({message: 'Account created successfully', token, user: newUser})
+         return res.status(201).json({message: 'Account created successfully', token, user: userObj})
 
     } catch (error) {
         return res.status(400).json({message: error.message || 'Registration failed'})
@@ -89,11 +93,12 @@ export const loginUser = async (req, res) => {
         }
 
         // return success message
-         const token = generateToken(user._id)
-         user.password = undefined;
+        const token = generateToken(user._id)
+        const userObj = user.toObject();
+        userObj.hasPassword = Boolean(user.password);
+        delete userObj.password;
 
-         return res.status(200).json({message: 'Login successful', token, user})
-
+        return res.status(200).json({message: 'Login successful', token, user: userObj})
     } catch (error) {
         return res.status(400).json({message: error.message || 'Login failed'})
     }
@@ -103,7 +108,6 @@ export const loginUser = async (req, res) => {
 // GET: /api/users/data
 export const getUserById = async (req, res) => {
     try {
-        
         const userId = req.userId;
 
         // check if user exists
@@ -111,9 +115,11 @@ export const getUserById = async (req, res) => {
         if(!user){
             return res.status(404).json({message: 'User not found'})
         }
-        // return user
-        user.password = undefined;
-         return res.status(200).json({user})
+        
+        const userObj = user.toObject();
+        userObj.hasPassword = Boolean(user.password);
+        delete userObj.password;
+        return res.status(200).json({user: userObj})
 
     } catch (error) {
         return res.status(400).json({message: error.message})
@@ -192,6 +198,47 @@ export const updateUserProfile = async (req, res) => {
     }
 }
 
+// controller for updating user password
+// PUT: /api/users/change-password
+export const changePasswordController = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { currentPassword, newPassword } = req.body;
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // If user already has a password, verify current password
+        if (user.password) {
+            if (!currentPassword) {
+                return res.status(400).json({ message: 'Current password is required' });
+            }
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Current password is incorrect' });
+            }
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        const userObj = user.toObject();
+        userObj.hasPassword = true;
+        delete userObj.password;
+
+        return res.status(200).json({ message: 'Password updated successfully!', user: userObj });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || 'Failed to update password' });
+    }
+};
+
 // controller for deactivating user account
 // POST: /api/users/deactivate
 export const deactivateUserAccount = async (req, res) => {
@@ -252,4 +299,234 @@ export const deleteUserAccount = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-};
+};
+
+// Helper to generate 6-digit random code
+const generate6DigitCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// controller to send OTP for signup verification
+// POST: /api/users/send-signup-otp
+export const sendSignupOtpController = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Please fill in all required fields' });
+        }
+
+        if (password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+
+        // Check if user already exists
+        const existing = await User.findOne({ email: cleanEmail });
+        if (existing) {
+            if (existing.authProvider && existing.authProvider !== 'local') {
+                return res.status(400).json({
+                    message: `An account with this email already exists via ${existing.authProvider.toUpperCase()}. Please sign in with ${existing.authProvider.toUpperCase()}.`
+                });
+            }
+            return res.status(400).json({ message: 'Account already exists with this email. Please sign in.' });
+        }
+
+        const otp = generate6DigitCode();
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(`[AUTH OTP] Signup OTP generated for ${cleanEmail}: ${otp}`);
+
+        // Delete any existing signup OTP for this email
+        await Otp.deleteMany({ email: cleanEmail, purpose: 'signup' });
+
+        // Save OTP
+        await Otp.create({
+            email: cleanEmail,
+            otp,
+            purpose: 'signup',
+            metadata: {
+                name: name.trim(),
+                hashedPassword
+            }
+        });
+
+        // Send OTP via SMTP
+        try {
+            await sendSignupOtp(cleanEmail, otp, name.trim());
+        } catch (emailErr) {
+            console.error('SMTP send error:', emailErr);
+            return res.status(500).json({
+                message: `Failed to send verification email. Please check your email or SMTP configuration (${emailErr.message})`
+            });
+        }
+
+        return res.status(200).json({
+            message: `Verification code sent to ${cleanEmail}. Please enter the 6-digit code.`
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || 'Failed to send verification code' });
+    }
+};
+
+// controller to verify OTP and complete registration
+// POST: /api/users/verify-signup-otp
+export const verifySignupOtpController = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+
+        if (!email || !otp) {
+            return res.status(400).json({ message: 'Email and 6-digit OTP code are required' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanOtp = otp.toString().trim();
+
+        const otpRecord = await Otp.findOne({
+            email: cleanEmail,
+            otp: cleanOtp,
+            purpose: 'signup'
+        });
+
+        if (!otpRecord) {
+            return res.status(400).json({ message: 'Invalid or expired verification code. Please request a new one.' });
+        }
+
+        // Re-check existing user to prevent race condition
+        const existingUser = await User.findOne({ email: cleanEmail });
+        if (existingUser) {
+            await Otp.deleteMany({ email: cleanEmail, purpose: 'signup' });
+            return res.status(400).json({ message: 'Account already exists with this email. Please sign in.' });
+        }
+
+        const { name, hashedPassword } = otpRecord.metadata || {};
+        if (!name || !hashedPassword) {
+            return res.status(400).json({ message: 'Registration session expired. Please start signup again.' });
+        }
+
+        const newUser = await User.create({
+            name,
+            email: cleanEmail,
+            password: hashedPassword
+        });
+
+        // Clean up OTPs
+        await Otp.deleteMany({ email: cleanEmail, purpose: 'signup' });
+
+        const token = generateToken(newUser._id);
+        newUser.password = undefined;
+
+        return res.status(201).json({
+            message: 'Email verified and account created successfully!',
+            token,
+            user: newUser
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || 'Verification failed' });
+    }
+};
+
+// controller to send OTP for password reset
+// POST: /api/users/send-reset-otp
+export const sendResetPasswordOtpController = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Please provide your email address' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const user = await User.findOne({ email: cleanEmail });
+
+        if (!user) {
+            return res.status(404).json({ message: 'No registered account found with this email address.' });
+        }
+
+        if (user.authProvider && user.authProvider !== 'local' && !user.password) {
+            const providerName = user.authProvider.charAt(0).toUpperCase() + user.authProvider.slice(1);
+            return res.status(400).json({
+                message: `This account was registered using ${providerName}. Please use social login with ${providerName}.`
+            });
+        }
+
+        const otp = generate6DigitCode();
+        console.log(`[AUTH OTP] Password reset OTP generated for ${cleanEmail}: ${otp}`);
+
+        // Delete any existing reset OTP for this email
+        await Otp.deleteMany({ email: cleanEmail, purpose: 'reset_password' });
+
+        await Otp.create({
+            email: cleanEmail,
+            otp,
+            purpose: 'reset_password'
+        });
+
+        try {
+            await sendResetPasswordOtp(cleanEmail, otp, user.name || 'User');
+        } catch (emailErr) {
+            console.error('SMTP reset send error:', emailErr);
+            return res.status(500).json({
+                message: `Failed to send password reset email (${emailErr.message})`
+            });
+        }
+
+        return res.status(200).json({
+            message: `Password reset code sent to ${cleanEmail}. Please check your inbox.`
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || 'Failed to send password reset code' });
+    }
+};
+
+// controller to verify OTP and reset password
+// POST: /api/users/reset-password
+export const verifyResetPasswordOtpController = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ message: 'Email, OTP code, and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const cleanOtp = otp.toString().trim();
+
+        const otpRecord = await Otp.findOne({
+            email: cleanEmail,
+            otp: cleanOtp,
+            purpose: 'reset_password'
+        });
+
+        if (!otpRecord) {
+            return res.status(400).json({ message: 'Invalid or expired password reset code. Please request a new one.' });
+        }
+
+        const user = await User.findOne({ email: cleanEmail });
+        if (!user) {
+            return res.status(404).json({ message: 'User account not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        // Clean up OTPs
+        await Otp.deleteMany({ email: cleanEmail, purpose: 'reset_password' });
+
+        const token = generateToken(user._id);
+        user.password = undefined;
+
+        return res.status(200).json({
+            message: 'Password reset successfully! You are now logged in.',
+            token,
+            user
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || 'Password reset failed' });
+    }
+};

@@ -39,7 +39,7 @@ const AtsChecker = () => {
     description: "Scan your resume against any job description with froggie AI. Get a real-time ATS compatibility score, keyword density analysis, and actionable optimization suggestions.",
     keywords: "ATS score checker, resume ATS scanner, resume keyword match, free ATS score check, check resume against job description, ATS friendly score, ATS resume test",
     canonical: "https://froggie.site/app/ats-checker",
-    ogImage: "https://froggie.site/og-image.png",
+    ogImage: "https://froggie.site/froggie_banner.jpg",
   });
 
   const { token } = useSelector((state) => state.auth);

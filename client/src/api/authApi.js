@@ -23,6 +23,42 @@ export const authApi = {
   },
 
   /**
+   * Send OTP for account signup verification
+   * @param {Object} userData - { name, email, password }
+   */
+  sendSignupOtp: async (userData) => {
+    const { data } = await api.post("/api/users/send-signup-otp", userData);
+    return data;
+  },
+
+  /**
+   * Verify signup OTP and complete user registration
+   * @param {Object} payload - { email, otp }
+   */
+  verifySignupOtp: async (payload) => {
+    const { data } = await api.post("/api/users/verify-signup-otp", payload);
+    return data;
+  },
+
+  /**
+   * Send OTP for password reset
+   * @param {Object} payload - { email }
+   */
+  sendResetOtp: async (payload) => {
+    const { data } = await api.post("/api/users/send-reset-otp", payload);
+    return data;
+  },
+
+  /**
+   * Verify OTP and set new password
+   * @param {Object} payload - { email, otp, newPassword }
+   */
+  resetPassword: async (payload) => {
+    const { data } = await api.post("/api/users/reset-password", payload);
+    return data;
+  },
+
+  /**
    * Fetch authenticated user's profile data
    * @param {string} token
    */
@@ -44,6 +80,18 @@ export const authApi = {
         Authorization: token,
         "Content-Type": "multipart/form-data",
       },
+    });
+    return data;
+  },
+
+  /**
+   * Change user password
+   * @param {Object} payload - { currentPassword, newPassword }
+   * @param {string} token
+   */
+  changePassword: async (payload, token) => {
+    const { data } = await api.put("/api/users/change-password", payload, {
+      headers: { Authorization: token },
     });
     return data;
   },

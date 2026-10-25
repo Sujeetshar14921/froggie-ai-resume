@@ -171,7 +171,7 @@ const TalentPage = () => {
           "@type": "Organization",
           "name": "froggie",
           "url": "https://froggie.site/",
-          "logo": "https://froggie.site/favicon.svg",
+          "logo": "https://froggie.site/froggie_logo.png",
         },
         "potentialAction": {
           "@type": "SearchAction",
@@ -189,7 +189,7 @@ const TalentPage = () => {
               "name": `${candidate.personal_info?.full_name || "Verified Candidate"} — ${candidate.personal_info?.profession || "Software Professional"}`,
               "url": `https://froggie.site/view/${candidate._id}`,
               "description": candidate.professional_summary || `${candidate.personal_info?.profession || "Candidate"} verified resume profile on froggie`,
-              "image": candidate.personal_info?.image || candidate.userId?.image || "https://froggie.site/og-image.png",
+              "image": candidate.personal_info?.image || candidate.userId?.image || "https://froggie.site/froggie_banner.jpg",
             },
           })),
         },
@@ -222,7 +222,7 @@ const TalentPage = () => {
     keywords:
       "hire developers, tech talent pool, public candidate directory, developer resumes, hire software engineers, full stack developer resumes, frontend developer CV, backend engineer portfolio, hire React developers, hire Node.js developers, hire Python engineers, data scientist resumes, verified candidate showcase, ATS resumes directory, remote tech talent, hire talent India, hire freelance developers, froggie talent pool, froggie candidate showcase, hire AI engineers",
     canonical: "https://froggie.site/talent",
-    ogImage: "https://froggie.site/og-image.png",
+    ogImage: "https://froggie.site/froggie_banner.jpg",
     schema: talentSchema,
   });
   const [popularLocations, setPopularLocations] = useState([]);

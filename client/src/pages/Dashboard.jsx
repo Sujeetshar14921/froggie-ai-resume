@@ -175,7 +175,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap shrink-0">
               <button
                 onClick={() => setShowCreateResume(true)}
-                className="shimmer-button flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-black text-xs sm:text-sm shadow-xl transition-all cursor-pointer hover:scale-105 active:scale-95 border border-emerald-500/40"
+                className="shimmer-button flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer border border-emerald-500/40"
               >
                 <Plus size={15} className="text-emerald-400" />
                 <span>Create Resume</span>
@@ -183,7 +183,7 @@ const Dashboard = () => {
 
               <button
                 onClick={() => setShowUploadResume(true)}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-extrabold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 shadow-2xs hover:shadow-xs transition-all cursor-pointer hover:scale-102"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
               >
                 <UploadCloud size={15} className="text-slate-600 dark:text-slate-300" />
                 <span>Import PDF</span>
@@ -276,25 +276,25 @@ const Dashboard = () => {
           {/* CREATE RESUME */}
           <div
             onClick={() => setShowCreateResume(true)}
-            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
+            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
             <div className="icon-3d-pod icon-3d-pod-emerald w-12 h-12 rounded-2xl flex items-center justify-center">
               <Plus size={24} className="lucide-3d text-white" />
             </div>
 
             <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 mb-2 border border-emerald-200/70">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 mb-2 border border-emerald-200/70">
                 Live Editor
               </span>
-              <h3 className="text-lg font-black text-slate-950 group-hover:text-emerald-700 transition-colors">
+              <h3 className="text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                 Create Resume
               </h3>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
                 Step-by-step form builder with AI bullet enhancer and real-time live preview.
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-xs group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Start Building</span>
               <ArrowRight size={14} />
             </div>
@@ -303,25 +303,25 @@ const Dashboard = () => {
           {/* IMPORT PDF RESUME */}
           <div
             onClick={() => setShowUploadResume(true)}
-            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-slate-400 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
+            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
             <div className="icon-3d-pod icon-3d-pod-dark w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-400">
               <UploadCloud size={20} className="lucide-3d sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-800 mb-1.5 sm:mb-2 border border-slate-200">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 mb-1.5 sm:mb-2 border border-slate-200 dark:border-slate-700">
                 AI PDF Parser
               </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-950 group-hover:text-slate-900 transition-colors">
+              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                 Import PDF / Doc
               </h3>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
                 Upload your existing PDF and AI will auto-extract skills, work history, and sections.
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 text-slate-900 font-bold text-xs group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-200 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Upload Document</span>
               <ArrowRight size={13} />
             </div>
@@ -330,14 +330,14 @@ const Dashboard = () => {
           {/* ATS SCORE CHECKER */}
           <div
             onClick={() => navigate("/app/ats-checker")}
-            className="group relative bg-slate-950 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-800 shadow-md hover:shadow-2xl hover:border-emerald-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
+            className="group relative bg-slate-950 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-800 hover:border-emerald-500/60 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
             <div className="icon-3d-pod icon-3d-pod-emerald w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
               <ShieldCheck size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-1.5 sm:mb-2">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-1.5 sm:mb-2">
                 AI Match 0-100
               </span>
               <h3 className="text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors">
@@ -357,25 +357,25 @@ const Dashboard = () => {
           {/* JOB APPLICATION TRACKER */}
           <div
             onClick={() => navigate("/app/applications")}
-            className="group relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-amber-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
+            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
             <div className="icon-3d-pod icon-3d-pod-amber w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
               <Briefcase size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 mb-1.5 sm:mb-2 border border-amber-200/70">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 mb-1.5 sm:mb-2 border border-amber-200/70 dark:border-amber-800/60">
                 Pipeline CRM
               </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-950 group-hover:text-amber-700 transition-colors">
+              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                 Job Tracker
               </h3>
-              <p className="text-slate-500 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
+              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
                 Track interview rounds, follow-up dates, tailored resumes, and salary negotiations.
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
               <span>Open Pipeline</span>
               <ArrowRight size={13} />
             </div>
@@ -384,14 +384,14 @@ const Dashboard = () => {
           {/* SMART FILE & MEDIA STUDIO */}
           <div
             onClick={() => navigate("/file-studio")}
-            className="group relative bg-white dark:bg-[#0c1424] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden col-span-2 sm:col-span-1"
+            className="group relative bg-white dark:bg-[#0c1424] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden col-span-2 sm:col-span-1"
           >
             <div className="icon-3d-pod icon-3d-pod-purple w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-indigo-400">
               <Sparkles size={20} className="lucide-3d sm:w-6 sm:h-6" />
             </div>
 
             <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 mb-1.5 sm:mb-2 border border-indigo-200/70 dark:border-indigo-800/60">
+              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 mb-1.5 sm:mb-2 border border-indigo-200/70 dark:border-indigo-800/60">
                 All-in-One Studio
               </span>
               <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">

@@ -1,135 +1,236 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import {
   User,
   Shield,
-  Trash2,
-  AlertTriangle,
-  Check,
-  Download,
-  Eye,
-  ArrowRight,
-  HelpCircle,
-  FileText,
   Lock,
-  Mail,
-  Briefcase,
-  MapPin,
-  Phone,
-  Camera,
-  ChevronRight,
-  ShieldCheck,
-  ArrowLeft,
+  Eye,
+  EyeOff,
   Palette,
-  CheckCircle2,
-  Cookie,
-  BarChart3,
-  Loader2,
-  Upload,
+  Sparkles,
+  Sliders,
+  FileText,
+  Cloud,
+  Globe,
+  Bell,
+  Volume2,
+  Maximize2,
   Sun,
   Moon,
   Laptop,
+  Download,
+  Trash2,
+  LogOut,
+  Check,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+  Camera,
+  ArrowLeft,
+  KeyRound,
+  ShieldCheck,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  RefreshCw,
+  Zap,
 } from "lucide-react";
 import { authApi } from "../api/authApi";
-import { login, logout, updateUser } from "../app/features/authSlice";
+import { logout, updateUser } from "../app/features/authSlice";
 import { getSavedTheme, applyTheme } from "../utils/theme";
-import {
-  getCookiePreferences,
-  saveCookiePreferences,
-  resetCookieConsent,
-} from "../utils/cookieConsent";
 import toast from "react-hot-toast";
 
-const DEPARTURE_REASONS = [
+// Feature flags storage key
+const FEATURE_FLAGS_KEY = "froggie_feature_flags";
+
+const DEFAULT_FEATURES = {
+  atsOptimizer: true,
+  realTimeScore: true,
+  autoSave: true,
+  talentDiscovery: false,
+  aiBulletEnhancer: true,
+  emailNotifications: true,
+  soundEffects: false,
+  compactWorkspace: false,
+};
+
+// Features Metadata Configuration
+const FEATURES_CONFIG = [
   {
-    id: "found_job",
-    title: "I found a job / got hired! 🎉",
-    desc: "I secured an employment offer and no longer need resume optimization.",
+    key: "atsOptimizer",
+    title: "ATS Smart Keyword Matcher",
+    description: "Extract industry keywords from target job descriptions and suggest real-time placements in your resume.",
+    badge: "RECOMMENDED",
+    icon: Sparkles,
+    gradient: "from-emerald-500/20 to-teal-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
   },
   {
-    id: "missing_features",
-    title: "Missing features or tools I need",
-    desc: "Needed specific ATS formatting, cover letter builder, or custom exports.",
+    key: "realTimeScore",
+    title: "Live ATS Score Meter",
+    description: "Display an active floating score dial in the builder that computes compliance with recruiter scanners.",
+    badge: "POPULAR",
+    icon: FileText,
+    gradient: "from-blue-500/20 to-cyan-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30",
   },
   {
-    id: "ats_templates",
-    title: "Templates didn't fit my specific industry",
-    desc: "Looking for niche styles (academia, federal, or creative portfolios).",
+    key: "autoSave",
+    title: "Auto-Save Drafts to Cloud",
+    description: "Continuously back up resume progress every 10 seconds to prevent accidental data loss.",
+    badge: "ESSENTIAL",
+    icon: Cloud,
+    gradient: "from-indigo-500/20 to-violet-500/20 text-indigo-600 dark:text-indigo-400 border-indigo-500/30",
   },
   {
-    id: "privacy",
-    title: "Privacy or data retention concerns",
-    desc: "Prefer to purge personal resume data, phone, and profile history.",
+    key: "talentDiscovery",
+    title: "Public Talent Directory Discovery",
+    description: "Publish your verified candidate profile to froggie's talent pool for recruiters to discover you.",
+    badge: "GET HIRED",
+    icon: Globe,
+    gradient: "from-purple-500/20 to-pink-500/20 text-purple-600 dark:text-purple-400 border-purple-500/30",
   },
   {
-    id: "technical",
-    title: "Technical issues or difficulty using builder",
-    desc: "Encountered formatting bugs or difficulty navigating the application.",
+    key: "aiBulletEnhancer",
+    title: "AI STAR Bullet Enhancer",
+    description: "1-Click rewrite of work experience into quantifiable, action-oriented STAR accomplishment statements.",
+    badge: "AI POWERED",
+    icon: Zap,
+    gradient: "from-teal-500/20 to-emerald-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30",
   },
   {
-    id: "other",
-    title: "Other / Personal preference",
-    desc: "Temporary cleanup or personal reasons.",
+    key: "emailNotifications",
+    title: "Email Status & Interview Alerts",
+    description: "Receive timely updates when your public resume is viewed or an employer requests contact.",
+    badge: "ALERTS",
+    icon: Bell,
+    gradient: "from-amber-500/20 to-orange-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30",
+  },
+  {
+    key: "soundEffects",
+    title: "UI Sound Feedback & Chimes",
+    description: "Play subtle audio cues when exporting PDFs, running AI scans, or completing achievements.",
+    badge: "AUDIO",
+    icon: Volume2,
+    gradient: "from-rose-500/20 to-pink-500/20 text-rose-600 dark:text-rose-400 border-rose-500/30",
+  },
+  {
+    key: "compactWorkspace",
+    title: "Compact Resume Workspace",
+    description: "Reduce padding across builder inputs to show more content simultaneously on laptop screens.",
+    badge: "LAYOUT",
+    icon: Maximize2,
+    gradient: "from-slate-500/20 to-slate-600/20 text-slate-600 dark:text-slate-300 border-slate-500/30",
   },
 ];
+
+/**
+ * Ultra-Smooth Tactile Toggle Switch Component (iOS / Stripe / Linear Physics)
+ * - Elastic spring physics on knob stretch
+ * - Radiant active aura
+ * - Tactile 3D thumb with center dot indicator
+ */
+const SmoothToggle = ({ checked, onChange, label, disabled = false }) => {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        onChange?.();
+      }}
+      className={`group relative inline-flex h-7 w-12 sm:h-7.5 sm:w-13 shrink-0 cursor-pointer items-center rounded-full p-0.5 border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 ${
+        checked
+          ? "bg-gradient-to-r from-emerald-500 to-teal-500 border-emerald-400/40 shadow-[0_0_14px_rgba(16,185,129,0.45)]"
+          : "bg-slate-200 dark:bg-slate-800 border-slate-300/80 dark:border-slate-700/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)] dark:shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)]"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : "hover:brightness-105 active:scale-95"}`}
+      aria-label={label}
+    >
+      <span
+        className={`pointer-events-none flex size-6 items-center justify-center rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.2),0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-active:w-7 ${
+          checked
+            ? "translate-x-5 sm:translate-x-6 bg-gradient-to-b from-white to-slate-50"
+            : "translate-x-0 bg-white"
+        }`}
+      >
+        <span
+          className={`size-1.5 rounded-full transition-all duration-200 ${
+            checked ? "bg-emerald-500 scale-100" : "bg-slate-300 dark:bg-slate-500 scale-75 opacity-50"
+          }`}
+        />
+      </span>
+    </button>
+  );
+};
 
 const SettingsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
 
-  // Active Tab: 'profile' | 'appearance' | 'privacy' | 'danger'
-  const [activeTab, setActiveTab] = useState("profile");
+  // Active tab: 'features' | 'profile' | 'security' | 'appearance' | 'account'
+  const [activeTab, setActiveTab] = useState("features");
 
-  // Appearance / Theme
-  const [currentTheme, setCurrentTheme] = useState("light");
+  // ==========================================
+  // 1. FEATURE TOGGLES STATE
+  // ==========================================
+  const [features, setFeatures] = useState(() => {
+    try {
+      const saved = localStorage.getItem(FEATURE_FLAGS_KEY);
+      return saved ? { ...DEFAULT_FEATURES, ...JSON.parse(saved) } : DEFAULT_FEATURES;
+    } catch {
+      return DEFAULT_FEATURES;
+    }
+  });
 
-  // Profile Credentials Form
+  const activeFeaturesCount = useMemo(() => {
+    return Object.values(features).filter(Boolean).length;
+  }, [features]);
+
+  const toggleFeature = (key, label) => {
+    setFeatures((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      localStorage.setItem(FEATURE_FLAGS_KEY, JSON.stringify(next));
+      toast.success(
+        `${label} ${next[key] ? "activated" : "deactivated"}`,
+        { icon: next[key] ? "✅" : "⚪" }
+      );
+      return next;
+    });
+  };
+
+  const handleResetFeatures = () => {
+    setFeatures(DEFAULT_FEATURES);
+    localStorage.setItem(FEATURE_FLAGS_KEY, JSON.stringify(DEFAULT_FEATURES));
+    toast.success("Feature toggles reset to recommended defaults", { icon: "✨" });
+  };
+
+  const handleEnableAll = () => {
+    const allEnabled = Object.keys(DEFAULT_FEATURES).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+    setFeatures(allEnabled);
+    localStorage.setItem(FEATURE_FLAGS_KEY, JSON.stringify(allEnabled));
+    toast.success("All features activated!", { icon: "🚀" });
+  };
+
+  // ==========================================
+  // 2. PROFILE STATE
+  // ==========================================
   const fileInputRef = useRef(null);
   const [profileName, setProfileName] = useState(user?.name || "");
   const [profileProfession, setProfileProfession] = useState(user?.profession || "");
   const [profilePhone, setProfilePhone] = useState(user?.phone || "");
   const [profileLocation, setProfileLocation] = useState(user?.location || "");
   const [profileBio, setProfileBio] = useState(user?.bio || "");
-  const [defaultVisibility, setDefaultVisibility] = useState("private");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(user?.image || "");
   const [removeImage, setRemoveImage] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  // Cookie & Privacy Preferences
-  const [cookiePrefs, setCookiePrefs] = useState(getCookiePreferences());
-
-  // Danger Questionnaire States
-  const [dangerActionType, setDangerActionType] = useState(null); // 'deactivate' | 'delete'
-  const [surveyStep, setSurveyStep] = useState(1);
-  const [selectedReason, setSelectedReason] = useState("");
-  const [feedbackOptions, setFeedbackOptions] = useState([]);
-  const [partedAdvice, setPartedAdvice] = useState("");
-  const [confirmationPhrase, setConfirmationPhrase] = useState("");
-  const [isAcknowledged, setIsAcknowledged] = useState(false);
-  const [isSubmittingDanger, setIsSubmittingDanger] = useState(false);
-
-  // Load Settings on Mount
-  useEffect(() => {
-    setCurrentTheme(getSavedTheme());
-    setDefaultVisibility(localStorage.getItem("froggie-default-visibility") || "private");
-    setCookiePrefs(getCookiePreferences());
-
-    const handleCookieSync = (e) => {
-      if (e.detail) {
-        setCookiePrefs(e.detail);
-      } else {
-        setCookiePrefs(getCookiePreferences());
-      }
-    };
-
-    window.addEventListener("froggie:cookie-consent-changed", handleCookieSync);
-    return () => window.removeEventListener("froggie:cookie-consent-changed", handleCookieSync);
-  }, []);
-
-  // Sync Profile Form with Redux User
   useEffect(() => {
     if (user) {
       setProfileName(user.name || "");
@@ -143,18 +244,20 @@ const SettingsPage = () => {
     }
   }, [user]);
 
-  // Handle Photo Changes
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("Profile photo must be smaller than 5MB");
+        toast.error("Avatar image size must be under 5MB");
         return;
       }
       setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
       setRemoveImage(false);
-      toast.success("Photo selected. Click 'Save Profile' to apply.", { icon: "📸" });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -162,37 +265,18 @@ const SettingsPage = () => {
     setImageFile(null);
     setImagePreview("");
     setRemoveImage(true);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    toast.success("Photo cleared. Click 'Save Profile' to confirm.");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Handle Theme Switching
-  const handleThemeChange = (newTheme) => {
-    setCurrentTheme(newTheme);
-    applyTheme(newTheme);
-    toast.success(`Theme switched to ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)} Mode`);
-  };
-
-  // Handle Visibility Toggle
-  const handleVisibilityChange = (val) => {
-    setDefaultVisibility(val);
-    localStorage.setItem("froggie-default-visibility", val);
-    toast.success(`New resumes will default to ${val.toUpperCase()}`);
-  };
-
-  // Handle Profile Save
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     if (!profileName.trim()) {
-      toast.error("Full Name is required");
+      toast.error("Name is required");
       return;
     }
 
-    setIsSavingProfile(true);
-
     try {
+      setIsSavingProfile(true);
       const formData = new FormData();
       formData.append("name", profileName.trim());
       formData.append("profession", profileProfession.trim());
@@ -200,53 +284,132 @@ const SettingsPage = () => {
       formData.append("location", profileLocation.trim());
       formData.append("bio", profileBio.trim());
 
-      if (removeImage) {
-        formData.append("removeImage", "true");
-      } else if (imageFile) {
+      if (imageFile) {
         formData.append("image", imageFile);
+      } else if (removeImage) {
+        formData.append("removeImage", "true");
       }
 
       const res = await authApi.updateProfile(formData, token);
-      if (res?.user) {
+      if (res.user) {
         dispatch(updateUser(res.user));
-        dispatch(login({ token, user: res.user }));
-        setImagePreview(res.user.image || "");
-        setImageFile(null);
-        setRemoveImage(false);
-        toast.success(res.message || "Profile credentials updated successfully!");
+        toast.success("Profile saved successfully!", { icon: "🎉" });
       }
     } catch (err) {
-      console.error("Profile update error:", err);
       toast.error(err.response?.data?.message || err.message || "Failed to update profile");
     } finally {
       setIsSavingProfile(false);
     }
   };
 
-  // Cookie Handlers
-  const handleSaveCookiePrefs = () => {
-    saveCookiePreferences(cookiePrefs);
-    toast.success("Cookie preferences saved successfully!");
+  // ==========================================
+  // 3. CHANGE PASSWORD STATE
+  // ==========================================
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Determine if user has an existing password requiring current password verification
+  const userRequiresCurrentPassword = useMemo(() => {
+    if (typeof user?.hasPassword === "boolean") {
+      return user.hasPassword;
+    }
+    // Default to true for local auth (or when authProvider is not specified / local)
+    if (!user?.authProvider || user.authProvider === "local") {
+      return true;
+    }
+    return false;
+  }, [user]);
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    if (userRequiresCurrentPassword && !passwordForm.currentPassword) {
+      toast.error("Current password is required");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      toast.error("New passwords do not match!");
+      return;
+    }
+
+    try {
+      setIsChangingPassword(true);
+      const res = await authApi.changePassword(
+        {
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        },
+        token
+      );
+
+      toast.success(res.message || "Password updated successfully!", { icon: "🔒" });
+      if (res.user) {
+        dispatch(updateUser(res.user));
+      } else {
+        dispatch(updateUser({ ...user, hasPassword: true }));
+      }
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || "Failed to update password");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
-  const handleOpenCookieBanner = () => {
-    window.dispatchEvent(new CustomEvent("froggie:open-cookie-banner"));
+  // ==========================================
+  // 4. APPEARANCE & THEME STATE
+  // ==========================================
+  const [currentTheme, setCurrentTheme] = useState(() => getSavedTheme());
+  const [defaultVisibility, setDefaultVisibility] = useState(() => {
+    return localStorage.getItem("froggie_default_visibility") || "private";
+  });
+
+  const handleThemeChange = (newTheme) => {
+    setCurrentTheme(newTheme);
+    applyTheme(newTheme);
+    toast.success(`Theme switched to ${newTheme}`, { icon: "🎨" });
   };
 
-  const handleResetCookies = () => {
-    resetCookieConsent();
-    setCookiePrefs(getCookiePreferences());
-    toast.success("Cookie preferences reset to initial defaults");
+  const handleVisibilityChange = (visibility) => {
+    setDefaultVisibility(visibility);
+    localStorage.setItem("froggie_default_visibility", visibility);
+    toast.success(
+      visibility === "public"
+        ? "New resumes will default to Public (Shareable link & Talent Directory)"
+        : "New resumes will default to Private",
+      { icon: "👁️" }
+    );
   };
 
-  // Data Export Handler
-  const handleExportAllData = () => {
-    const backupData = {
-      froggieWorkspaceExport: {
-        version: "3.0.0",
-        exportDate: new Date().toISOString(),
+  // ==========================================
+  // 5. ACCOUNT & DANGER ZONE STATE
+  // ==========================================
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  const handleExportData = () => {
+    try {
+      const exportObject = {
+        exportedAt: new Date().toISOString(),
         user: {
-          id: user?._id,
           name: user?.name,
           email: user?.email,
           profession: user?.profession,
@@ -254,1061 +417,869 @@ const SettingsPage = () => {
           location: user?.location,
           bio: user?.bio,
         },
-        preferences: {
-          theme: currentTheme,
-          defaultVisibility,
-          cookieConsent: cookiePrefs,
-        },
-        notice: "Personal Froggie Workspace Archive",
-      },
-    };
+        featureFlags: features,
+        theme: currentTheme,
+        defaultVisibility,
+      };
 
-    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `froggie-data-export-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success("Workspace archive downloaded!");
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObject, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `froggie-account-export-${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      toast.success("Account data exported as JSON", { icon: "💾" });
+    } catch {
+      toast.error("Failed to generate export file");
+    }
   };
 
-  // Danger Questionnaire Logic
-  const startDangerFlow = (actionType) => {
-    setDangerActionType(actionType);
-    setSurveyStep(1);
-    setSelectedReason("");
-    setFeedbackOptions([]);
-    setPartedAdvice("");
-    setConfirmationPhrase("");
-    setIsAcknowledged(false);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    dispatch(logout());
+    toast.success("Signed out successfully");
+    navigate("/");
   };
 
-  const cancelDangerFlow = () => {
-    setDangerActionType(null);
-    setSurveyStep(1);
-    setSelectedReason("");
-  };
-
-  const toggleFeedbackOption = (opt) => {
-    setFeedbackOptions((prev) =>
-      prev.includes(opt) ? prev.filter((o) => o !== opt) : [...prev, opt]
-    );
-  };
-
-  const handleExecuteDangerAction = async () => {
-    const expectedPhrase = dangerActionType === "delete" ? "DELETE MY ACCOUNT" : "DEACTIVATE";
-    if (confirmationPhrase.trim() !== expectedPhrase) {
-      toast.error(`Please type "${expectedPhrase}" exactly to confirm.`);
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") {
+      toast.error("Please type DELETE to confirm");
       return;
     }
-
-    if (!isAcknowledged) {
-      toast.error("Please check the acknowledgement checkbox.");
-      return;
-    }
-
-    setIsSubmittingDanger(true);
-    const feedbackPayload = {
-      reason: selectedReason,
-      feedback: feedbackOptions,
-      partedAdvice,
-      confirmation: confirmationPhrase,
-    };
 
     try {
-      if (dangerActionType === "delete") {
-        await authApi.deleteAccount(feedbackPayload, token);
-        toast.success("Your account and resumes have been permanently deleted.");
-      } else {
-        await authApi.deactivateAccount(feedbackPayload, token);
-        toast.success("Account deactivated. Public resumes are now private.");
-      }
-
+      setIsDeletingAccount(true);
+      await authApi.deleteAccount(token);
+      localStorage.removeItem("token");
       dispatch(logout());
-      navigate("/login");
+      toast.success("Account deleted permanently.");
+      navigate("/");
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || "Action failed.");
+      toast.error(err.response?.data?.message || err.message || "Failed to delete account");
     } finally {
-      setIsSubmittingDanger(false);
+      setIsDeletingAccount(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
-  // 4 Core, Essential Settings Categories
-  const navTabs = [
-    {
-      id: "profile",
-      label: "Profile Credentials",
-      sub: "Photo, name, title & contact",
-      icon: User,
-    },
-    {
-      id: "appearance",
-      label: "Appearance",
-      sub: "Theme & dark mode",
-      icon: Palette,
-    },
-    {
-      id: "privacy",
-      label: "Privacy & Cookies",
-      sub: "Cookie consent & data export",
-      icon: ShieldCheck,
-    },
-    {
-      id: "danger",
-      label: "Account & Danger Zone",
-      sub: "Deactivate or delete account",
-      icon: AlertTriangle,
-      isDanger: true,
-    },
+  // Tabs configuration
+  const tabs = [
+    { id: "features", label: "Features & Tools", icon: Sliders, count: `${activeFeaturesCount}/8` },
+    { id: "profile", label: "Profile", icon: User },
+    { id: "security", label: "Security & Password", icon: Lock },
+    { id: "appearance", label: "Appearance", icon: Palette },
+    { id: "account", label: "Account", icon: Shield },
   ];
 
   return (
-    <div className="min-h-screen py-4 sm:py-8 px-3.5 sm:px-6 lg:px-8 max-w-6xl mx-auto font-sans pb-20 lg:pb-8">
-      {/* CLEAN BREADCRUMB */}
-      <div className="mb-4 sm:mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-          <Link
-            to="/app"
-            className="inline-flex items-center gap-1.5 hover:text-emerald-600 transition-colors"
-          >
-            <ArrowLeft size={13} />
-            <span>Dashboard</span>
-          </Link>
-          <ChevronRight size={12} className="text-slate-300" />
-          <span className="text-slate-800 font-bold">Settings</span>
-        </div>
+    <div className="min-h-screen bg-slate-50/70 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 pb-20 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 space-y-6">
 
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            Account Active
-          </span>
-        </div>
-      </div>
-
-      {/* PAGE HEADER */}
-      <div className="mb-4 sm:mb-8">
-        <h1 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Settings
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-0.5 sm:mt-1">
-          Manage your personal profile, display preferences, privacy controls, and account status.
-        </p>
-      </div>
-
-      {/* MOBILE SEGMENTED BAR (<1024px) */}
-      <div className="flex lg:hidden overflow-x-auto gap-2 p-1 mb-4 sm:mb-6 border-b border-slate-200 pb-2.5 sm:pb-3 no-scrollbar">
-        {navTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id && !dangerActionType;
-
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                cancelDangerFlow();
-                setActiveTab(tab.id);
-              }}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs whitespace-nowrap font-bold transition-all shrink-0 cursor-pointer ${
-                isActive
-                  ? "bg-slate-900 text-white shadow-xs"
-                  : tab.isDanger
-                  ? "text-rose-600 hover:bg-rose-50"
-                  : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              <Icon size={14} className={isActive ? "text-emerald-400" : ""} />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 2-COLUMN SETTINGS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* LEFT SIDEBAR NAVIGATION (lg:col-span-4 xl:col-span-3) */}
-        <aside className="hidden lg:block lg:col-span-4 xl:col-span-3 bg-white rounded-2xl border border-slate-200/90 p-3 shadow-xs space-y-1 sticky top-24">
-          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Categories
+        {/* TOP NAVIGATION / HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Link
+                to="/app"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Dashboard</span>
+              </Link>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              Settings & Preferences
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Configure active AI modules, toggle features, manage profile and security controls.
+            </p>
           </div>
 
-          <div className="space-y-1">
-            {navTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id && !dangerActionType;
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60 shadow-2xs">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Workspace Active</span>
+            </span>
+          </div>
+        </div>
 
-              return (
+        {/* QUICK OVERVIEW STATS BAR */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <Sliders className="size-4.5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Features</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{activeFeaturesCount} of 8 Active</p>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <ShieldCheck className="size-4.5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Security</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">High / Encrypted</p>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+              <Cloud className="size-4.5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cloud Sync</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{features.autoSave ? "Auto-Save ON" : "Manual Save"}</p>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0">
+              <Palette className="size-4.5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Theme</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white capitalize truncate">{currentTheme} Mode</p>
+            </div>
+          </div>
+        </div>
+
+        {/* MODERN SEGMENTED TAB NAVIGATION */}
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 border-b border-slate-200/80 dark:border-slate-800/80 no-scrollbar">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-colors shrink-0 cursor-pointer ${
+                  isActive
+                    ? "bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900/80"
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? "text-emerald-400 dark:text-slate-950" : ""}`} />
+                <span>{tab.label}</span>
+                {tab.count && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
+                      isActive
+                        ? "bg-white/20 text-white dark:bg-slate-950/20 dark:text-slate-950 font-bold"
+                        : "bg-slate-200/70 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ========================================================= */}
+        {/* TAB 1: FEATURE TOGGLES (ACTIVE / INACTIVE SWITCHES)       */}
+        {/* ========================================================= */}
+        {activeTab === "features" && (
+          <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-6 shadow-xs">
+            {/* Header with Quick Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <Sliders className="size-5 text-emerald-500" />
+                  <span>Feature Controls & Automation</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Activate or deactivate platform capabilities, AI copilot assistants, and background sync.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
                 <button
-                  key={tab.id}
-                  onClick={() => {
-                    cancelDangerFlow();
-                    setActiveTab(tab.id);
-                  }}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl text-xs transition-all cursor-pointer text-left ${
-                    isActive
-                      ? "bg-slate-900 text-white font-bold shadow-xs"
-                      : tab.isDanger
-                      ? "text-rose-600 hover:bg-rose-50 font-semibold"
-                      : "text-slate-700 hover:bg-slate-50 hover:text-slate-950 font-semibold"
-                  }`}
+                  type="button"
+                  onClick={handleResetFeatures}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Restore default flags"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Icon
-                      size={16}
-                      className={
-                        isActive
-                          ? "text-emerald-400 shrink-0"
-                          : tab.isDanger
-                          ? "text-rose-500 shrink-0"
-                          : "text-slate-400 shrink-0"
-                      }
-                    />
-                    <div className="min-w-0">
-                      <p className="leading-tight truncate">{tab.label}</p>
-                      <p
-                        className={`text-[10px] truncate mt-0.5 ${
-                          isActive ? "text-slate-400" : "text-slate-400"
+                  <RefreshCw className="size-3" />
+                  <span>Defaults</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEnableAll}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Check className="size-3" />
+                  <span>Enable All</span>
+                </button>
+              </div>
+            </div>
+
+            {/* FEATURE CARDS GRID */}
+            <div className="grid grid-cols-1 gap-3.5">
+              {FEATURES_CONFIG.map((feat) => {
+                const Icon = feat.icon;
+                const isEnabled = Boolean(features[feat.key]);
+
+                return (
+                  <div
+                    key={feat.key}
+                    onClick={() => toggleFeature(feat.key, feat.title)}
+                    className={`p-4 sm:p-5 rounded-2xl border transition-colors duration-200 cursor-pointer flex items-center justify-between gap-4 group ${
+                      isEnabled
+                        ? "bg-white dark:bg-slate-900/90 border-slate-200/90 dark:border-slate-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/40"
+                        : "bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 hover:border-slate-300 dark:hover:border-slate-700 opacity-80 hover:opacity-100"
+                    }`}
+                  >
+                    {/* Left Icon & Text */}
+                    <div className="flex items-start gap-3.5 sm:gap-4 min-w-0">
+                      <div
+                        className={`size-11 sm:size-12 rounded-xl flex items-center justify-center shrink-0 border transition-colors duration-200 bg-gradient-to-br ${feat.gradient}`}
+                      >
+                        <Icon className="size-5 sm:size-5.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                            {feat.title}
+                          </h3>
+                          <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase tracking-wider">
+                            {feat.badge}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                          {feat.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Right Toggle & Status Indicator */}
+                    <div
+                      className="flex items-center gap-3 shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span
+                        className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold select-none ${
+                          isEnabled
+                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/80"
+                            : "bg-slate-100 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                         }`}
                       >
-                        {tab.sub}
-                      </p>
+                        {isEnabled ? (
+                          <>
+                            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Active</span>
+                          </>
+                        ) : (
+                          <span>Inactive</span>
+                        )}
+                      </span>
+
+                      <SmoothToggle
+                        checked={isEnabled}
+                        onChange={() => toggleFeature(feat.key, feat.title)}
+                        label={feat.title}
+                      />
                     </div>
                   </div>
-
-                  {isActive ? (
-                    <span className="size-1.5 rounded-full bg-emerald-400 shrink-0" />
-                  ) : (
-                    <ChevronRight size={13} className="text-slate-300 opacity-60 shrink-0" />
-                  )}
-                </button>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </aside>
+        )}
 
-        {/* RIGHT CONTENT WORKSPACE (lg:col-span-8 xl:col-span-9) */}
-        <main className="lg:col-span-8 xl:col-span-9 space-y-6">
-          {/* ==============================================================
-              DANGER QUESTIONNAIRE FLOW (IF USER TRIGGERED ACTION)
-              ============================================================== */}
-          {dangerActionType ? (
-            <div className="bg-white rounded-2xl border border-rose-200 p-6 sm:p-7 shadow-xs space-y-6 animate-in fade-in duration-150">
-              <div className="flex items-start gap-3.5 pb-4 border-b border-rose-100">
-                <div className="size-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-200">
-                  <AlertTriangle size={20} />
+        {/* ========================================================= */}
+        {/* TAB 2: PROFILE SETTINGS                                   */}
+        {/* ========================================================= */}
+        {activeTab === "profile" && (
+          <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-6 shadow-xs">
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <User className="size-5 text-emerald-500" />
+                <span>Personal Profile & Identity</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Update your contact details, profession headline, and profile avatar.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-6">
+              {/* AVATAR ROW */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-5 p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/30 border border-slate-200/80 dark:border-slate-800">
+                <div className="relative group size-20 rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0 border-2 border-slate-300 dark:border-slate-700 shadow-xs">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-8 h-8 text-slate-400" />
+                  )}
                 </div>
-                <div>
-                  <h3 className="text-base font-bold text-rose-950">
-                    {dangerActionType === "delete"
-                      ? "Confirm Account Deletion"
-                      : "Confirm Account Deactivation"}
-                  </h3>
-                  <p className="text-xs text-rose-700 font-medium mt-0.5">
-                    Step {surveyStep} of 3 • Please provide your feedback before continuing.
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <span>Upload Photo</span>
+                    </button>
+
+                    {imagePreview && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                    JPG, PNG or GIF up to 5MB. Photo will appear on supported resume templates.
                   </p>
                 </div>
               </div>
 
-              {/* PROGRESS BAR */}
-              <div className="grid grid-cols-3 gap-2">
-                <div
-                  className={`h-1 rounded-full ${
-                    surveyStep >= 1 ? "bg-rose-500" : "bg-slate-200"
-                  }`}
-                />
-                <div
-                  className={`h-1 rounded-full ${
-                    surveyStep >= 2 ? "bg-rose-500" : "bg-slate-200"
-                  }`}
-                />
-                <div
-                  className={`h-1 rounded-full ${
-                    surveyStep >= 3 ? "bg-rose-500" : "bg-slate-200"
-                  }`}
+              {/* FORM FIELDS */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Full Name
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      placeholder="e.g. Sujeet Kumar"
+                      required
+                      className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Email Address
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="email"
+                      value={user?.email || ""}
+                      disabled
+                      className="w-full h-11 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Headline / Profession
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <Briefcase className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="text"
+                      value={profileProfession}
+                      onChange={(e) => setProfileProfession(e.target.value)}
+                      placeholder="e.g. Senior Full-Stack Engineer"
+                      className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Phone Number
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="tel"
+                      value={profilePhone}
+                      onChange={(e) => setProfilePhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Location
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={profileLocation}
+                    onChange={(e) => setProfileLocation(e.target.value)}
+                    placeholder="e.g. Bangalore, India"
+                    className="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Bio / Summary
+                </label>
+                <textarea
+                  rows={3}
+                  value={profileBio}
+                  onChange={(e) => setProfileBio(e.target.value)}
+                  placeholder="Brief overview of your career background and core competencies..."
+                  className="w-full p-3.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all resize-none"
                 />
               </div>
 
-              {/* STEP 1: DEPARTURE REASON */}
-              {surveyStep === 1 && (
-                <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                    Question 1: Why are you leaving Froggie?
-                  </h4>
-
-                  <div className="grid gap-2.5">
-                    {DEPARTURE_REASONS.map((r) => {
-                      const isSelected = selectedReason === r.id;
-                      return (
-                        <div
-                          key={r.id}
-                          onClick={() => setSelectedReason(r.id)}
-                          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start justify-between gap-3 ${
-                            isSelected
-                              ? "bg-rose-50/60 border-rose-300 ring-1 ring-rose-300"
-                              : "border-slate-200 hover:border-slate-300 bg-white"
-                          }`}
-                        >
-                          <div>
-                            <p
-                              className={`text-xs font-bold ${
-                                isSelected ? "text-rose-950" : "text-slate-900"
-                              }`}
-                            >
-                              {r.title}
-                            </p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">{r.desc}</p>
-                          </div>
-                          <div
-                            className={`size-4 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
-                              isSelected
-                                ? "border-rose-600 bg-rose-600 text-white"
-                                : "border-slate-300 bg-white"
-                            }`}
-                          >
-                            {isSelected && <Check size={10} strokeWidth={3} />}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={cancelDangerFlow}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
-                      Cancel & Keep Account
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!selectedReason}
-                      onClick={() => setSurveyStep(2)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors disabled:opacity-40 cursor-pointer"
-                    >
-                      <span>Next Question</span>
-                      <ArrowRight size={13} />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 2: FEEDBACK DETAILS */}
-              {surveyStep === 2 && (
-                <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                    Question 2: What could we improve in the product?
-                  </h4>
-
-                  <div className="grid sm:grid-cols-2 gap-2.5">
-                    {[
-                      "More modern resume templates",
-                      "Faster AI bullet-point generator",
-                      "Free unbranded PDF downloads",
-                      "Better mobile editing experience",
-                      "Integrated cover letter writer",
-                      "Job board application tracker sync",
-                    ].map((opt) => {
-                      const isChecked = feedbackOptions.includes(opt);
-                      return (
-                        <label
-                          key={opt}
-                          onClick={() => toggleFeedbackOption(opt)}
-                          className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
-                            isChecked
-                              ? "bg-slate-100 border-slate-400 text-slate-950"
-                              : "border-slate-200 hover:bg-slate-50 text-slate-700"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => {}}
-                            className="rounded border-slate-300 text-slate-900 focus:ring-slate-900 size-4"
-                          />
-                          <span>{opt}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-
-                  <div className="space-y-1.5 pt-2">
-                    <label className="text-xs font-bold text-slate-700">
-                      Additional feedback for our team (Optional):
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={partedAdvice}
-                      onChange={(e) => setPartedAdvice(e.target.value)}
-                      placeholder="Tell us what worked well or what felt lacking..."
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none resize-none font-medium"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setSurveyStep(1)}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
-                      Back
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSurveyStep(3)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors cursor-pointer"
-                    >
-                      <span>Proceed to Final Confirmation</span>
-                      <ArrowRight size={13} />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3: FINAL PHRASE SECURITY CONFIRMATION */}
-              {surveyStep === 3 && (
-                <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-rose-800">
-                    Final Safeguard: Security Confirmation
-                  </h4>
-
-                  {/* BACKUP EXPORT REMINDER */}
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
-                    <div className="text-xs">
-                      <p className="font-bold text-slate-900">Download your workspace archive first</p>
-                      <p className="text-[11px] text-slate-500">Save a JSON backup of your resume records.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleExportAllData}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 cursor-pointer shadow-2xs"
-                    >
-                      Download Archive
-                    </button>
-                  </div>
-
-                  {/* ACKNOWLEDGEMENT CHECKBOX */}
-                  <label className="flex items-start gap-3 p-3.5 rounded-xl border border-rose-200 bg-rose-50/40 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isAcknowledged}
-                      onChange={(e) => setIsAcknowledged(e.target.checked)}
-                      className="mt-0.5 rounded border-rose-300 text-rose-600 focus:ring-rose-500 size-4 shrink-0"
-                    />
-                    <span className="text-xs text-rose-950 font-semibold leading-relaxed">
-                      {dangerActionType === "delete"
-                        ? "I understand that deleting my account permanently deletes all resumes, ATS data, and application history with NO recovery possible."
-                        : "I understand that deactivating will unpublish my public resumes until I sign back in."}
-                    </span>
-                  </label>
-
-                  {/* TYPED PHRASE INPUT */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">
-                      Type{" "}
-                      <span className="font-bold text-rose-600 font-mono">
-                        {dangerActionType === "delete" ? "DELETE MY ACCOUNT" : "DEACTIVATE"}
-                      </span>{" "}
-                      below to confirm:
-                    </label>
-                    <input
-                      type="text"
-                      value={confirmationPhrase}
-                      onChange={(e) => setConfirmationPhrase(e.target.value)}
-                      placeholder={dangerActionType === "delete" ? "DELETE MY ACCOUNT" : "DEACTIVATE"}
-                      className="w-full px-3.5 py-2 text-xs font-bold rounded-xl border border-rose-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none uppercase font-mono"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => setSurveyStep(2)}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
-                      Back
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={
-                        !isAcknowledged ||
-                        confirmationPhrase.trim() !==
-                          (dangerActionType === "delete" ? "DELETE MY ACCOUNT" : "DEACTIVATE") ||
-                        isSubmittingDanger
-                      }
-                      onClick={handleExecuteDangerAction}
-                      className="px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-40 transition-colors cursor-pointer"
-                    >
-                      {isSubmittingDanger ? (
-                        <span>Processing...</span>
-                      ) : dangerActionType === "delete" ? (
-                        <span>Permanently Delete My Account</span>
-                      ) : (
-                        <span>Deactivate My Account</span>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              {/* ==============================================================
-                  TAB 1: PROFILE CREDENTIALS
-                  ============================================================== */}
-              {activeTab === "profile" && (
-                <form
-                  onSubmit={handleSaveProfile}
-                  className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-6 animate-in fade-in duration-150"
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  disabled={isSavingProfile}
+                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm transition-colors flex items-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
-                  <div className="border-b border-slate-100 pb-4">
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <User size={18} className="text-emerald-600" />
-                      <span>Profile Credentials & Identity</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Update your candidate information, profile photo, and default resume visibility.
-                    </p>
-                  </div>
+                  {isSavingProfile ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                  <span>{isSavingProfile ? "Saving Profile..." : "Save Changes"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
-                  {/* HIDDEN FILE INPUT */}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg, image/webp"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
+        {/* ========================================================= */}
+        {/* TAB 3: SECURITY & PASSWORD (CHANGE PASSWORD)              */}
+        {/* ========================================================= */}
+        {activeTab === "security" && (
+          <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-6 shadow-xs">
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <KeyRound className="size-5 text-emerald-500" />
+                <span>{userRequiresCurrentPassword ? "Change Password" : "Set Account Password"}</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                {userRequiresCurrentPassword
+                  ? "Enter your current password to set a new password."
+                  : "Set a password to enable direct email and password sign-in for your account."}
+              </p>
+            </div>
 
-                  {/* AVATAR & PHOTO MANAGEMENT */}
-                  <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="relative shrink-0 self-center sm:self-auto">
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt={user?.name || "Candidate Avatar"}
-                          className="size-16 sm:size-20 rounded-2xl object-cover ring-2 ring-emerald-500/30 shadow-xs"
-                        />
-                      ) : (
-                        <div className="size-16 sm:size-20 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold text-xl shadow-xs">
-                          {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="absolute -bottom-1 -right-1 size-7 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-xs cursor-pointer ring-2 ring-white"
-                        title="Upload new photo"
-                      >
-                        <Camera size={13} />
-                      </button>
+            {/* Social User Notice (only if user has no password set) */}
+            {!userRequiresCurrentPassword && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs flex items-start gap-3">
+                <Shield className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  You logged in via social authentication ({user?.authProvider ? user.authProvider.charAt(0).toUpperCase() + user.authProvider.slice(1) : "Google/GitHub"}). You can set a password below to enable direct email and password sign-in as well.
+                </span>
+              </div>
+            )}
+
+            {/* CHANGE PASSWORD FORM */}
+            <form onSubmit={handleChangePassword} className="space-y-4 max-w-lg">
+              {userRequiresCurrentPassword && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Current Password
+                  </label>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                      <Lock className="w-4 h-4" />
                     </div>
-
-                    <div className="flex-1 space-y-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-bold text-slate-900">Profile Photo</p>
-                        {imageFile && (
-                          <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
-                            Unsaved selection
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500">
-                        Square format recommended (JPG, PNG, WebP up to 5MB). Photo updates your navbar and resume headers.
-                      </p>
-
-                      <div className="flex items-center gap-2 pt-1">
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer shadow-2xs"
-                        >
-                          <Upload size={13} />
-                          <span>{imagePreview ? "Change Photo" : "Upload Photo"}</span>
-                        </button>
-
-                        {imagePreview && (
-                          <button
-                            type="button"
-                            onClick={handleRemoveImage}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 cursor-pointer"
-                          >
-                            <Trash2 size={13} />
-                            <span>Remove</span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* FORM FIELDS */}
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Full Name *</label>
-                      <input
-                        type="text"
-                        value={profileName}
-                        onChange={(e) => setProfileName(e.target.value)}
-                        placeholder="e.g. Sujeet Sharma"
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none font-medium"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Professional Title</label>
-                      <input
-                        type="text"
-                        value={profileProfession}
-                        onChange={(e) => setProfileProfession(e.target.value)}
-                        placeholder="e.g. Senior Software Engineer"
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none font-medium"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Account Email</label>
-                      <input
-                        type="email"
-                        value={user?.email || ""}
-                        disabled
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-500 font-medium cursor-not-allowed"
-                        title="Linked to authentication"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-700">Contact Phone</label>
-                      <input
-                        type="tel"
-                        value={profilePhone}
-                        onChange={(e) => setProfilePhone(e.target.value)}
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none font-medium"
-                      />
-                    </div>
-
-                    <div className="space-y-1 sm:col-span-2">
-                      <label className="text-xs font-semibold text-slate-700">Location / City</label>
-                      <input
-                        type="text"
-                        value={profileLocation}
-                        onChange={(e) => setProfileLocation(e.target.value)}
-                        placeholder="e.g. San Francisco, CA / Remote"
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none font-medium"
-                      />
-                    </div>
-
-                    {/* DEFAULT RESUME VISIBILITY */}
-                    <div className="sm:col-span-2 p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Default Resume Visibility</p>
-                        <p className="text-[11px] text-slate-500">
-                          Initial privacy mode assigned whenever you create a new resume draft.
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-1 bg-white p-1 rounded-lg border border-slate-200 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => handleVisibilityChange("private")}
-                          className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
-                            defaultVisibility === "private"
-                              ? "bg-slate-900 text-white shadow-2xs"
-                              : "text-slate-500 hover:text-slate-800"
-                          }`}
-                        >
-                          Private (Default)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleVisibilityChange("public")}
-                          className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
-                            defaultVisibility === "public"
-                              ? "bg-emerald-600 text-white shadow-2xs"
-                              : "text-slate-500 hover:text-slate-800"
-                          }`}
-                        >
-                          Public Link
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="sm:col-span-2 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-semibold text-slate-700">
-                          Professional Summary / Career Bio
-                        </label>
-                        <span className="text-[10px] text-slate-400">
-                          {profileBio.length}/350 characters
-                        </span>
-                      </div>
-                      <textarea
-                        rows={3}
-                        maxLength={350}
-                        value={profileBio}
-                        onChange={(e) => setProfileBio(e.target.value)}
-                        placeholder="Brief summary of your professional experience and key technical skills..."
-                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 outline-none font-medium resize-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex justify-end">
+                    <input
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={passwordForm.currentPassword}
+                      onChange={(e) =>
+                        setPasswordForm((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter your current password"
+                      required
+                      autoComplete="current-password"
+                      className="w-full h-11 pl-10 pr-11 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                    />
                     <button
-                      type="submit"
-                      disabled={isSavingProfile}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-emerald-600 hover:bg-emerald-500 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowCurrentPassword((prev) => !prev)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      style={{ position: "absolute", right: 0, top: 0, bottom: 0, height: "100%" }}
+                      className="px-3.5 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-200 transition-colors cursor-pointer z-10 focus:outline-none"
+                      aria-label={showCurrentPassword ? "Hide password" : "Show password"}
                     >
-                      {isSavingProfile ? (
-                        <>
-                          <Loader2 size={14} className="animate-spin" />
-                          <span>Saving Changes...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 size={14} />
-                          <span>Save Profile Changes</span>
-                        </>
-                      )}
+                      {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                </form>
-              )}
-
-              {/* ==============================================================
-                  TAB 2: APPEARANCE (SERIOUS THEME CARDS)
-                  ============================================================== */}
-              {activeTab === "appearance" && (
-                <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-6 animate-in fade-in duration-150">
-                  <div className="border-b border-slate-100 pb-4">
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <Palette size={18} className="text-emerald-600" />
-                      <span>Appearance & Theme</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Choose your preferred interface theme. Selected theme applies across your entire workspace.
-                    </p>
-                  </div>
-
-                  {/* CLEAN THEME CARDS */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {/* LIGHT THEME */}
-                    <div
-                      onClick={() => handleThemeChange("light")}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer space-y-3 ${
-                        currentTheme === "light"
-                          ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900"
-                      }`}
-                    >
-                      {/* MINI LIGHT CANVAS */}
-                      <div className="h-24 rounded-lg border border-slate-200 bg-slate-50 p-2.5 flex flex-col justify-between overflow-hidden">
-                        <div className="flex items-center justify-between border-b border-slate-200 pb-1.5">
-                          <div className="h-2 w-12 rounded bg-slate-300" />
-                          <Sun size={12} className="text-amber-500" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="h-1.5 w-full rounded bg-slate-200" />
-                          <div className="h-1.5 w-3/4 rounded bg-slate-200" />
-                        </div>
-                        <div className="h-2 w-8 rounded bg-emerald-500" />
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1">
-                        <div>
-                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Light Mode</p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">High-contrast daylight theme</p>
-                        </div>
-                        {currentTheme === "light" && (
-                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">
-                            Active
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* DARK THEME */}
-                    <div
-                      onClick={() => handleThemeChange("dark")}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer space-y-3 ${
-                        currentTheme === "dark"
-                          ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900"
-                      }`}
-                    >
-                      {/* MINI DARK CANVAS */}
-                      <div className="h-24 rounded-lg border border-slate-800 bg-slate-900 p-2.5 flex flex-col justify-between overflow-hidden">
-                        <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
-                          <div className="h-2 w-12 rounded bg-slate-700" />
-                          <Moon size={12} className="text-emerald-400" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="h-1.5 w-full rounded bg-slate-800" />
-                          <div className="h-1.5 w-3/4 rounded bg-slate-800" />
-                        </div>
-                        <div className="h-2 w-8 rounded bg-emerald-500" />
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1">
-                        <div>
-                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Dark Mode</p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Deep obsidian dark theme</p>
-                        </div>
-                        {currentTheme === "dark" && (
-                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full">
-                            Active
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* SYSTEM DEFAULT */}
-                    <div
-                      onClick={() => handleThemeChange("system")}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer space-y-3 ${
-                        currentTheme === "system"
-                          ? "border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900"
-                      }`}
-                    >
-                      {/* MINI SPLIT CANVAS */}
-                      <div className="h-24 rounded-lg border border-slate-200 bg-gradient-to-r from-slate-100 to-slate-900 p-2.5 flex flex-col justify-between overflow-hidden">
-                        <div className="flex items-center justify-between pb-1.5">
-                          <div className="h-2 w-12 rounded bg-slate-400" />
-                          <Laptop size={12} className="text-blue-500" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="h-1.5 w-full rounded bg-slate-400/50" />
-                          <div className="h-1.5 w-3/4 rounded bg-slate-400/50" />
-                        </div>
-                        <div className="h-2 w-8 rounded bg-slate-700" />
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1">
-                        <div>
-                          <p className="text-xs font-bold text-slate-900">System Sync</p>
-                          <p className="text-[11px] text-slate-500 mt-0.5">Follows OS lighting preference</p>
-                        </div>
-                        {currentTheme === "system" && (
-                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                            Active
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               )}
 
-              {/* ==============================================================
-                  TAB 3: PRIVACY & COOKIES
-                  ============================================================== */}
-              {activeTab === "privacy" && (
-                <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-6 animate-in fade-in duration-150">
-                  <div className="border-b border-slate-100 pb-4">
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <ShieldCheck size={18} className="text-emerald-600" />
-                      <span>Privacy, Cookies & Data Export</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Configure your cookie consent permissions and download a full backup archive of your account.
-                    </p>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  New Password
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <Lock className="w-4 h-4" />
                   </div>
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={passwordForm.newPassword}
+                    onChange={(e) =>
+                      setPasswordForm((prev) => ({
+                        ...prev,
+                        newPassword: e.target.value,
+                      }))
+                    }
+                    placeholder="Min 6 characters"
+                    required
+                    autoComplete="new-password"
+                    className="w-full h-11 pl-10 pr-11 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowNewPassword((prev) => !prev)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    style={{ position: "absolute", right: 0, top: 0, bottom: 0, height: "100%" }}
+                    className="px-3.5 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-200 transition-colors cursor-pointer z-10 focus:outline-none"
+                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
 
-                  {/* COOKIE CONSENT PERMISSIONS */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        Cookie Preferences (GDPR Compliant)
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Confirm New Password
+                </label>
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type={showConfirmNewPassword ? "text" : "password"}
+                    value={passwordForm.confirmNewPassword}
+                    onChange={(e) =>
+                      setPasswordForm((prev) => ({
+                        ...prev,
+                        confirmNewPassword: e.target.value,
+                      }))
+                    }
+                    placeholder="••••••••"
+                    required
+                    autoComplete="new-password"
+                    className="w-full h-11 pl-10 pr-11 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                  />
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={() => setShowConfirmNewPassword((prev) => !prev)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    style={{ position: "absolute", right: 0, top: 0, bottom: 0, height: "100%" }}
+                    className="px-3.5 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-200 transition-colors cursor-pointer z-10 focus:outline-none"
+                    aria-label={showConfirmNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmNewPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isChangingPassword}
+                className="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
+              >
+                {isChangingPassword ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Lock className="w-4 h-4" />
+                )}
+                <span>
+                  {isChangingPassword
+                    ? "Updating Password..."
+                    : userRequiresCurrentPassword
+                    ? "Update Password"
+                    : "Set Password"}
+                </span>
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 4: APPEARANCE & THEME PREFERENCES                     */}
+        {/* ========================================================= */}
+        {activeTab === "appearance" && (
+          <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-6 shadow-xs">
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Palette className="size-5 text-emerald-500" />
+                <span>Theme & Display Preferences</span>
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Customize light/dark styling and default resume sharing privacy.
+              </p>
+            </div>
+
+            {/* THEME SELECTOR TILES */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { id: "light", label: "Light Mode", icon: Sun, desc: "Clean bright palette" },
+                { id: "dark", label: "Dark Mode", icon: Moon, desc: "Low-light obsidian style" },
+                { id: "system", label: "System Auto", icon: Laptop, desc: "Matches OS preferences" },
+              ].map((item) => {
+                const Icon = item.icon;
+                const isSelected = currentTheme === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleThemeChange(item.id)}
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      isSelected
+                        ? "border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20 ring-2 ring-emerald-500/20 shadow-xs"
+                        : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="size-9 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                        <Icon className={`w-4 h-4 ${isSelected ? "text-emerald-500" : "text-slate-500"}`} />
+                      </div>
+                      {isSelected && (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900 dark:text-white">
+                        {item.label}
                       </p>
-                      <button
-                        type="button"
-                        onClick={handleOpenCookieBanner}
-                        className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 cursor-pointer"
-                      >
-                        Open Notice Banner 🍪
-                      </button>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                        {item.desc}
+                      </p>
                     </div>
+                  </button>
+                );
+              })}
+            </div>
 
-                    <div className="space-y-2.5">
-                      {/* STRICTLY ESSENTIAL */}
-                      <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <Lock size={15} className="text-emerald-600 shrink-0" />
-                          <div>
-                            <p className="text-xs font-bold text-slate-900 flex items-center gap-2">
-                              <span>Strictly Essential Cookies</span>
-                              <span className="text-[9px] font-bold text-slate-400 bg-slate-200 px-1.5 py-0.2 rounded">
-                                Always Active
-                              </span>
-                            </p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Required for authentication tokens, session security, and theme persistence.
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
-                          Enforced
-                        </span>
-                      </div>
-
-                      {/* ANALYTICS */}
-                      <label className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <BarChart3 size={15} className="text-blue-600 shrink-0" />
-                          <div>
-                            <p className="text-xs font-bold text-slate-900">ATS Analytics & Performance</p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Anonymous parsing telemetry used to improve scanner speed and keyword accuracy.
-                            </p>
-                          </div>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={cookiePrefs.analytics}
-                          onChange={(e) =>
-                            setCookiePrefs({ ...cookiePrefs, analytics: e.target.checked })
-                          }
-                          className="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-                        />
-                      </label>
-
-                      {/* AI PERSONALIZATION */}
-                      <label className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <FileText size={15} className="text-purple-600 shrink-0" />
-                          <div>
-                            <p className="text-xs font-bold text-slate-900">AI Enhancement Cache</p>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
-                              Stores generated suggestions temporarily for instant builder reloads.
-                            </p>
-                          </div>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={cookiePrefs.personalization}
-                          onChange={(e) =>
-                            setCookiePrefs({ ...cookiePrefs, personalization: e.target.checked })
-                          }
-                          className="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
-                        />
-                      </label>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2">
-                      <button
-                        type="button"
-                        onClick={handleSaveCookiePrefs}
-                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 transition-colors cursor-pointer"
-                      >
-                        Save Cookie Preferences
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleResetCookies}
-                        className="text-xs font-semibold text-slate-400 hover:text-slate-600 cursor-pointer"
-                      >
-                        Reset Defaults
-                      </button>
-                    </div>
+            {/* RESUME DEFAULT VISIBILITY */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                Default Resume Visibility
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg">
+                <button
+                  type="button"
+                  onClick={() => handleVisibilityChange("private")}
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                    defaultVisibility === "private"
+                      ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 font-bold text-emerald-800 dark:text-emerald-300 ring-2 ring-emerald-500/15"
+                      : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Lock className="w-4 h-4 text-slate-400" />
+                    <span className="text-sm">Private by default</span>
                   </div>
+                  {defaultVisibility === "private" && (
+                    <Check className="w-4 h-4 text-emerald-500" />
+                  )}
+                </button>
 
-                  {/* DATA EXPORT & PORTABILITY */}
-                  <div className="pt-4 border-t border-slate-100">
-                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">
-                      Data Portability
-                    </p>
-                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">Export Complete Account Archive</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          Download all your resumes, ATS logs, and profile records in a structured JSON file.
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleExportAllData}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-800 bg-white border border-slate-200 hover:bg-slate-100 cursor-pointer shadow-2xs shrink-0"
-                      >
-                        <Download size={13} />
-                        <span>Download Archive (.json)</span>
-                      </button>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => handleVisibilityChange("public")}
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                    defaultVisibility === "public"
+                      ? "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 font-bold text-emerald-800 dark:text-emerald-300 ring-2 ring-emerald-500/15"
+                      : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Globe className="w-4 h-4 text-slate-400" />
+                    <span className="text-sm">Public by default</span>
                   </div>
+                  {defaultVisibility === "public" && (
+                    <Check className="w-4 h-4 text-emerald-500" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 5: ACCOUNT & DANGER ACTIONS                           */}
+        {/* ========================================================= */}
+        {activeTab === "account" && (
+          <div className="space-y-6">
+            {/* DATA BACKUP & EXPORT */}
+            <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-4 shadow-xs">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Download className="w-4 h-4 text-emerald-500" />
+                    <span>Export Account Data</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Download a full JSON archive of your personal preferences, feature flags, and profile details.
+                  </p>
                 </div>
-              )}
+                <button
+                  type="button"
+                  onClick={handleExportData}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Export JSON</span>
+                </button>
+              </div>
+            </div>
 
-              {/* ==============================================================
-                  TAB 4: ACCOUNT STATUS & DANGER ZONE
-                  ============================================================== */}
-              {activeTab === "danger" && (
-                <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-7 shadow-xs space-y-6 animate-in fade-in duration-150">
-                  <div className="border-b border-slate-100 pb-4">
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <AlertTriangle size={18} className="text-rose-600" />
-                      <span>Account Lifecycle & Danger Zone</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Manage account freeze, temporary deactivation, or permanent data erasure.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* TEMPORARY DEACTIVATION */}
-                    <div className="p-4 sm:p-5 rounded-xl border border-amber-200 bg-amber-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-amber-500" />
-                          <span>Temporarily Deactivate Account</span>
-                        </p>
-                        <p className="text-[11px] text-amber-800 mt-1">
-                          Pauses your account and hides all public resume links. You can safely reactivate anytime simply by logging back in.
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => startDangerFlow("deactivate")}
-                        className="px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition-colors shrink-0 cursor-pointer shadow-2xs"
-                      >
-                        Deactivate Account
-                      </button>
-                    </div>
-
-                    {/* PERMANENT DELETION */}
-                    <div className="p-4 sm:p-5 rounded-xl border border-rose-200 bg-rose-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-bold text-rose-950 flex items-center gap-1.5">
-                          <Trash2 size={14} className="text-rose-600" />
-                          <span>Permanently Delete Account & Resumes</span>
-                        </p>
-                        <p className="text-[11px] text-rose-800 mt-1">
-                          Irrevocably erases all your tailored resumes, ATS scores, audit reports, and personal profile information. This action cannot be reversed.
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => startDangerFlow("delete")}
-                        className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shrink-0 cursor-pointer shadow-xs"
-                      >
-                        Delete Account
-                      </button>
-                    </div>
-                  </div>
+            {/* SIGN OUT & SESSION */}
+            <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-8 space-y-4 shadow-xs">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <LogOut className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <span>Session Management</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Sign out of your active browser session on this device.
+                  </p>
                 </div>
-              )}
-            </>
-          )}
-        </main>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+
+            {/* DANGER ZONE: DELETE ACCOUNT */}
+            <div className="bg-white dark:bg-slate-900/90 rounded-3xl border border-rose-200 dark:border-rose-900/60 p-5 sm:p-8 space-y-4 shadow-xs">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-500" />
+                    <span>Delete Account Permanently</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                    Permanently delete your froggie AI account, all saved resumes, and ATS scanner reports. This action cannot be undone.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete Account</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
+
+      {/* CONFIRM DELETE MODAL */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-rose-200 dark:border-rose-900 max-w-md w-full p-6 space-y-5 shadow-2xl animate-in fade-in duration-150">
+            <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400">
+              <div className="size-10 rounded-2xl bg-rose-100 dark:bg-rose-950 flex items-center justify-center">
+                <AlertTriangle className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Delete Account Permanently?
+                </h3>
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+                  This action is irreversible.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              All your resumes, ATS scans, uploaded files, and candidate profiles will be erased forever. To proceed, please type <strong className="text-slate-900 dark:text-white font-mono">DELETE</strong> below:
+            </p>
+
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder="Type DELETE"
+              className="w-full h-11 px-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-mono text-slate-900 dark:text-white outline-none focus:border-rose-500"
+            />
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setDeleteConfirmText("");
+                }}
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deleteConfirmText !== "DELETE" || isDeletingAccount}
+                onClick={handleDeleteAccount}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+              >
+                {isDeletingAccount && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>Permanently Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

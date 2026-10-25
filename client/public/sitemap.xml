@@ -11,12 +11,12 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://froggie.site/og-image.png</image:loc>
+      <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
       <image:title>froggie AI ATS Resume Builder &amp; Career Studio</image:title>
       <image:caption>Build 100% ATS-compliant resumes with real-time scoring and AI enhancement</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://froggie.site/favicon.svg</image:loc>
+      <image:loc>https://froggie.site/froggie_logo.png</image:loc>
       <image:title>froggie Brand Logo</image:title>
     </image:image>
   </url>
@@ -28,7 +28,7 @@
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://froggie.site/og-image.png</image:loc>
+      <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
       <image:title>froggie Public Talent Discovery &amp; Verified Resume Directory</image:title>
       <image:caption>Discover verified candidate profiles, developer portfolios, and ATS-optimized resumes</image:caption>
     </image:image>

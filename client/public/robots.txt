@@ -14,7 +14,11 @@ Allow: /donate
 Allow: /view/
 Allow: /view/*
 Allow: /favicon*
+Allow: /froggie_logo.png
+Allow: /froggie_banner.jpg
 Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
 Allow: /*.svg$
 Allow: /*.ico$
 Disallow: /app/

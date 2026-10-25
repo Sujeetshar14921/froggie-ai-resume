@@ -17,7 +17,7 @@ export const useSEO = ({
   description,
   keywords,
   canonical,
-  ogImage = "https://froggie.site/og-image.png",
+  ogImage = "https://froggie.site/froggie_banner.jpg",
   schema,
 }) => {
   useEffect(() => {

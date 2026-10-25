@@ -58,7 +58,7 @@ const Preview = () => {
         "name": candidateName,
         "jobTitle": candidateProfession,
         "description": resumeData.professional_summary || `${candidateName}'s verified resume profile on froggie`,
-        "image": resumeData.personal_info?.image || resumeData.userId?.image || "https://froggie.site/og-image.png",
+        "image": resumeData.personal_info?.image || resumeData.userId?.image || "https://froggie.site/froggie_banner.jpg",
         "knowsAbout": resumeData.skills || [],
       },
     };
@@ -71,7 +71,7 @@ const Preview = () => {
       : `View ${candidateName}'s verified ATS-compliant resume and portfolio on froggie AI Resume Studio.`,
     keywords: `${candidateName}, ${candidateProfession}, ${Array.isArray(resumeData?.skills) ? resumeData.skills.join(", ") : ""}, verified resume, froggie portfolio`,
     canonical: `https://froggie.site/view/${resumeId}`,
-    ogImage: resumeData?.personal_info?.image || resumeData?.userId?.image || "https://froggie.site/og-image.png",
+    ogImage: resumeData?.personal_info?.image || resumeData?.userId?.image || "https://froggie.site/froggie_banner.jpg",
     schema: candidateSchema,
   });
 

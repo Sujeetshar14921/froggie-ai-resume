@@ -128,8 +128,8 @@ export const sendNativeNotification = (title, options = {}) => {
   try {
     const notification = new Notification(`🐸 ${title}`, {
       body: options.body || "Froggie AI notification",
-      icon: options.icon || "/favicon.ico",
-      badge: "/favicon-32x32.png",
+      icon: options.icon || "/froggie_logo.png",
+      badge: "/froggie_logo.png",
       tag: options.tag || "froggie-alert",
       ...options,
     });

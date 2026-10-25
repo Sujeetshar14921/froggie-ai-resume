@@ -93,7 +93,7 @@ const MobileBottomNav = () => {
       label: "Sign In",
       to: "/login",
       icon: LogIn,
-      isActive: pathname.startsWith("/login"),
+      isActive: pathname.startsWith("/login") || pathname.startsWith("/signup"),
     },
   ];
 
