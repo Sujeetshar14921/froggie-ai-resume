@@ -19,7 +19,7 @@ export const analyzeResume = async (req, res) => {
   let tempFilePath = req.file?.path;
 
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
     const { resumeId, jobDescription, customJobTitle } = req.body;
 
     // 1. Validate Job Description
@@ -40,12 +40,41 @@ export const analyzeResume = async (req, res) => {
       });
     }
 
-    // 2. Obtain Resume Data
+    // 2. Obtain Resume Data (Uploaded file takes precedence over saved resumeId)
     let resumeText = "";
     let resumeTitle = "Uploaded Resume";
     let resumeDoc = null;
 
-    if (resumeId) {
+    if (req.file) {
+      // Parse uploaded PDF / Word DOC / DOCX / TXT file
+      try {
+        const dataBuffer = fs.readFileSync(req.file.path);
+        resumeText = await extractDocumentText(
+          dataBuffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+      } catch (parseErr) {
+        console.error("Document text extraction failed:", parseErr);
+        return res.status(400).json({
+          message: `Failed to read document "${req.file.originalname}": ${parseErr.message || "Invalid or corrupt file"}`,
+        });
+      }
+
+      if (!resumeText || resumeText.trim().length < 20) {
+        return res.status(400).json({
+          message: "Could not extract readable text from the uploaded resume document. Please check the file or ensure it contains readable text.",
+        });
+      }
+
+      resumeTitle = req.file.originalname.replace(/\.(pdf|docx?|txt)$/i, "");
+    } else if (resumeId) {
+      if (!userId) {
+        return res.status(401).json({
+          message: "Please log in to analyze saved resumes, or upload your resume file directly.",
+        });
+      }
+
       resumeDoc = await Resume.findOne({ _id: resumeId, userId });
       if (!resumeDoc) {
         return res.status(404).json({ message: "Selected resume not found or unauthorized" });
@@ -54,30 +83,14 @@ export const analyzeResume = async (req, res) => {
       resumeTitle = resumeDoc.title || "My Resume";
       resumeText = formatResumeTextForAts(resumeDoc);
 
-      if (!resumeText || resumeText.trim().length < 30) {
+      if (!resumeText || resumeText.trim().length < 20) {
         return res.status(400).json({
           message: "The selected resume does not contain sufficient details to analyze. Please add some experience, skills, or summary first.",
         });
       }
-    } else if (req.file) {
-      // Parse uploaded PDF / Word DOC / DOCX file
-      const dataBuffer = fs.readFileSync(req.file.path);
-      resumeText = await extractDocumentText(
-        dataBuffer,
-        req.file.originalname,
-        req.file.mimetype
-      );
-
-      if (!resumeText || resumeText.trim().length < 30) {
-        return res.status(400).json({
-          message: "Could not extract readable text from the uploaded resume document.",
-        });
-      }
-
-      resumeTitle = req.file.originalname.replace(/\.(pdf|docx?|txt)$/i, "");
     } else if (req.body.resumeText) {
       resumeText = req.body.resumeText.trim();
-      if (resumeText.length < 30) {
+      if (resumeText.length < 20) {
         return res.status(400).json({ message: "Resume content is too short" });
       }
     } else {

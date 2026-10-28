@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { resumeApi } from "../../api/resumeApi";
 import { TEMPLATES } from "../../constants/templates";
 import toast from "react-hot-toast";
-import FrogFace from "../FrogLogo";
 import { initSectionHeaderReveal, animateTemplateSwitch } from "../../animations";
 
 // 4 Selected Featured Templates for Home Showcase
@@ -120,7 +119,6 @@ const TemplateShowcase = () => {
         {/* SECTION HEADER */}
         <div className="section-header text-center max-w-3xl mx-auto mb-8 sm:mb-12">
           <span className="section-badge inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[11px] sm:text-xs font-black uppercase tracking-wider mb-3 sm:mb-4 shadow-2xs">
-            <FrogFace size={15} />
             4 Featured ATS Templates
           </span>
 

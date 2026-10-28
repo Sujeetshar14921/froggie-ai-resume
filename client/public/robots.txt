@@ -3,17 +3,17 @@
 
 User-agent: *
 Allow: /
+Allow: /ats-checker
 Allow: /talent
 Allow: /talent/*
 Allow: /file-studio
 Allow: /file-studio/*
 Allow: /faq
+Allow: /donate
 Allow: /login
 Allow: /signup
-Allow: /donate
 Allow: /view/
 Allow: /view/*
-Allow: /favicon*
 Allow: /froggie_logo.png
 Allow: /froggie_banner.jpg
 Allow: /*.png$
@@ -21,49 +21,15 @@ Allow: /*.jpg$
 Allow: /*.jpeg$
 Allow: /*.svg$
 Allow: /*.ico$
-Disallow: /app/
-Disallow: /api/
-
-User-agent: Googlebot
-Allow: /
-Allow: /talent
-Allow: /talent/*
-Allow: /file-studio
-Allow: /file-studio/*
-Allow: /faq
-Allow: /login
-Allow: /signup
-Allow: /donate
-Allow: /view/
-Allow: /view/*
-Disallow: /app/
-Disallow: /api/
-
-User-agent: Googlebot-Image
-Allow: /
-Allow: /talent
-Allow: /file-studio
-Allow: /*.png$
-Allow: /*.svg$
-Allow: /*.jpg$
-Allow: /*.jpeg$
 Allow: /*.webp$
 
-User-agent: Bingbot
-Allow: /
-Allow: /talent
-Allow: /talent/*
-Allow: /file-studio
-Allow: /file-studio/*
-Allow: /faq
-Allow: /login
-Allow: /signup
-Allow: /donate
-Allow: /view/
-Allow: /view/*
-Disallow: /app/
+# Disallow private user sessions, account settings, and backend APIs
 Disallow: /api/
+Disallow: /app/my-resumes
+Disallow: /app/applications
+Disallow: /app/settings
+Disallow: /app/builder/
 
-# Host & Sitemap Declaration
+# Host & Authority Sitemap
 Host: https://froggie.site
 Sitemap: https://froggie.site/sitemap.xml

@@ -182,7 +182,7 @@ const IvyLeagueTemplate = ({ data, accentColor = "#1E3A8A", pageContent = null }
                         {bulletPoints.map((point, bIdx) => (
                           <li key={bIdx} className="flex items-start gap-2">
                             <span className="text-slate-900 text-sm leading-none mt-0.5 select-none font-bold">▪</span>
-                            <span className="flex-1">{point.replace(/^[•\-\*]\s*/, "")}</span>
+                            <span className="flex-1">{point.replace(/^[•\-*]\s*/, "")}</span>
                           </li>
                         ))}
                       </ul>

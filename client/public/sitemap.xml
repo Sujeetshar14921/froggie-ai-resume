@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  <!-- Homepage -->
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- 1. Homepage & AI Resume Builder Studio -->
   <url>
     <loc>https://froggie.site/</loc>
-    <lastmod>2026-09-27</lastmod>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://froggie.site/froggie_logo.png</image:loc>
+      <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
       <image:title>froggie AI ATS Resume Builder &amp; Career Studio</image:title>
       <image:caption>Build 100% ATS-compliant resumes with real-time scoring and AI enhancement</image:caption>
     </image:image>
@@ -21,12 +19,25 @@
     </image:image>
   </url>
 
-  <!-- Public Talent Discovery & Candidate Directory -->
+  <!-- 2. AI ATS Resume Score Checker & Compatibility Audit -->
+  <url>
+    <loc>https://froggie.site/ats-checker</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+    <image:image>
+      <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
+      <image:title>froggie AI ATS Resume Score Checker</image:title>
+      <image:caption>Scan your resume against any job description with real-time ATS compatibility scoring</image:caption>
+    </image:image>
+  </url>
+
+  <!-- 3. Public Talent Discovery & Verified Candidate Directory -->
   <url>
     <loc>https://froggie.site/talent</loc>
-    <lastmod>2026-09-27</lastmod>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <priority>0.90</priority>
     <image:image>
       <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
       <image:title>froggie Public Talent Discovery &amp; Verified Resume Directory</image:title>
@@ -34,25 +45,46 @@
     </image:image>
   </url>
 
-  <!-- ATS Resume Score Checker -->
+  <!-- 4. Universal Document & File Media Studio -->
   <url>
-    <loc>https://froggie.site/app/ats-checker</loc>
-    <lastmod>2026-09-27</lastmod>
+    <loc>https://froggie.site/file-studio</loc>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://froggie.site/froggie_banner.jpg</image:loc>
+      <image:title>froggie Smart File &amp; Media Studio</image:title>
+      <image:caption>Compress, convert, extract text, and edit PDF &amp; Word DOCX documents online</image:caption>
+    </image:image>
   </url>
 
-  <!-- Auth Portal -->
+  <!-- 5. Frequently Asked Questions & ATS Resume Guides -->
+  <url>
+    <loc>https://froggie.site/faq</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.80</priority>
+  </url>
+
+  <!-- 6. Support & Community Open-Source Backing -->
+  <url>
+    <loc>https://froggie.site/donate</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+
+  <!-- 7. Authentication Portals -->
   <url>
     <loc>https://froggie.site/login</loc>
-    <lastmod>2026-09-27</lastmod>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.60</priority>
   </url>
   <url>
-    <loc>https://froggie.site/login?state=register</loc>
-    <lastmod>2026-09-27</lastmod>
+    <loc>https://froggie.site/signup</loc>
+    <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.60</priority>
   </url>
 </urlset>

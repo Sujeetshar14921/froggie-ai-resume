@@ -321,16 +321,6 @@ const ApplicationTracker = () => {
         {/* TOP COMMAND HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card-elevated p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm">
           <div className="space-y-1.5 text-left">
-            <div className="flex items-center gap-2">
-              <BrandIcon size="sm" />
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70 tracking-wide uppercase">
-                Job Hunt CRM
-              </span>
-              <span className="hidden sm:inline-block text-xs text-slate-400">•</span>
-              <span className="hidden sm:inline-block text-xs font-bold text-slate-500">
-                {applications.length} Tracked Roles
-              </span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
               Application Tracker
             </h1>

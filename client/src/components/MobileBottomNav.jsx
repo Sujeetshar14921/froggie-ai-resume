@@ -43,7 +43,7 @@ const MobileBottomNav = () => {
     },
     {
       label: "ATS AI",
-      to: "/app/ats-checker",
+      to: "/ats-checker",
       icon: Sparkles,
       isActive: pathname === "/app/ats-checker" || pathname === "/ats-checker",
       isCenter: true,
@@ -78,7 +78,7 @@ const MobileBottomNav = () => {
     },
     {
       label: "AI ATS",
-      to: "/app/ats-checker",
+      to: "/ats-checker",
       icon: Sparkles,
       isActive: pathname === "/app/ats-checker" || pathname === "/ats-checker",
       isCenter: true,

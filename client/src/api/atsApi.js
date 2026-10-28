@@ -11,20 +11,27 @@ export const atsApi = {
    */
   analyzeResume: async (payload, token) => {
     let requestData = payload;
-    let headers = { Authorization: token };
+    const headers = {};
+    if (token) {
+      headers.Authorization = token;
+    }
 
     if (payload instanceof FormData) {
       requestData = payload;
-      // Do not manually override Content-Type so Axios/browser computes multipart boundary automatically
-    } else if (payload.file instanceof File || payload.file instanceof Blob) {
+    } else if (payload?.file) {
       const formData = new FormData();
       formData.append("resume", payload.file);
-      formData.append("jobDescription", payload.jobDescription);
+      formData.append("jobDescription", payload.jobDescription || "");
       if (payload.customJobTitle) {
         formData.append("customJobTitle", payload.customJobTitle);
       }
       requestData = formData;
-      // Do not manually override Content-Type so Axios/browser computes multipart boundary automatically
+    } else if (payload?.resumeText) {
+      requestData = {
+        resumeText: payload.resumeText,
+        jobDescription: payload.jobDescription || "",
+        customJobTitle: payload.customJobTitle,
+      };
     }
 
     const { data } = await api.post("/api/ats/analyze", requestData, { headers });

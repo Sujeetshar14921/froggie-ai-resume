@@ -10,6 +10,62 @@ try {
 }
 
 /**
+ * Multimodal AI OCR Text Extractor using Google Gemini
+ * Extracts text from scanned PDFs, image-based resumes, or non-standard documents
+ */
+export const extractPdfWithGeminiOcr = async (buffer) => {
+  const rawKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    "";
+  const apiKey = rawKey.replace(/["']/g, "").trim();
+  if (!apiKey) {
+    throw new Error("No Gemini API key available for OCR fallback");
+  }
+
+  const model = (
+    process.env.OPENAI_MODEL ||
+    process.env.GEMINI_MODEL ||
+    "gemini-3.5-flash-lite"
+  )
+    .replace(/["']/g, "")
+    .trim();
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            inlineData: {
+              mimeType: "application/pdf",
+              data: buffer.toString("base64"),
+            },
+          },
+          {
+            text: "Extract all text content from this resume document accurately with zero omissions. Return only the extracted plain text without any conversational preamble.",
+          },
+        ],
+      },
+    ],
+  };
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text || text.trim().length === 0) {
+    throw new Error(data.error?.message || "Gemini OCR returned empty text");
+  }
+  return text.trim();
+};
+
+/**
  * Universal Document Text Extractor
  * Extracts plain text from PDF, Word (.docx, .doc), and plain text documents.
  * 
@@ -27,7 +83,30 @@ export const extractDocumentText = async (buffer, originalName = "", mimetype = 
 
   // 1. PDF
   if (name.endsWith(".pdf") || mimetype === "application/pdf") {
-    return await extractPdfText(buffer);
+    let pdfText = "";
+    try {
+      pdfText = await extractPdfText(buffer);
+    } catch (pdfErr) {
+      console.warn("pdf-parse extraction warning:", pdfErr.message);
+    }
+
+    if (pdfText && pdfText.trim().length >= 20) {
+      return pdfText.trim();
+    }
+
+    // High-performance Gemini AI Vision OCR fallback for scanned/image PDFs
+    try {
+      const ocrText = await extractPdfWithGeminiOcr(buffer);
+      if (ocrText && ocrText.trim().length >= 20) {
+        return ocrText.trim();
+      }
+    } catch (ocrErr) {
+      console.warn("Gemini OCR fallback notice:", ocrErr.message);
+    }
+
+    if (pdfText && pdfText.trim().length > 0) {
+      return pdfText.trim();
+    }
   }
 
   // 2. DOCX / DOC
@@ -54,12 +133,19 @@ export const extractDocumentText = async (buffer, originalName = "", mimetype = 
     }
   }
 
-  // 3. Fallback: try PDF parser, then UTF-8 plain text
+  // 3. Fallback: try PDF parser, then Gemini OCR, then UTF-8 plain text
   try {
     const pdfAttempt = await extractPdfText(buffer);
-    if (pdfAttempt && pdfAttempt.trim().length > 0) return pdfAttempt;
+    if (pdfAttempt && pdfAttempt.trim().length >= 20) return pdfAttempt.trim();
   } catch {
-    // Continue to text fallback
+    // Continue
+  }
+
+  try {
+    const ocrAttempt = await extractPdfWithGeminiOcr(buffer);
+    if (ocrAttempt && ocrAttempt.trim().length >= 20) return ocrAttempt.trim();
+  } catch {
+    // Continue
   }
 
   return buffer.toString("utf-8").trim();
@@ -68,4 +154,5 @@ export const extractDocumentText = async (buffer, originalName = "", mimetype = 
 export default {
   extractDocumentText,
   extractPdfText,
+  extractPdfWithGeminiOcr,
 };

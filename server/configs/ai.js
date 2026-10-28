@@ -1,35 +1,57 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-dotenv.config();
 
-const rawKey =
-  process.env.GEMINI_API_KEY ||
-  process.env.OPENAI_API_KEY ||
-  "";
-const apiKey = rawKey.replace(/["']/g, "").trim();
-const baseURL = (process.env.OPENAI_BASE_URL || "").replace(/["']/g, "").trim();
-const defaultModel = (
-  process.env.GEMINI_MODEL ||
-  process.env.OPENAI_MODEL ||
-  "gemini-3.5-flash-lite"
-)
-  .replace(/["']/g, "")
-  .trim();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Explicitly load server/.env regardless of current working directory or ES module import order
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
+dotenv.config();
 
 /**
  * Universal AI Client with zero-latency Google Gemini & OpenAI interoperability
  * Provides native Gemini Function Calling, Multi-turn conversations, and fallback resilience.
  */
 class UniversalAiClient {
-  constructor({ apiKey, baseURL, model }) {
-    this.apiKey = apiKey;
-    this.baseURL = baseURL;
-    this.model = model || "gemini-3.5-flash-lite";
+  constructor({ apiKey, baseURL, model } = {}) {
+    this._apiKey = apiKey;
+    this._baseURL = baseURL;
+    this._model = model;
+  }
+
+  get apiKey() {
+    const raw =
+      process.env.GEMINI_API_KEY ||
+      process.env.OPENAI_API_KEY ||
+      this._apiKey ||
+      "";
+    return raw.replace(/["']/g, "").trim();
+  }
+
+  get baseURL() {
+    const raw =
+      process.env.OPENAI_BASE_URL ||
+      this._baseURL ||
+      "";
+    return raw.replace(/["']/g, "").trim();
+  }
+
+  get model() {
+    const raw =
+      process.env.GEMINI_MODEL ||
+      process.env.OPENAI_MODEL ||
+      this._model ||
+      "gemini-3.5-flash-lite";
+    return raw.replace(/["']/g, "").trim();
   }
 
   get isGemini() {
+    const key = this.apiKey;
+    const base = this.baseURL;
     return (
-      this.apiKey.startsWith("AIza") ||
-      Boolean(this.baseURL?.includes("googleapis.com")) ||
+      key.startsWith("AIza") ||
+      Boolean(base?.includes("googleapis.com")) ||
       Boolean(process.env.GEMINI_API_KEY)
     );
   }
@@ -48,11 +70,7 @@ class UniversalAiClient {
     const modelsToTry = [
       targetModel,
       "gemini-3.5-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-3.1-flash-lite",
-      "gemini-3-flash-preview",
       "gemini-2.5-flash",
-      "gemini-3.5-flash",
     ];
 
     const uniqueModels = [...new Set(modelsToTry)];
@@ -231,10 +249,6 @@ class UniversalAiClient {
   }
 }
 
-const ai = new UniversalAiClient({
-  apiKey,
-  baseURL,
-  model: defaultModel,
-});
+const ai = new UniversalAiClient();
 
 export default ai;

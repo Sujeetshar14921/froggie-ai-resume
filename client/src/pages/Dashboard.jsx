@@ -1,35 +1,18 @@
 import React, { useState, useEffect } from "react";
-import {
-  Plus,
-  UploadCloud,
-  FilePenLine,
-  Sparkles,
-  FileText,
-  ShieldCheck,
-  Zap,
-  ArrowRight,
-  Briefcase,
-  Target,
-  Clock,
-  CheckCircle2,
-  Copy,
-  Download,
-  Eye,
-  Trash2,
-  Flame,
-  Award,
-  TrendingUp,
-  Layers,
-  ChevronRight,
-  RefreshCw,
-} from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 import { resumeApi } from "../api/resumeApi";
 import { aiApi } from "../api/aiApi";
-import { CreateResumeModal, UploadResumeModal } from "../components/dashboard";
-import toast from "react-hot-toast";
-import FrogFace, { BrandIcon } from "../components/FrogLogo";
+import {
+  CreateResumeModal,
+  UploadResumeModal,
+  DashboardHeader,
+  DashboardStats,
+  DashboardWorkflowCards,
+  DashboardRecentResumes,
+  DashboardFeatureBanner,
+} from "../components/dashboard";
 import { useSEO } from "../hooks/useSEO";
 import { TRACKER_STORAGE_KEY } from "../constants/trackerConfig";
 
@@ -128,10 +111,10 @@ const Dashboard = () => {
     e.stopPropagation();
     try {
       setIsLoading(true);
-      const res = await resumeApi.duplicateResume(resumeId, token);
+      await resumeApi.duplicateResume(resumeId, token);
       toast.success("Resume duplicated!");
       fetchUserResumes();
-    } catch (err) {
+    } catch {
       toast.error("Could not duplicate resume");
     } finally {
       setIsLoading(false);
@@ -147,405 +130,38 @@ const Dashboard = () => {
     <div className="min-h-screen bg-slate-50/70 pb-20">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-8 lg:px-12 xl:px-16 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {/* HERO COMMAND HEADER */}
-        <div className="relative overflow-hidden glass-card-elevated p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm text-left">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-emerald-500/15 via-teal-500/5 to-transparent rounded-full pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] sm:text-xs font-black shadow-2xs">
-                  <ShieldCheck size={13} className="text-emerald-600" />
-                  <span>ATS Engine Ready</span>
-                </span>
-              </div>
-
-              <h1 className="text-xl sm:text-4xl font-black text-slate-950 tracking-tight">
-                Welcome back, {user?.name?.split(" ")[0] || "Candidate"} 👋
-              </h1>
-              <p className="text-slate-500 text-xs sm:text-sm max-w-2xl font-medium">
-                Your centralized AI career studio. Build high-conversion resumes, benchmark ATS scores against job descriptions, and track your interview pipeline.
-              </p>
-            </div>
-
-            {/* QUICK LAUNCH ACTIONS */}
-            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap shrink-0">
-              <button
-                onClick={() => setShowCreateResume(true)}
-                className="shimmer-button flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm transition-colors cursor-pointer border border-emerald-500/40"
-              >
-                <Plus size={15} className="text-emerald-400" />
-                <span>Create Resume</span>
-              </button>
-
-              <button
-                onClick={() => setShowUploadResume(true)}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-bold text-xs sm:text-sm border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-              >
-                <UploadCloud size={15} className="text-slate-600 dark:text-slate-300" />
-                <span>Import PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <DashboardHeader
+          user={user}
+          onCreateResume={() => setShowCreateResume(true)}
+          onUploadResume={() => setShowUploadResume(true)}
+        />
 
         {/* 4 TELEMETRY STATS CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 text-left">
-          {/* Total Resumes */}
-          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
-            <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Resumes
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <FileText size={14} className="lucide-3d sm:w-4 sm:h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-3xl font-black text-slate-950">
-              {resumes.length}
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-              <span className="truncate">{resumes.length > 0 ? "Ready to export" : "Create draft"}</span>
-            </p>
-          </div>
-
-          {/* ATS Readiness */}
-          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
-            <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                ATS Score
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-blue p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Target size={14} className="lucide-3d sm:w-4 sm:h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-3xl font-black text-blue-600">
-              96%
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></span>
-              <span className="truncate">Workday & Lever</span>
-            </p>
-          </div>
-
-          {/* Active Job CRM Pipeline */}
-          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
-            <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Tracked Jobs
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-amber p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Briefcase size={14} className="lucide-3d sm:w-4 sm:h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-3xl font-black text-amber-600">
-              {totalTracked}
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
-              <span className="truncate">{activeInterviews > 0 ? `${activeInterviews} interviews` : "Pipeline active"}</span>
-            </p>
-          </div>
-
-          {/* Career Wins / Offers */}
-          <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-1 sm:space-y-1.5 group hover:shadow-md transition-all">
-            <div className="flex items-center justify-between text-slate-500">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Offers
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-purple p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Award size={14} className="lucide-3d sm:w-4 sm:h-4" />
-              </div>
-            </div>
-            <div className="text-xl sm:text-3xl font-black text-purple-600">
-              {totalOffers}
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 truncate">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0"></span>
-              <span className="truncate">Milestones</span>
-            </p>
-          </div>
-        </div>
+        <DashboardStats
+          resumesCount={resumes.length}
+          totalTracked={totalTracked}
+          activeInterviews={activeInterviews}
+          totalOffers={totalOffers}
+        />
 
         {/* 5 CORE WORKFLOW HERO CARDS */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 text-left">
-          {/* CREATE RESUME */}
-          <div
-            onClick={() => setShowCreateResume(true)}
-            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
-          >
-            <div className="icon-3d-pod icon-3d-pod-emerald w-12 h-12 rounded-2xl flex items-center justify-center">
-              <Plus size={24} className="lucide-3d" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 mb-2 border border-emerald-200/70">
-                Live Editor
-              </span>
-              <h3 className="text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
-                Create Resume
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium">
-                Step-by-step form builder with AI bullet enhancer and real-time live preview.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
-              <span>Start Building</span>
-              <ArrowRight size={14} />
-            </div>
-          </div>
-
-          {/* IMPORT PDF RESUME */}
-          <div
-            onClick={() => setShowUploadResume(true)}
-            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
-          >
-            <div className="icon-3d-pod icon-3d-pod-dark w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-emerald-400">
-              <UploadCloud size={20} className="lucide-3d sm:w-6 sm:h-6" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 mb-1.5 sm:mb-2 border border-slate-200 dark:border-slate-700">
-                AI PDF Parser
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                Import PDF / Doc
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
-                Upload your existing PDF and AI will auto-extract skills, work history, and sections.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-200 font-bold text-xs group-hover:translate-x-1 transition-transform">
-              <span>Upload Document</span>
-              <ArrowRight size={13} />
-            </div>
-          </div>
-
-          {/* ATS SCORE CHECKER */}
-          <div
-            onClick={() => navigate("/app/ats-checker")}
-            className="group relative bg-slate-950 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-800 hover:border-emerald-500/60 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
-          >
-            <div className="icon-3d-pod icon-3d-pod-emerald w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
-              <ShieldCheck size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-1.5 sm:mb-2">
-                AI Match 0-100
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-white group-hover:text-emerald-300 transition-colors">
-                ATS Checker
-              </h3>
-              <p className="text-slate-300 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
-                Scan your resume against any job description to discover keyword gaps & optimize score.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-emerald-300 font-bold text-xs group-hover:translate-x-1 transition-transform">
-              <span>Run ATS Benchmark</span>
-              <ArrowRight size={13} />
-            </div>
-          </div>
-
-          {/* JOB APPLICATION TRACKER */}
-          <div
-            onClick={() => navigate("/app/applications")}
-            className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
-          >
-            <div className="icon-3d-pod icon-3d-pod-amber w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center">
-              <Briefcase size={20} className="lucide-3d text-white sm:w-6 sm:h-6" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 mb-1.5 sm:mb-2 border border-amber-200/70 dark:border-amber-800/60">
-                Pipeline CRM
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-slate-100 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
-                Job Tracker
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
-                Track interview rounds, follow-up dates, tailored resumes, and salary negotiations.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
-              <span>Open Pipeline</span>
-              <ArrowRight size={13} />
-            </div>
-          </div>
-
-          {/* SMART FILE & MEDIA STUDIO */}
-          <div
-            onClick={() => navigate("/file-studio")}
-            className="group relative bg-white dark:bg-[#0c1424] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden col-span-2 sm:col-span-1"
-          >
-            <div className="icon-3d-pod icon-3d-pod-purple w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center text-indigo-400">
-              <Sparkles size={20} className="lucide-3d sm:w-6 sm:h-6" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 mb-1.5 sm:mb-2 border border-indigo-200/70 dark:border-indigo-800/60">
-                All-in-One Studio
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-slate-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                File & Media Studio
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed line-clamp-2 font-medium hidden sm:block">
-                Resize storage (KB/MB), convert (PDF ↔ Word, PNG ↔ JPG), crop, edit & remove photo background.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-xs group-hover:translate-x-1 transition-transform">
-              <span>Open Studio</span>
-              <ArrowRight size={13} />
-            </div>
-          </div>
-        </div>
+        <DashboardWorkflowCards
+          onCreateResume={() => setShowCreateResume(true)}
+          onUploadResume={() => setShowUploadResume(true)}
+          onNavigate={navigate}
+        />
 
         {/* RECENT RESUMES SECTION */}
-        <div className="space-y-4 text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <FileText size={18} className="text-slate-900" />
-              <h2 className="text-xl font-black text-slate-950 dark:text-white tracking-tight">
-                Recent Resumes
-              </h2>
-              <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent dark:border-slate-700">
-                {resumes.length}
-              </span>
-            </div>
-
-            <button
-              onClick={() => navigate("/app/my-resumes")}
-              className="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1 hover:underline cursor-pointer"
-            >
-              <span>View All Resumes</span>
-              <ChevronRight size={14} />
-            </button>
-          </div>
-
-          {isFetchingResumes ? (
-            <div className="p-12 text-center bg-white dark:bg-[#0c1424] rounded-3xl border border-slate-200 dark:border-slate-800 text-slate-400">
-              <RefreshCw size={24} className="animate-spin mx-auto text-emerald-600 mb-2" />
-              <p className="text-xs font-bold">Loading your resume drafts...</p>
-            </div>
-          ) : resumes.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {resumes.slice(0, 3).map((r) => (
-                <div
-                  key={r._id}
-                  onClick={() => navigate(`/app/builder/${r._id}`)}
-                  className="bg-white dark:bg-[#0c1424] rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/40 transition-all cursor-pointer space-y-3 group text-left"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <h4 className="font-black text-sm text-slate-950 dark:text-white truncate group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
-                        {r.title || "Untitled Resume"}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold truncate mt-0.5">
-                        {r.personal_info?.profession || "Profession not set"}
-                      </p>
-                    </div>
-
-                    <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-black shrink-0">
-                      ATS Ready
-                    </span>
-                  </div>
-
-                  <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} />
-                      <span>{new Date(r.updatedAt || Date.now()).toLocaleDateString()}</span>
-                    </span>
-
-                    <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/app/ats-checker?resumeId=${r._id}`);
-                        }}
-                        className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 text-slate-700 dark:text-slate-300 text-[10px] font-bold transition-colors border border-transparent dark:border-slate-700"
-                        title="Scan with ATS"
-                      >
-                        ATS Scan
-                      </button>
-                      <button
-                        onClick={(e) => handleDuplicateResume(r._id, e)}
-                        className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
-                        title="Duplicate"
-                      >
-                        <Copy size={12} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-8 sm:p-10 text-center bg-white rounded-3xl border border-slate-200/90 shadow-2xs space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-xl">
-                📄
-              </div>
-              <h3 className="text-sm font-black text-slate-900">No resumes found in your vault</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Create a tailored resume or import your existing PDF to start customizing.
-              </p>
-              <button
-                onClick={() => setShowCreateResume(true)}
-                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-950 text-white font-bold text-xs hover:bg-slate-900 transition-all cursor-pointer"
-              >
-                <Plus size={14} className="text-emerald-400" />
-                <span>Create First Resume</span>
-              </button>
-            </div>
-          )}
-        </div>
+        <DashboardRecentResumes
+          resumes={resumes}
+          isFetching={isFetchingResumes}
+          onNavigate={navigate}
+          onDuplicate={handleDuplicateResume}
+          onCreateResume={() => setShowCreateResume(true)}
+        />
 
         {/* AI CAREER STUDIO POWER BANNER */}
-        <div className="rounded-3xl bg-slate-950 p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden text-left">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 grid md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 shrink-0">
-                <Sparkles size={18} />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm text-white">AI Content Enhancement</h3>
-                <p className="text-slate-400 text-xs mt-1 leading-relaxed font-medium">
-                  Use built-in AI buttons to rewrite bullet points with strong action verbs and measurable achievements.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 shrink-0">
-                <ShieldCheck size={18} />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm text-white">ATS-Optimized Templates</h3>
-                <p className="text-slate-400 text-xs mt-1 leading-relaxed font-medium">
-                  6 professional layouts compliant with major ATS parsing standards (Greenhouse, Lever, Workday).
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
-                <Zap size={18} />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm text-white">Instant Multi-Format Export</h3>
-                <p className="text-slate-400 text-xs mt-1 leading-relaxed font-medium">
-                  Export vector PDF or Word (.docx) documents with perfect pagination and layout fidelity.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardFeatureBanner />
 
         {/* CREATE RESUME MODAL */}
         <CreateResumeModal

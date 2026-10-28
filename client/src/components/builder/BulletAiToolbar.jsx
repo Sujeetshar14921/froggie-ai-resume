@@ -93,7 +93,7 @@ const BulletAiToolbar = ({
         modeTitle: mode.title,
         modeIcon: mode.icon,
       });
-    } catch (err) {
+    } catch {
       toast.error("Could not optimize bullet. Please try again.");
     } finally {
       setLoadingMode(null);

@@ -39,11 +39,13 @@ const Navbar = () => {
 
   const isTalentPage = location.pathname.startsWith("/talent");
   const isFileStudioPage = location.pathname.startsWith("/file-studio");
+  const isAtsCheckerPage = location.pathname.startsWith("/ats-checker");
   const isLandingOrFaq =
     (location.pathname === "/" ||
       location.pathname === "/faq" ||
       location.pathname === "/donate" ||
-      isFileStudioPage) &&
+      isFileStudioPage ||
+      isAtsCheckerPage) &&
     !isTalentPage;
 
   // React to theme changes across application
@@ -127,6 +129,7 @@ const Navbar = () => {
   };
 
   const navLinks = [
+    { name: "ATS Checker", href: "/ats-checker", isRoute: true },
     { name: "Find Talent", href: "/talent", isRoute: true },
     { name: "File Studio", href: "/file-studio", isRoute: true },
     { name: "Features", href: "/#features", isRoute: false },
@@ -163,10 +166,13 @@ const Navbar = () => {
     },
     {
       name: "ATS Resume Checker",
-      href: "/app/ats-checker",
+      href: "/ats-checker",
       icon: ShieldCheck,
-      badge: "AI",
-      isActive: location.pathname.startsWith("/app/ats-checker"),
+      badge: "FREE",
+      badgeColor: "emerald",
+      isActive:
+        location.pathname.startsWith("/ats-checker") ||
+        location.pathname.startsWith("/app/ats-checker"),
     },
     {
       name: "File & Media Studio",

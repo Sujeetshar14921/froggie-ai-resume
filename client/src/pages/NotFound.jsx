@@ -111,7 +111,7 @@ const NotFound = () => {
             <span>Talent</span>
           </Link>
           <span className="text-slate-300 dark:text-slate-700">•</span>
-          <Link to="/app/ats-checker" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1">
+          <Link to="/ats-checker" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center gap-1">
             <Search className="w-3 h-3" />
             <span>ATS Checker</span>
           </Link>

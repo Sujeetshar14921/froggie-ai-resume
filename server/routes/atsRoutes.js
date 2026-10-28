@@ -1,5 +1,5 @@
 import express from "express";
-import protect from "../middlewares/authMiddleware.js";
+import protect, { optionalProtect } from "../middlewares/authMiddleware.js";
 import upload from "../configs/multer.js";
 import {
   analyzeResume,
@@ -10,8 +10,8 @@ import {
 
 const atsRouter = express.Router();
 
-// Analyze resume (existing by resumeId OR uploaded PDF file)
-atsRouter.post("/analyze", protect, upload.single("resume"), analyzeResume);
+// Analyze resume (Public / Guest accessible OR authenticated with saved resume)
+atsRouter.post("/analyze", optionalProtect, upload.single("resume"), analyzeResume);
 
 // Fetch scan history
 atsRouter.get("/history", protect, getAtsHistory);

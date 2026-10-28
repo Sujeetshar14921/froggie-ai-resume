@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Sparkles,
@@ -10,7 +10,11 @@ import {
   Loader2,
   Target,
   ShieldCheck,
+  Lock,
+  Copy,
+  Check,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import { analyzeJdGap } from "../../utils/jdAnalyzer";
 
 const AtsOptimizeSection = ({
@@ -20,20 +24,24 @@ const AtsOptimizeSection = ({
   jobDescription = "",
   targetRole = "",
   onApplyOptimizations,
+  onPromptLogin,
+  isGuest = false,
   isApplying = false,
   isApplied = false,
 }) => {
-  // Run JD gap analysis automatically
+  const [copiedSummary, setCopiedSummary] = useState(false);
+
+  // Run JD gap analysis automatically if resumeData is present
   const gapAnalysis = useMemo(() => {
     if (!resumeData || !jobDescription) return null;
     return analyzeJdGap(resumeData, jobDescription, targetRole);
   }, [resumeData, jobDescription, targetRole]);
 
-  if (!gapAnalysis && !isApplied) return null;
+  if (!report && !isApplied) return null;
 
   const currentScore = report?.overallScore || 65;
   const projectedScore = Math.min(
-    Math.max(currentScore + 22, gapAnalysis?.potentialScore || 94),
+    Math.max(currentScore + 20, gapAnalysis?.potentialScore || 94),
     98
   );
   const scoreBoost = projectedScore - currentScore;
@@ -96,13 +104,29 @@ const AtsOptimizeSection = ({
     ? report.skills.missing
     : (gapAnalysis?.skillsToAdd || []);
 
+  const candidateTitle = targetRole || report?.jobTitle || "Professional";
   const effectiveSummary = gapAnalysis?.tailoredSummary || (
     resumeData?.professional_summary
-      ? `${resumeData.professional_summary} Specialized in ${targetRole || report?.jobTitle || "the target role"} with core expertise in ${effectiveSkillsToAdd.slice(0, 5).join(", ")}.`
-      : `Results-driven ${targetRole || report?.jobTitle || "Professional"} with proven expertise in ${effectiveSkillsToAdd.slice(0, 5).join(", ")}. Adept at scalable system design, cross-functional collaboration, and delivering measurable impact.`
+      ? `${resumeData.professional_summary} Specialized as ${candidateTitle} with core expertise in ${effectiveSkillsToAdd.slice(0, 5).join(", ")}.`
+      : `Results-driven ${candidateTitle} with proven expertise in ${effectiveSkillsToAdd.slice(0, 5).join(", ") || "modern industry practices"}. Adept at cross-functional agile collaboration, scalable system delivery, and driving measurable impact.`
   );
 
+  const handleCopySummary = async () => {
+    try {
+      await navigator.clipboard.writeText(effectiveSummary);
+      setCopiedSummary(true);
+      toast.success("Tailored summary copied to clipboard!");
+      setTimeout(() => setCopiedSummary(false), 2500);
+    } catch {
+      toast.error("Failed to copy summary");
+    }
+  };
+
   const handleApply = () => {
+    if (isGuest && onPromptLogin) {
+      onPromptLogin();
+      return;
+    }
     if (onApplyOptimizations) {
       onApplyOptimizations({
         tailoredSummary: effectiveSummary,
@@ -129,6 +153,11 @@ const AtsOptimizeSection = ({
             {targetRole && (
               <span className="text-xs text-slate-400 font-medium truncate max-w-xs">
                 Target: <strong className="text-white">{targetRole}</strong>
+              </span>
+            )}
+            {isGuest && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                Login to Apply 1-Click
               </span>
             )}
           </div>
@@ -165,14 +194,36 @@ const AtsOptimizeSection = ({
       <div className="grid md:grid-cols-2 gap-4 relative z-10 text-left">
         
         {/* 1. TAILORED SUMMARY PREVIEW */}
-        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2">
-          <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
-            <FileText size={14} />
-            <span>Targeted Summary to Apply</span>
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2 flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                <FileText size={14} />
+                <span>Targeted Summary to Apply</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopySummary}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 px-2 py-1 rounded-lg transition-colors cursor-pointer"
+                title="Copy Summary"
+              >
+                {copiedSummary ? (
+                  <>
+                    <Check size={12} className="text-emerald-400" />
+                    <span className="text-emerald-400">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy size={12} />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed italic bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 max-h-28 overflow-y-auto no-scrollbar">
+              "{effectiveSummary}"
+            </p>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed italic bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 max-h-28 overflow-y-auto no-scrollbar">
-            "{effectiveSummary}"
-          </p>
         </div>
 
         {/* 2. MISSING KEYWORDS TO INJECT */}
@@ -208,28 +259,43 @@ const AtsOptimizeSection = ({
         <div className="flex items-center gap-2 text-xs text-slate-400 text-left">
           <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
           <span>
-            Safely updates your resume in database & re-runs ATS benchmark automatically.
+            {isGuest
+              ? "Create a free account or sign in to save your resume & apply 1-click optimizations."
+              : "Safely updates your resume in database & re-runs ATS benchmark automatically."}
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleApply}
-          disabled={isApplying}
-          className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
-        >
-          {isApplying ? (
-            <>
-              <Loader2 size={16} className="animate-spin" />
-              <span>Applying All Optimizations...</span>
-            </>
-          ) : (
-            <>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {isGuest ? (
+            <button
+              type="button"
+              onClick={handleApply}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95 shrink-0"
+            >
               <Sparkles size={16} />
-              <span>Apply All Optimizations to Resume</span>
-            </>
+              <span>Sign In to Apply AI Optimizations (Free)</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleApply}
+              disabled={isApplying}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
+            >
+              {isApplying ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Applying All Optimizations...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} />
+                  <span>Apply All Optimizations to Resume</span>
+                </>
+              )}
+            </button>
           )}
-        </button>
+        </div>
       </div>
 
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   Sparkles,
@@ -7,11 +7,17 @@ import {
   RotateCcw,
   FileCheck,
   ShieldCheck,
-  Share2,
-  Download,
   Target,
   ArrowRight,
+  Lock,
+  X,
+  LogIn,
+  UserPlus,
+  CheckCircle2,
 } from "lucide-react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/home/Footer";
+import FrogFace from "../components/FrogLogo";
 import {
   AtsScoreGauge,
   AtsScoreBreakdown,
@@ -32,21 +38,46 @@ import {
   sendMilestoneNotification,
   NOTIFICATION_CATEGORIES,
 } from "../utils/browserNotification";
+import TelemetryCard from "../components/common/TelemetryCard";
 
 const AtsChecker = () => {
   useSEO({
-    title: "AI ATS Resume Checker & Compatibility Score | froggie AI",
-    description: "Scan your resume against any job description with froggie AI. Get a real-time ATS compatibility score, keyword density analysis, and actionable optimization suggestions.",
-    keywords: "ATS score checker, resume ATS scanner, resume keyword match, free ATS score check, check resume against job description, ATS friendly score, ATS resume test",
-    canonical: "https://froggie.site/app/ats-checker",
+    title: "Free AI ATS Resume Checker & Compatibility Score | froggie AI",
+    description: "Scan your resume against any job description for free with froggie AI. Get instant ATS compatibility score, semantic keyword density audit, formatting analysis, and AI suggestions.",
+    keywords: "ATS score checker, free ATS resume score, ATS resume scanner, check resume against job description, ATS friendly score, ATS resume test, froggie ATS, resume job match",
+    canonical: "https://froggie.site/ats-checker",
     ogImage: "https://froggie.site/froggie_banner.jpg",
+    schema: {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "froggie AI ATS Resume Score Checker",
+      "url": "https://froggie.site/ats-checker",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "description": "Free AI ATS resume scanner & job match benchmark tool. Real-time ATS compatibility scoring, keyword gap analysis, and tailored optimization recommendations.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+      },
+      "featureList": [
+        "Free Real-time ATS Compatibility Scoring (0-100%)",
+        "Job Description Semantic Gap Analysis",
+        "Hard & Soft Keyword Density Audit",
+        "Formatting & Parser Health Check",
+        "1-Click JD Tailored Resume Optimization"
+      ],
+    },
   });
 
-  const { token } = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth || {});
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialResumeId = searchParams.get("resumeId") || "";
 
   const [userResumes, setUserResumes] = useState([]);
+  const [inputTab, setInputTab] = useState(initialResumeId ? "saved" : "upload");
   const [selectedResumeId, setSelectedResumeId] = useState(initialResumeId);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -63,7 +94,9 @@ const AtsChecker = () => {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
-  // Load detailed resume data for the selected resume
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  // Load detailed resume data for the selected resume (authenticated only)
   useEffect(() => {
     if (!selectedResumeId || !token) {
       setSelectedResumeData(null);
@@ -80,8 +113,50 @@ const AtsChecker = () => {
     loadResumeDetails();
   }, [selectedResumeId, token]);
 
+  // Load user resumes on mount (authenticated only)
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchResumes = async () => {
+      if (!token) {
+        setInputTab("upload");
+        return;
+      }
+      try {
+        const data = await resumeApi.getUserResumes(token);
+        if (!isMounted) return;
+
+        const resumes = data.resumes || [];
+        setUserResumes(resumes);
+
+        if (initialResumeId) {
+          setSelectedResumeId(initialResumeId);
+          setInputTab("saved");
+        } else if (resumes.length > 0) {
+          setSelectedResumeId((prev) => prev || resumes[0]._id);
+          setInputTab((prev) => prev || "saved");
+        } else {
+          setInputTab("upload");
+        }
+      } catch (err) {
+        console.error("Failed to load user resumes:", err);
+      }
+    };
+
+    fetchResumes();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [token, initialResumeId]);
+
   // Apply All Optimizations directly to selected resume and re-run ATS benchmark
   const handleApplyOptimizations = async ({ tailoredSummary, skillsToAdd, targetRole }) => {
+    if (!token || !user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     if (!selectedResumeId || !selectedResumeData) {
       toast.error("Please select a valid resume to apply optimizations.");
       return;
@@ -128,7 +203,7 @@ const AtsChecker = () => {
           title: `ATS Optimized: ${upgradedScore}% 🚀`,
           message: `Your resume was upgraded with keywords and tailored content!`,
           category: NOTIFICATION_CATEGORIES.ATS_AI,
-          actionLink: `/app/ats-checker?resumeId=${selectedResumeId || ""}`,
+          actionLink: `/ats-checker?resumeId=${selectedResumeId || ""}`,
           actionLabel: "View Report",
         });
       }
@@ -140,36 +215,12 @@ const AtsChecker = () => {
     }
   };
 
-  // Load user resumes on mount
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchResumes = async () => {
-      if (!token) return;
-      try {
-        const data = await resumeApi.getUserResumes(token);
-        if (!isMounted) return;
-
-        setUserResumes(data.resumes || []);
-
-        if (!initialResumeId && data.resumes && data.resumes.length > 0) {
-          setSelectedResumeId(data.resumes[0]._id);
-        }
-      } catch (err) {
-        console.error("Failed to load user resumes:", err);
-      }
-    };
-
-    fetchResumes();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [token, initialResumeId]);
-
-  // Load history
+  // Load history (authenticated only)
   const loadHistory = async () => {
-    if (!token) return;
+    if (!token) {
+      setShowAuthModal(true);
+      return;
+    }
     try {
       setIsHistoryLoading(true);
       const data = await atsApi.getHistory(token);
@@ -181,41 +232,44 @@ const AtsChecker = () => {
     }
   };
 
-  // Run ATS Analysis
+  // Run ATS Analysis (Publicly accessible to everyone - guests and logged-in users)
   const handleAnalyze = async () => {
-    if (!token) {
-      toast.error("Please log in to use the ATS Checker");
-      return;
-    }
-
-    if (!selectedResumeId && !uploadedFile) {
-      toast.error("Please select or upload a resume to analyze");
-      return;
-    }
-
     if (!jobDescription || jobDescription.trim().length < 30) {
       toast.error("Please provide at least 30 characters of job description");
       return;
     }
 
+    let payload;
+    if (inputTab === "upload") {
+      if (!uploadedFile) {
+        toast.error("Please upload a PDF, Word DOC, or TXT resume to analyze");
+        return;
+      }
+      payload = {
+        file: uploadedFile,
+        jobDescription: jobDescription.trim(),
+        customJobTitle: customJobTitle.trim() || undefined,
+      };
+    } else {
+      if (!token) {
+        toast.error("Please log in to use saved resumes, or upload a resume file directly");
+        setInputTab("upload");
+        return;
+      }
+      if (!selectedResumeId) {
+        toast.error("Please select a saved resume to analyze");
+        return;
+      }
+      payload = {
+        resumeId: selectedResumeId,
+        jobDescription: jobDescription.trim(),
+        customJobTitle: customJobTitle.trim() || undefined,
+      };
+    }
+
     try {
       setIsLoading(true);
       setIsOptimizedApplied(false);
-
-      let payload;
-      if (uploadedFile) {
-        payload = {
-          file: uploadedFile,
-          jobDescription: jobDescription.trim(),
-          customJobTitle: customJobTitle.trim() || undefined,
-        };
-      } else {
-        payload = {
-          resumeId: selectedResumeId,
-          jobDescription: jobDescription.trim(),
-          customJobTitle: customJobTitle.trim() || undefined,
-        };
-      }
 
       const res = await atsApi.analyzeResume(payload, token);
       setReport(res.report);
@@ -225,16 +279,16 @@ const AtsChecker = () => {
       if (score >= 70) {
         sendMilestoneNotification({
           title: `ATS Score: ${score}% Match! 🎯`,
-          message: `Your resume scored ${score}% compatibility against ${res.report?.targetJobTitle || "job description"}.`,
+          message: `Your resume scored ${score}% compatibility against ${res.report?.jobTitle || "job description"}.`,
           category: NOTIFICATION_CATEGORIES.ATS_AI,
-          actionLink: `/app/ats-checker?resumeId=${selectedResumeId || ""}`,
+          actionLink: `/ats-checker?resumeId=${selectedResumeId || ""}`,
           actionLabel: "View Report",
         });
       }
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      console.error("ATS Analysis error:", err);
+      console.error("ATS Analysis error details:", err?.response?.data || err);
       toast.error(err?.response?.data?.message || err.message || "Analysis failed");
     } finally {
       setIsLoading(false);
@@ -243,6 +297,7 @@ const AtsChecker = () => {
 
   // Open past report from history
   const handleSelectHistoryReport = async (reportId) => {
+    if (!token) return;
     try {
       setIsLoading(true);
       const data = await atsApi.getReportById(reportId, token);
@@ -258,6 +313,7 @@ const AtsChecker = () => {
 
   // Delete past report
   const handleDeleteHistoryReport = async (reportId) => {
+    if (!token) return;
     try {
       await atsApi.deleteReport(reportId, token);
       setHistory((prev) => prev.filter((item) => item._id !== reportId));
@@ -268,291 +324,328 @@ const AtsChecker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/70 pb-20">
-      
-      {/* TOP HERO / HEADER BAR */}
-      <div className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
-        <div className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 h-14 sm:h-20 flex items-center justify-between">
-          
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-sm sm:text-xl font-black text-slate-950 tracking-tight flex items-center gap-1.5 sm:gap-2">
-                <ShieldCheck className="size-4.5 sm:size-6 text-emerald-600" />
-                <span>froggie ATS Resume Checker</span>
-              </h1>
-              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
-                AI semantic keyword, competency, and formatting compatibility auditor
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors duration-300 pb-16 lg:pb-0 flex flex-col justify-between">
+      <div>
+        <Navbar />
 
-          {/* RIGHT ACTION BUTTONS */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                setIsHistoryOpen(true);
-                loadHistory();
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98"
-            >
-              <History size={13} className="text-emerald-600" />
-              <span>History</span>
-            </button>
-
-            {report && (
-              <button
-                onClick={() => {
-                  setReport(null);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98"
-              >
-                <RotateCcw size={13} />
-                <span>Re-Analyze</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* MAIN CONTAINER */}
-      <main className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-8 space-y-4 sm:space-y-6">
-        
-        {/* TOP COMMAND HERO CARD */}
-        <div className="relative overflow-hidden glass-card-elevated p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm group text-left">
-          {/* Half-circle colorful environment auras */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-500/15 via-teal-400/10 to-transparent rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-700 blur-xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 via-indigo-400/5 to-transparent rounded-tr-full pointer-events-none blur-xl" />
-
-          <div className="relative z-10 max-w-4xl space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-              <Sparkles size={12} className="text-emerald-600 animate-pulse" />
-              <span>Live ATS Compatibility Auditor</span>
-            </div>
-            <h2 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-950 tracking-tight">
-              Benchmark Your Resume Against <span className="text-gradient-emerald">Any Job Opening</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed max-w-2xl">
-              Discover exact keyword gaps, missing technical skills, recruiter score predictions, and 1-click ATS formatting fixes before applying to top companies.
-            </p>
-          </div>
-        </div>
-
-        {/* 4 MINI TELEMETRY STAT CARDS WITH COLORFUL HALF CIRCLES */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-left">
-          {/* Card 1: Parser Accuracy */}
-          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-500/15 via-emerald-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Parser Standard
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
-                <ShieldCheck size={15} className="lucide-3d" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-slate-950">
-                99.8%
-              </span>
-              <span className="text-[10px] font-bold text-slate-400">read rate</span>
-            </div>
-            <p className="text-[10px] text-emerald-700 font-bold mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Standard ATS compliant
-            </p>
-          </div>
-
-          {/* Card 2: Semantic Match */}
-          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-blue-500/15 via-blue-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Keyword Matching
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-blue p-1.5 rounded-xl">
-                <Target size={15} className="lucide-3d" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-blue-600">
-                Real-time
-              </span>
-              <span className="text-[10px] font-bold text-blue-400">JD gap check</span>
-            </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-              Hard & soft skills scan
-            </p>
-          </div>
-
-          {/* Card 3: Formatting Health */}
-          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-purple-500/15 via-purple-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Formatting Audit
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-purple p-1.5 rounded-xl">
-                <FileCheck size={15} className="lucide-3d" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-purple-600">
-                0 Traps
-              </span>
-              <span className="text-[10px] font-bold text-purple-400">safe layout</span>
-            </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
-              No table / header glitches
-            </p>
-          </div>
-
-          {/* Card 4: 1-Click AI Fix */}
-          <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl glass-card-elevated border border-slate-200/90 shadow-2xs hover:shadow-md hover:-translate-y-0.5 transition-all group">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/15 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-            <div className="flex items-center justify-between text-slate-500 mb-2">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                Auto-Optimize
-              </span>
-              <div className="icon-3d-pod icon-3d-pod-amber p-1.5 rounded-xl">
-                <Sparkles size={15} className="lucide-3d" />
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl sm:text-2xl font-black text-amber-600">
-                1-Click
-              </span>
-              <span className="text-[10px] font-bold text-amber-400">JD sync</span>
-            </div>
-            <p className="text-[10px] text-slate-500 font-medium mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-              Direct resume upgrade
-            </p>
-          </div>
-        </div>
-
-        {/* LOADING STATE */}
-        {isLoading && (
-          <div className="py-8">
-            <AtsLoadingState />
-          </div>
-        )}
-
-        {/* INPUT MODE (WHEN NO ACTIVE REPORT OR EDITING) */}
-        {!isLoading && !report && (
-          <div className="space-y-6">
-            <AtsInputSection
-              userResumes={userResumes}
-              selectedResumeId={selectedResumeId}
-              onSelectResumeId={setSelectedResumeId}
-              uploadedFile={uploadedFile}
-              onSetUploadedFile={setUploadedFile}
-              jobDescription={jobDescription}
-              onChangeJobDescription={setJobDescription}
-              customJobTitle={customJobTitle}
-              onChangeCustomJobTitle={setCustomJobTitle}
-              onAnalyze={handleAnalyze}
-              isLoading={isLoading}
-            />
-          </div>
-        )}
-
-        {/* RESULTS DASHBOARD MODE */}
-        {!isLoading && report && (
-          <div className="space-y-8 animate-in fade-in duration-300">
-            
-            {/* AUTOMATED JD TAILORING & 1-CLICK OPTIMIZATION SUITE */}
-            <AtsOptimizeSection
-              report={report}
-              resumeData={selectedResumeData}
-              resumeId={selectedResumeId}
-              jobDescription={jobDescription}
-              targetRole={customJobTitle || report.jobTitle}
-              onApplyOptimizations={handleApplyOptimizations}
-              isApplying={isApplyingOptimizations}
-              isApplied={isOptimizedApplied}
-            />
-
-            {/* 1. OVERALL SCORE GAUGE CARD */}
-            <AtsScoreGauge
-              score={report.overallScore}
-              summary={report.summary}
-            />
-
-            {/* 2. CATEGORY BREAKDOWN BARS */}
-            <AtsScoreBreakdown scores={report.scores} />
-
-            {/* 3. SKILLS ALIGNMENT & MATCHED VS MISSING */}
-            <AtsSkillsMatch skills={report.skills} />
-
-            {/* 4. ATS KEYWORD COVERAGE */}
-            <AtsKeywordsCard keywords={report.keywords} />
-
-            {/* 5. EXPERIENCE & ROLE ALIGNMENT */}
-            <AtsExperienceCard
-              experience={report.experience}
-              jobTitle={report.jobTitle}
-              resumeTitle={report.resumeTitle}
-            />
-
-            {/* 6. STRENGTHS, IMPROVEMENTS & ATS FORMATTING ISSUES */}
-            <AtsInsightsCard
-              strengths={report.strengths}
-              improvements={report.improvements}
-              atsIssues={report.atsIssues}
-              recommendations={report.recommendations}
-            />
-
-            {/* BOTTOM RE-ANALYZE BAR */}
-            <div className="p-6 sm:p-8 rounded-3xl glass-dark-elevated text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="relative z-10 space-y-1">
-                <h4 className="text-base sm:text-lg font-black tracking-tight text-white">Want to test adjustments?</h4>
-                <p className="text-xs text-slate-400 max-w-xl">
-                  Update your resume in the editor or modify the target Job Description to benchmark your score again with our AI auditor.
+        {/* SUB HEADER / PAGE TITLE BAR */}
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 shadow-2xs">
+          <div className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 h-14 sm:h-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-sm sm:text-xl font-black text-slate-950 dark:text-white tracking-tight flex items-center gap-1.5 sm:gap-2">
+                    <ShieldCheck className="size-4.5 sm:size-6 text-emerald-600 dark:text-emerald-400" />
+                    <span>froggie ATS Resume Checker</span>
+                  </h1>
+                  <span className="px-2 py-0.5 text-[10px] font-black rounded-lg uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-500/30">
+                    Free Public Audit
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
+                  Semantic keyword gap audit, ATS parser validation, and 1-click tailored suggestions
                 </p>
               </div>
+            </div>
 
-              <div className="flex items-center gap-3 flex-wrap relative z-10 shrink-0">
-                {selectedResumeData && (
-                  <Link
-                    to={`/app/builder/${selectedResumeId}`}
-                    className="shimmer-button px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
-                  >
-                    <span>Open in Resume Builder</span>
-                    <ArrowRight size={14} />
-                  </Link>
-                )}
+            {/* RIGHT ACTIONS */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!token) {
+                    setShowAuthModal(true);
+                  } else {
+                    setIsHistoryOpen(true);
+                    loadHistory();
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98 border border-slate-200/60 dark:border-slate-700"
+              >
+                <History size={13} className="text-emerald-600 dark:text-emerald-400" />
+                <span>History</span>
+              </button>
 
+              {report && (
                 <button
+                  type="button"
                   onClick={() => {
                     setReport(null);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-700 rounded-xl transition-all cursor-pointer hover:scale-102 active:scale-98"
                 >
-                  <RotateCcw size={14} />
-                  <span>Modify & Re-Analyze</span>
+                  <RotateCcw size={13} />
+                  <span>Re-Analyze</span>
                 </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* MAIN AUDIT CONTAINER */}
+        <main className="w-full px-3.5 sm:px-8 lg:px-12 xl:px-16 pt-4 sm:pt-8 space-y-4 sm:space-y-6">
+          {/* 4 MINI TELEMETRY STAT CARDS */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-left">
+            <TelemetryCard
+              label="Parser Standard"
+              value="99.8%"
+              badge="read rate"
+              icon={ShieldCheck}
+              color="emerald"
+              subtext="Standard ATS compliant"
+            />
+
+            <TelemetryCard
+              label="Keyword Matching"
+              value="Real-time"
+              badge="JD gap check"
+              icon={Target}
+              color="blue"
+              subtext="Hard & soft skills scan"
+            />
+
+            <TelemetryCard
+              label="Formatting Audit"
+              value="0 Traps"
+              badge="safe layout"
+              icon={FileCheck}
+              color="purple"
+              subtext="No table / header glitches"
+            />
+
+            <TelemetryCard
+              label="Auto-Optimize"
+              value="1-Click"
+              badge="JD sync"
+              icon={Sparkles}
+              color="amber"
+              subtext="Direct resume upgrade"
+              pulseDot={true}
+            />
+          </div>
+
+          {/* LOADING STATE */}
+          {isLoading && (
+            <div className="py-8">
+              <AtsLoadingState />
+            </div>
+          )}
+
+          {/* INPUT MODE */}
+          {!isLoading && !report && (
+            <div className="space-y-6">
+              <AtsInputSection
+                userResumes={userResumes}
+                selectedResumeId={selectedResumeId}
+                onSelectResumeId={setSelectedResumeId}
+                uploadedFile={uploadedFile}
+                onSetUploadedFile={setUploadedFile}
+                inputTab={inputTab}
+                setInputTab={(tab) => {
+                  if (tab === "saved" && (!token || !user)) {
+                    toast("Sign in to select from your saved resumes", { icon: "🔒" });
+                    setShowAuthModal(true);
+                    return;
+                  }
+                  setInputTab(tab);
+                }}
+                jobDescription={jobDescription}
+                onChangeJobDescription={setJobDescription}
+                customJobTitle={customJobTitle}
+                onChangeCustomJobTitle={setCustomJobTitle}
+                onAnalyze={handleAnalyze}
+                isLoading={isLoading}
+              />
+            </div>
+          )}
+
+          {/* RESULTS DASHBOARD MODE */}
+          {!isLoading && report && (
+            <div className="space-y-8 animate-in fade-in duration-300">
+              {/* 1-CLICK OPTIMIZATION SUITE */}
+              <AtsOptimizeSection
+                report={report}
+                resumeData={selectedResumeData}
+                resumeId={selectedResumeId}
+                jobDescription={jobDescription}
+                targetRole={customJobTitle || report.jobTitle}
+                onApplyOptimizations={handleApplyOptimizations}
+                onPromptLogin={() => setShowAuthModal(true)}
+                isGuest={!token || !user}
+                isApplying={isApplyingOptimizations}
+                isApplied={isOptimizedApplied}
+              />
+
+              {/* OVERALL SCORE GAUGE */}
+              <AtsScoreGauge
+                score={report.overallScore}
+                summary={report.summary}
+              />
+
+              {/* CATEGORY BREAKDOWN BARS */}
+              <AtsScoreBreakdown scores={report.scores} />
+
+              {/* SKILLS ALIGNMENT */}
+              <AtsSkillsMatch skills={report.skills} />
+
+              {/* ATS KEYWORD COVERAGE */}
+              <AtsKeywordsCard keywords={report.keywords} />
+
+              {/* EXPERIENCE & ROLE ALIGNMENT */}
+              <AtsExperienceCard
+                experience={report.experience}
+                jobTitle={report.jobTitle}
+                resumeTitle={report.resumeTitle}
+              />
+
+              {/* STRENGTHS, IMPROVEMENTS & FORMATTING ISSUES */}
+              <AtsInsightsCard
+                strengths={report.strengths}
+                improvements={report.improvements}
+                atsIssues={report.atsIssues}
+                recommendations={report.recommendations}
+              />
+
+              {/* BOTTOM RE-ANALYZE BAR */}
+              <div className="p-6 sm:p-8 rounded-3xl glass-dark-elevated text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+                <div className="relative z-10 space-y-1 text-left">
+                  <h4 className="text-base sm:text-lg font-black tracking-tight text-white">Want to test adjustments?</h4>
+                  <p className="text-xs text-slate-400 max-w-xl">
+                    Update your resume or modify the target Job Description to benchmark your score again with our AI auditor.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3 flex-wrap relative z-10 shrink-0">
+                  {selectedResumeData && (
+                    <Link
+                      to={`/app/builder/${selectedResumeId}`}
+                      className="shimmer-button px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
+                    >
+                      <span>Open in Resume Builder</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  )}
+
+                  {!user && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthModal(true)}
+                      className="shimmer-button px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
+                    >
+                      <Sparkles size={14} />
+                      <span>Create Free Account to Save</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReport(null);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-all cursor-pointer flex items-center gap-2 hover:scale-102 active:scale-98"
+                  >
+                    <RotateCcw size={14} />
+                    <span>Modify & Re-Analyze</span>
+                  </button>
+                </div>
               </div>
             </div>
+          )}
+        </main>
 
+        {/* AUTHENTICATION PROMPT MODAL FOR GUESTS */}
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center">
+              <button
+                type="button"
+                onClick={() => setShowAuthModal(false)}
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="mx-auto size-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                <FrogFace size={30} />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  Unlock 1-Click AI Resume Optimization
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Sign in or create a free froggie account to automatically inject missing keywords, strengthen your summary, and export ATS-tailored resumes with zero paywalls.
+                </p>
+              </div>
+
+              <div className="space-y-2.5 text-left text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                <div className="flex items-center gap-2 font-medium">
+                  <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
+                  <span>Auto-inject missing high-match keywords into your resume</span>
+                </div>
+                <div className="flex items-center gap-2 font-medium">
+                  <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
+                  <span>STAR-format AI professional summary rewrite</span>
+                </div>
+                <div className="flex items-center gap-2 font-medium">
+                  <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
+                  <span>Export high-resolution ATS PDF & Word DOCX anytime</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAuthModal(false);
+                    navigate("/signup?redirect=/ats-checker");
+                  }}
+                  className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-102 active:scale-98"
+                >
+                  <UserPlus size={16} />
+                  <span>Create Free Account</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAuthModal(false);
+                    navigate("/login?redirect=/ats-checker");
+                  }}
+                  className="w-full py-3 px-5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <LogIn size={16} />
+                  <span>Sign In</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAuthModal(false)}
+                className="text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              >
+                Continue Viewing Free Audit
+              </button>
+            </div>
           </div>
         )}
 
-      </main>
+        {/* HISTORY DRAWER (AUTHENTICATED ONLY) */}
+        <AtsHistoryDrawer
+          isOpen={isHistoryOpen}
+          onClose={() => setIsHistoryOpen(false)}
+          history={history}
+          onSelectReport={handleSelectHistoryReport}
+          onDeleteReport={handleDeleteHistoryReport}
+          isLoading={isHistoryLoading}
+        />
+      </div>
 
-      {/* HISTORY DRAWER */}
-      <AtsHistoryDrawer
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        history={history}
-        onSelectReport={handleSelectHistoryReport}
-        onDeleteReport={handleDeleteHistoryReport}
-        isLoading={isHistoryLoading}
-      />
+      <Footer />
     </div>
   );
 };

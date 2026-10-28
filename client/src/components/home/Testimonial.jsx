@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { testimonialApi } from "../../api/testimonialApi";
 import FeedbackModal from "./FeedbackModal";
-import FrogFace from "../FrogLogo";
 import { initTestimonialsMarquee } from "../../animations";
 
 const AVATAR_GRADIENTS = [
@@ -297,7 +296,6 @@ const Testimonial = () => {
         {/* SECTION HEADER */}
         <div className="section-header text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-black uppercase tracking-wider mb-4 shadow-2xs backdrop-blur-sm">
-            <FrogFace size={14} />
             Community & User Voice
           </span>
 

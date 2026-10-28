@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../../configs/api";
 import toast from "react-hot-toast";
-import FrogFace, { BrandIcon } from "../FrogLogo";
+import { BrandIcon } from "../FrogLogo";
 import { initHeroAnimation } from "../../animations";
 
 const Hero = () => {
@@ -103,9 +103,8 @@ const Hero = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-600" />
           </span>
-          <FrogFace size={14} />
           <span className="tracking-tight text-slate-900 dark:text-slate-100 truncate">
-            froggie AI 3.0 <span className="text-emerald-600 font-black">&middot;</span> Real-Time ATS Scoring
+            froggie AI 3.0 resume builder & file studio
           </span>
         </div>
 

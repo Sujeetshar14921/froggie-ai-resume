@@ -77,13 +77,13 @@ const App = () => {
           <Route path='/donate' element={<DonatePage />} />
           <Route path='/talent' element={<TalentPage />} />
           <Route path='/talent/:resumeId' element={<Preview />} />
-          <Route path='/ats-checker' element={<Navigate to='/app/ats-checker' replace />} />
+          <Route path='/ats-checker' element={<AtsChecker />} />
           <Route path='/file-studio' element={<FileStudioPage />} />
 
           <Route path='app' element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path='my-resumes' element={<MyResumes />} />
-            <Route path='ats-checker' element={<AtsChecker />} />
+            <Route path='ats-checker' element={<Navigate to='/ats-checker' replace />} />
             <Route path='applications' element={<ApplicationTracker />} />
             <Route path='file-studio' element={<Navigate to='/file-studio' replace />} />
             <Route path='settings' element={<SettingsPage />} />

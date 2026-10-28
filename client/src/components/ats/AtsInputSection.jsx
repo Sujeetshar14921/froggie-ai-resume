@@ -19,6 +19,8 @@ const AtsInputSection = ({
   onSelectResumeId,
   uploadedFile,
   onSetUploadedFile,
+  inputTab = "saved",
+  setInputTab,
   jobDescription,
   onChangeJobDescription,
   customJobTitle,
@@ -26,11 +28,12 @@ const AtsInputSection = ({
   onAnalyze,
   isLoading,
 }) => {
-  const [inputTab, setInputTab] = useState(userResumes.length > 0 ? "saved" : "upload");
   const [isDragging, setIsDragging] = useState(false);
 
   const charCount = (jobDescription || "").length;
   const isJdValid = charCount >= 30;
+  const hasResume = inputTab === "upload" ? Boolean(uploadedFile) : Boolean(selectedResumeId);
+  const canAnalyze = isJdValid && hasResume && !isLoading;
 
   const handlePasteJd = async () => {
     try {
@@ -53,8 +56,12 @@ const AtsInputSection = ({
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      if (!file.name.toLowerCase().endsWith(".pdf")) {
-        toast.error("Please drop a valid .pdf resume file");
+      const validExtensions = [".pdf", ".docx", ".doc", ".txt"];
+      const isExtValid = validExtensions.some((ext) =>
+        file.name.toLowerCase().endsWith(ext)
+      );
+      if (!isExtValid) {
+        toast.error("Please drop a valid PDF, Word DOC, or TXT resume file");
       } else {
         onSetUploadedFile(file);
       }
@@ -85,14 +92,14 @@ const AtsInputSection = ({
             <button
               type="button"
               onClick={() => setInputTab("saved")}
-              disabled={userResumes.length === 0}
+              title={userResumes.length === 0 ? "Sign in to access your saved resumes" : "Select from saved resumes"}
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 inputTab === "saved"
                   ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-2xs"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
-              My Resumes ({userResumes.length})
+              My Resumes {userResumes.length > 0 ? `(${userResumes.length})` : ""}
             </button>
             <button
               type="button"
@@ -103,7 +110,7 @@ const AtsInputSection = ({
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
               }`}
             >
-              Upload PDF
+              Upload Resume (PDF/DOCX)
             </button>
           </div>
         </div>
@@ -119,13 +126,12 @@ const AtsInputSection = ({
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {userResumes.map((res) => {
-                  const isSelected = selectedResumeId === res._id && !uploadedFile;
+                  const isSelected = selectedResumeId === res._id;
                   return (
                     <div
                       key={res._id}
                       onClick={() => {
                         onSelectResumeId(res._id);
-                        onSetUploadedFile(null);
                       }}
                       className={`relative overflow-hidden p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-3 group/item ${
                         isSelected
@@ -179,9 +185,9 @@ const AtsInputSection = ({
               onDrop={handleFileDrop}
               className={`border-2 border-dashed rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all flex flex-col items-center justify-center ${
                 isDragging
-                  ? "border-emerald-500 bg-emerald-50"
+                  ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
                   : uploadedFile
-                  ? "border-emerald-400 bg-emerald-50/40"
+                  ? "border-emerald-400 bg-emerald-50/40 dark:bg-emerald-950/20"
                   : "border-slate-200 hover:border-emerald-400 hover:bg-slate-50/50"
               }`}
             >
@@ -194,11 +200,24 @@ const AtsInputSection = ({
               </div>
 
               {uploadedFile ? (
-                <div>
-                  <p className="text-xs font-bold text-slate-900">{uploadedFile.name}</p>
-                  <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
-                    ✓ Resume file loaded ({(uploadedFile.size / 1024).toFixed(1)} KB)
-                  </p>
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="text-center sm:text-left">
+                    <p className="text-xs font-bold text-slate-900 truncate max-w-xs">{uploadedFile.name}</p>
+                    <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
+                      ✓ Resume file loaded ({(uploadedFile.size / 1024).toFixed(1)} KB)
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      onSetUploadedFile(null);
+                    }}
+                    className="px-2.5 py-1 text-[11px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg cursor-pointer"
+                  >
+                    Change File
+                  </button>
                 </div>
               ) : (
                 <div>
@@ -308,11 +327,21 @@ const AtsInputSection = ({
         <button
           type="button"
           onClick={onAnalyze}
-          disabled={isLoading || !isJdValid || (!selectedResumeId && !uploadedFile)}
+          disabled={!canAnalyze}
           className="w-full py-4 bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg hover:scale-[1.005] active:scale-[0.995] transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border border-emerald-500/40"
         >
           <FrogFace size={18} />
-          <span>{isLoading ? "Running froggie ATS Engine..." : "Analyze ATS Match Score"}</span>
+          <span>
+            {isLoading
+              ? "Running froggie ATS Engine..."
+              : !hasResume && inputTab === "upload"
+              ? "Upload a Resume File to Continue"
+              : !hasResume && inputTab === "saved"
+              ? "Select a Saved Resume to Continue"
+              : !isJdValid
+              ? `Paste Job Description (${charCount}/30 chars)`
+              : "Analyze ATS Match Score"}
+          </span>
         </button>
       </div>
     </div>

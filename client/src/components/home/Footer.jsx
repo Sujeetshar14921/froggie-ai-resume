@@ -21,7 +21,6 @@ import {
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import FeedbackModal from "./FeedbackModal";
 import { BrandIcon } from "../FrogLogo";
-import { TEMPLATES } from "../../constants/templates";
 import FroggieBrandSection from "./FroggieBrandSection";
 
 const Footer = () => {
@@ -136,25 +135,25 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* COL 2: STUDIO & AI TOOLS (3 cols) */}
+          {/* COL 2: STUDIO & TOOLS (3 cols) */}
           <div className="lg:col-span-3 space-y-3.5">
             <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles size={14} className="text-emerald-400" />
-              <span>Studio & AI Tools</span>
+              <span>Studio & Tools</span>
             </h3>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li>
-                <button
-                  onClick={() => navigate("/app")}
-                  className="hover:text-emerald-400 transition-colors text-left flex items-center gap-1.5 cursor-pointer group"
+                <Link
+                  to="/app"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
                   <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                   <span>AI Resume Builder</span>
-                </button>
+                </Link>
               </li>
               <li>
                 <Link
-                  to="/app/ats-checker"
+                  to="/ats-checker"
                   className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
                   <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
@@ -164,35 +163,59 @@ const Footer = () => {
               <li>
                 <Link
                   to="/talent"
-                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group text-emerald-300 font-semibold"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
-                  <ChevronRight size={12} className="text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                   <span>Public Talent Directory</span>
-                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    NEW
-                  </span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/file-studio"
-                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group text-indigo-300 font-semibold"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
-                  <ChevronRight size={12} className="text-indigo-400 group-hover:translate-x-0.5 transition-all" />
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                   <span>Smart File & Media Studio</span>
-                  <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    FREE
-                  </span>
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => navigate("/app/applications")}
-                  className="hover:text-emerald-400 transition-colors text-left flex items-center gap-1.5 cursor-pointer group"
+                <Link
+                  to="/app/applications"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
                   <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
                   <span>Application Tracker</span>
-                </button>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* COL 3: RESOURCES & GUIDES (2 cols) */}
+          <div className="lg:col-span-2 space-y-3.5">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+              <Zap size={14} className="text-emerald-400" />
+              <span>Resources</span>
+            </h3>
+            <ul className="space-y-2 text-xs sm:text-sm">
+              <li>
+                <a
+                  href="#templates"
+                  onClick={(e) => handleAnchorNav(e, "templates")}
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
+                >
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                  <span>ATS Resume Templates</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#how-it-works"
+                  onClick={(e) => handleAnchorNav(e, "how-it-works")}
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
+                >
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                  <span>How It Works</span>
+                </a>
               </li>
               <li>
                 <a
@@ -201,41 +224,26 @@ const Footer = () => {
                   className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
                   <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-                  <span>Gemini AI Enhancer</span>
+                  <span>Platform Features</span>
                 </a>
               </li>
-            </ul>
-          </div>
-
-          {/* COL 3: ATS TEMPLATES (2 cols) */}
-          <div className="lg:col-span-2 space-y-3.5">
-            <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
-              <Zap size={14} className="text-emerald-400" />
-              <span>ATS Templates</span>
-            </h3>
-            <ul className="space-y-2 text-xs sm:text-sm">
-              {TEMPLATES.slice(0, 5).map((tpl) => (
-                <li key={tpl.id}>
-                  <a
-                    href="#templates"
-                    onClick={(e) => handleAnchorNav(e, "templates")}
-                    className="hover:text-emerald-400 transition-colors flex items-center justify-between group"
-                  >
-                    <span className="truncate">{tpl.name}</span>
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-900 text-emerald-400 border border-emerald-500/20 shrink-0 ml-1">
-                      {tpl.atsScore}
-                    </span>
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/faq"
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
+                >
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                  <span>FAQ & Help Center</span>
+                </Link>
+              </li>
               <li>
                 <a
-                  href="#templates"
-                  onClick={(e) => handleAnchorNav(e, "templates")}
-                  className="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors inline-flex items-center gap-1 pt-0.5"
+                  href="#testimonials"
+                  onClick={(e) => handleAnchorNav(e, "testimonials")}
+                  className="hover:text-emerald-400 transition-colors flex items-center gap-1.5 group"
                 >
-                  <span>View All Templates</span>
-                  <ChevronRight size={11} />
+                  <ChevronRight size={12} className="text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                  <span>User Reviews</span>
                 </a>
               </li>
             </ul>

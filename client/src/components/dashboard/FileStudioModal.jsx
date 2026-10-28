@@ -967,7 +967,7 @@ const FileStudioModal = ({ isOpen, onClose }) => {
         await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
         toast.success("Copied to clipboard! Ready to paste 📋");
       });
-    } catch (err) {
+    } catch {
       toast.error("Clipboard copy not supported in this browser");
     }
   };

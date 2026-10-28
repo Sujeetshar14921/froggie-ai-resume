@@ -162,7 +162,7 @@ const ApexGridTemplate = ({ data, accentColor = "#0F766E", pageContent = null })
                     {bulletPoints.length > 0 && (
                       <ul className="space-y-1 text-slate-700 text-xs leading-relaxed pl-3.5 list-disc mt-1">
                         {bulletPoints.map((point, bIdx) => (
-                          <li key={bIdx}>{point.replace(/^[•\-\*]\s*/, "")}</li>
+                          <li key={bIdx}>{point.replace(/^[•\-*]\s*/, "")}</li>
                         ))}
                       </ul>
                     )}

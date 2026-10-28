@@ -40,9 +40,11 @@ export const aiApi = {
    */
   uploadResumePdf: async (payload, token) => {
     let requestData = payload;
-    let headers = { Authorization: token };
+    const headers = { Authorization: token };
 
-    if (payload.file instanceof File || payload.file instanceof Blob) {
+    if (payload instanceof FormData) {
+      requestData = payload;
+    } else if (payload?.file) {
       const formData = new FormData();
       formData.append("resume", payload.file);
       if (payload.title) {
@@ -52,7 +54,6 @@ export const aiApi = {
         formData.append("resumeId", payload.resumeId);
       }
       requestData = formData;
-      headers["Content-Type"] = "multipart/form-data";
     }
 
     const { data } = await api.post("/api/ai/upload-resume", requestData, { headers });
@@ -93,7 +94,6 @@ export const aiApi = {
       const formData = new FormData();
       formData.append("image", imageFileOrBase64);
       requestData = formData;
-      headers["Content-Type"] = "multipart/form-data";
     } else {
       requestData = { image: imageFileOrBase64 };
     }

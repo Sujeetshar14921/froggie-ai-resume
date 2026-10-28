@@ -142,7 +142,7 @@ const NovaSidebarTemplate = ({ data, accentColor = "#0284C7", pageContent = null
                     {bulletPoints.length > 0 && (
                       <ul className="mt-1.5 space-y-1 text-slate-700 text-xs leading-relaxed pl-3 list-disc">
                         {bulletPoints.map((point, bIdx) => (
-                          <li key={bIdx}>{point.replace(/^[•\-\*]\s*/, "")}</li>
+                          <li key={bIdx}>{point.replace(/^[•\-*]\s*/, "")}</li>
                         ))}
                       </ul>
                     )}

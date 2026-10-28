@@ -13,11 +13,8 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="language" content="English" />
-    <meta name="rating" content="General" />
-    <meta name="revisit-after" content="1 days" />
     <meta name="theme-color" content="#10b981" />
-    <meta name="application-name" content="froggie AI Resume Studio & Talent Pool" />
+    <meta name="application-name" content="froggie" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="froggie" />
@@ -116,15 +113,64 @@
             "@type": "WebSite",
             "@id": "https://froggie.site/#website",
             "name": "froggie",
+            "alternateName": [
+              "froggie AI",
+              "froggie.site",
+              "froggie Resume Builder",
+              "froggie ATS Checker",
+              "froggie Talent Hub"
+            ],
             "url": "https://froggie.site/",
+            "inLanguage": "en-US",
+            "description": "Free AI Resume Builder, ATS Score Scanner, and Public Candidate Talent Directory.",
             "publisher": {
               "@id": "https://froggie.site/#organization"
             },
             "potentialAction": {
               "@type": "SearchAction",
-              "target": "https://froggie.site/talent?q={search_term_string}",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://froggie.site/talent?q={search_term_string}"
+              },
               "query-input": "required name=search_term_string"
-            }
+            },
+            "hasPart": [
+              {
+                "@type": "WebPage",
+                "@id": "https://froggie.site/ats-checker#webpage",
+                "name": "ATS Score Scanner",
+                "url": "https://froggie.site/ats-checker",
+                "description": "Scan and benchmark your resume compatibility score against any job description in real-time."
+              },
+              {
+                "@type": "WebPage",
+                "@id": "https://froggie.site/talent#webpage",
+                "name": "Public Talent Directory",
+                "url": "https://froggie.site/talent",
+                "description": "Explore verified candidate resumes, developer portfolios, and tech talent directory."
+              },
+              {
+                "@type": "WebPage",
+                "@id": "https://froggie.site/file-studio#webpage",
+                "name": "Smart File & Media Studio",
+                "url": "https://froggie.site/file-studio",
+                "description": "Compress, convert, extract text, and edit PDF & Word DOCX documents online for free."
+              },
+              {
+                "@type": "WebPage",
+                "@id": "https://froggie.site/faq#webpage",
+                "name": "FAQ & Help Center",
+                "url": "https://froggie.site/faq",
+                "description": "Comprehensive answers and guides on Applicant Tracking Systems (ATS) and resume formatting."
+              },
+              {
+                "@type": "WebPage",
+                "@id": "https://froggie.site/donate#webpage",
+                "name": "Support & Donate",
+                "url": "https://froggie.site/donate",
+                "description": "Support froggie AI free open-source career tools for job seekers worldwide."
+              }
+            ]
           },
           {
             "@type": "CollectionPage",
@@ -137,23 +183,53 @@
             }
           },
           {
-            "@type": "SiteNavigationElement",
+            "@type": "ItemList",
             "@id": "https://froggie.site/#navigation",
-            "name": [
-              "Home",
-              "Public Talent Pool",
-              "File & Media Studio",
-              "ATS Resume Checker",
-              "FAQ & Guides",
-              "Support & Donate"
-            ],
-            "url": [
-              "https://froggie.site/",
-              "https://froggie.site/talent",
-              "https://froggie.site/file-studio",
-              "https://froggie.site/app/ats-checker",
-              "https://froggie.site/faq",
-              "https://froggie.site/donate"
+            "name": "froggie Sitelinks Navigation",
+            "numberOfItems": 6,
+            "itemListElement": [
+              {
+                "@type": "SiteNavigationElement",
+                "position": 1,
+                "name": "ATS Score Scanner",
+                "description": "Scan and benchmark your resume compatibility score against any job description in real-time with AI.",
+                "url": "https://froggie.site/ats-checker"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 2,
+                "name": "AI Resume Builder",
+                "description": "Build 100% ATS-compliant, job-winning resumes in minutes with AI suggestions and modern designer templates.",
+                "url": "https://froggie.site/"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 3,
+                "name": "Public Talent Directory",
+                "description": "Explore verified candidate resumes, developer portfolios, and tech talent directory worldwide.",
+                "url": "https://froggie.site/talent"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 4,
+                "name": "Smart File & Media Studio",
+                "description": "Compress, convert, extract text, and edit PDF & Word DOCX documents online for free.",
+                "url": "https://froggie.site/file-studio"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 5,
+                "name": "FAQ & Help Center",
+                "description": "Comprehensive knowledge base on Applicant Tracking Systems, scoring breakdown, and resume optimization.",
+                "url": "https://froggie.site/faq"
+              },
+              {
+                "@type": "SiteNavigationElement",
+                "position": 6,
+                "name": "Support & Donate",
+                "description": "Support froggie AI free open-source career tools for students and job seekers worldwide.",
+                "url": "https://froggie.site/donate"
+              }
             ]
           },
           {
@@ -207,20 +283,32 @@
               {
                 "@type": "ListItem",
                 "position": 2,
-                "name": "Talent Directory",
-                "item": "https://froggie.site/talent"
+                "name": "ATS Score Scanner",
+                "item": "https://froggie.site/ats-checker"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
-                "name": "ATS Checker",
-                "item": "https://froggie.site/app/ats-checker"
+                "name": "Public Talent Pool",
+                "item": "https://froggie.site/talent"
               },
               {
                 "@type": "ListItem",
                 "position": 4,
+                "name": "File Studio",
+                "item": "https://froggie.site/file-studio"
+              },
+              {
+                "@type": "ListItem",
+                "position": 5,
                 "name": "FAQ",
                 "item": "https://froggie.site/faq"
+              },
+              {
+                "@type": "ListItem",
+                "position": 6,
+                "name": "Donate",
+                "item": "https://froggie.site/donate"
               }
             ]
           }
