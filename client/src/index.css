@@ -105,12 +105,12 @@ body,
 
 /* Award-Winning Design Utilities & Visual Depth Tokens */
 .bg-tech-grid {
-  background-image: radial-gradient(rgba(16, 185, 129, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(16, 185, 129, 0.15) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 .bg-dot-pattern {
-  background-image: radial-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(100, 116, 139, 0.22) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -911,6 +911,223 @@ select option[selected] {
 .animate-hero-marquee {
   animation: heroMarquee 32s linear infinite;
   will-change: transform;
+}
+
+/* ==========================================================================
+   FROGGIE PREMIUM LIGHT MODE SYSTEM (HIGH CONTRAST, DEFINED EDGES & READABILITY)
+   Solves washed-out / faint colors: strong typography, crisp borders, and punchy chips
+   ========================================================================== */
+
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Page canvas background - gives cards a visible contrast foundation */
+html:not(.dark) .min-h-screen,
+html:not(.dark) [class*="min-h-screen"] {
+  background-color: #f8fafc;
+}
+
+/* Subtle page sections - use rich slate-100 instead of washed-out white/pale */
+html:not(.dark) .bg-slate-50,
+html:not(.dark) .bg-slate-50\/40,
+html:not(.dark) .bg-slate-50\/50,
+html:not(.dark) .bg-slate-50\/60,
+html:not(.dark) .bg-slate-50\/70,
+html:not(.dark) .bg-slate-50\/80,
+html:not(.dark) .bg-slate-50\/90 {
+  background-color: #f1f5f9 !important;
+}
+
+/* Clean solid white cards with crisp borders and subtle depth */
+html:not(.dark) .glass-card-elevated,
+html:not(.dark) .bento-card:not(.glass-dark-elevated) {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 6px 18px -4px rgba(15, 23, 42, 0.05) !important;
+}
+
+html:not(.dark) .glass-card-elevated:hover,
+html:not(.dark) .bento-card:not(.glass-dark-elevated):hover {
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 12px 28px -6px rgba(16, 185, 129, 0.14) !important;
+}
+
+/* Strengthen borders across light mode so cards, inputs, and dividers never look washed out */
+html:not(.dark) .border-slate-100 {
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .border-slate-200,
+html:not(.dark) .border-slate-200\/40,
+html:not(.dark) .border-slate-200\/50,
+html:not(.dark) .border-slate-200\/60,
+html:not(.dark) .border-slate-200\/70,
+html:not(.dark) .border-slate-200\/80,
+html:not(.dark) .border-slate-200\/90 {
+  border-color: #cbd5e1 !important;
+}
+
+/* Strengthen muted and helper texts for maximum readability and zero eye strain */
+html:not(.dark) .text-slate-400 {
+  color: #475569 !important;
+}
+
+html:not(.dark) .text-slate-500 {
+  color: #334155 !important;
+}
+
+html:not(.dark) .text-slate-600 {
+  color: #1e293b !important;
+}
+
+html:not(.dark) .text-slate-200 {
+  color: #94a3b8 !important;
+}
+
+html:not(.dark) .text-slate-300 {
+  color: #64748b !important;
+}
+
+/* Strengthen Tinted Badges, Chips and Pills in Light Mode */
+html:not(.dark) .bg-emerald-50,
+html:not(.dark) .bg-emerald-50\/70,
+html:not(.dark) .bg-emerald-50\/80,
+html:not(.dark) .bg-emerald-50\/90 {
+  background-color: #d1fae5 !important;
+  border-color: #6ee7b7 !important;
+  color: #065f46 !important;
+}
+
+html:not(.dark) .bg-blue-50,
+html:not(.dark) .bg-blue-50\/70,
+html:not(.dark) .bg-blue-50\/80 {
+  background-color: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1e40af !important;
+}
+
+html:not(.dark) .bg-amber-50,
+html:not(.dark) .bg-amber-50\/70,
+html:not(.dark) .bg-amber-50\/80 {
+  background-color: #fef3c7 !important;
+  border-color: #fcd34d !important;
+  color: #92400e !important;
+}
+
+html:not(.dark) .bg-purple-50,
+html:not(.dark) .bg-purple-50\/70,
+html:not(.dark) .bg-purple-50\/80 {
+  background-color: #f3e8ff !important;
+  border-color: #d8b4fe !important;
+  color: #6b21a8 !important;
+}
+
+html:not(.dark) .bg-teal-50,
+html:not(.dark) .bg-teal-50\/70,
+html:not(.dark) .bg-teal-50\/80 {
+  background-color: #ccfbf1 !important;
+  border-color: #5eead4 !important;
+  color: #115e59 !important;
+}
+
+html:not(.dark) .bg-rose-50,
+html:not(.dark) .bg-rose-50\/70,
+html:not(.dark) .bg-rose-50\/80 {
+  background-color: #ffe4e6 !important;
+  border-color: #fda4af !important;
+  color: #9f1239 !important;
+}
+
+html:not(.dark) .bg-slate-100,
+html:not(.dark) .bg-slate-100\/70,
+html:not(.dark) .bg-slate-100\/80 {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* Modern Icon Pods in Light Mode (Punchy, High Contrast) */
+html:not(.dark) .icon-3d-pod-emerald {
+  background-color: #d1fae5 !important;
+  border: 1px solid #6ee7b7 !important;
+  color: #047857 !important;
+}
+html:not(.dark) .icon-3d-pod-emerald svg,
+html:not(.dark) .icon-3d-pod-emerald .lucide-3d {
+  color: #047857 !important;
+}
+
+html:not(.dark) .icon-3d-pod-teal {
+  background-color: #ccfbf1 !important;
+  border: 1px solid #5eead4 !important;
+  color: #0f766e !important;
+}
+html:not(.dark) .icon-3d-pod-teal svg,
+html:not(.dark) .icon-3d-pod-teal .lucide-3d {
+  color: #0f766e !important;
+}
+
+html:not(.dark) .icon-3d-pod-blue {
+  background-color: #dbeafe !important;
+  border: 1px solid #93c5fd !important;
+  color: #1d4ed8 !important;
+}
+html:not(.dark) .icon-3d-pod-blue svg,
+html:not(.dark) .icon-3d-pod-blue .lucide-3d {
+  color: #1d4ed8 !important;
+}
+
+html:not(.dark) .icon-3d-pod-amber {
+  background-color: #fef3c7 !important;
+  border: 1px solid #fcd34d !important;
+  color: #b45309 !important;
+}
+html:not(.dark) .icon-3d-pod-amber svg,
+html:not(.dark) .icon-3d-pod-amber .lucide-3d {
+  color: #b45309 !important;
+}
+
+html:not(.dark) .icon-3d-pod-purple {
+  background-color: #f3e8ff !important;
+  border: 1px solid #d8b4fe !important;
+  color: #7e22ce !important;
+}
+html:not(.dark) .icon-3d-pod-purple svg,
+html:not(.dark) .icon-3d-pod-purple .lucide-3d {
+  color: #7e22ce !important;
+}
+
+html:not(.dark) .icon-3d-pod-rose {
+  background-color: #ffe4e6 !important;
+  border: 1px solid #fda4af !important;
+  color: #e11d48 !important;
+}
+html:not(.dark) .icon-3d-pod-rose svg,
+html:not(.dark) .icon-3d-pod-rose .lucide-3d {
+  color: #e11d48 !important;
+}
+
+/* Clean Header border in Light Mode */
+html:not(.dark) header {
+  border-bottom-color: #cbd5e1 !important;
+}
+
+/* Form inputs, select and textareas in Light Mode */
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: #64748b !important;
 }
 
 /* ==========================================================================

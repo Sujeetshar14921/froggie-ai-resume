@@ -51,7 +51,6 @@ const HowItWorks = () => {
         {/* SECTION HEADER */}
         <div className="section-header text-center max-w-3xl mx-auto mb-8 sm:mb-16">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-black uppercase tracking-wider mb-3 sm:mb-4 shadow-2xs">
-            <FrogFace size={15} />
             Fast 3-Step Workflow
           </span>
 
@@ -98,7 +97,7 @@ const HowItWorks = () => {
                     <div className="icon-3d-pod icon-3d-pod-dark size-14 sm:size-16 rounded-2xl flex items-center justify-center text-emerald-400">
                       <Icon size={26} className="lucide-3d" />
                     </div>
-                    <span className="text-3xl font-black text-slate-200 font-mono group-hover:text-emerald-300/40 transition-colors">
+                    <span className="text-3xl font-black text-slate-300 dark:text-slate-700 font-mono group-hover:text-emerald-500/50 transition-colors">
                       {step.number}
                     </span>
                   </div>

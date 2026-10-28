@@ -99,7 +99,7 @@ const Features = () => {
                   {pillars[0].tag}
                 </span>
                 <div className="icon-3d-pod icon-3d-pod-emerald size-12 rounded-2xl flex items-center justify-center">
-                  <Layers size={22} className="lucide-3d text-white" />
+                  <Layers size={22} className="lucide-3d" />
                 </div>
               </div>
 

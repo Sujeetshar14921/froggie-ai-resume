@@ -153,10 +153,6 @@ const Dashboard = () => {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
             <div className="space-y-1.5 sm:space-y-2">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-[11px] sm:text-xs font-black shadow-2xs">
-                  <FrogFace size={13} />
-                  <span>froggie AI v3.0 Studio</span>
-                </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] sm:text-xs font-black shadow-2xs">
                   <ShieldCheck size={13} className="text-emerald-600" />
                   <span>ATS Engine Ready</span>
@@ -201,7 +197,7 @@ const Dashboard = () => {
                 Resumes
               </span>
               <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <FileText size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
+                <FileText size={14} className="lucide-3d sm:w-4 sm:h-4" />
               </div>
             </div>
             <div className="text-xl sm:text-3xl font-black text-slate-950">
@@ -220,7 +216,7 @@ const Dashboard = () => {
                 ATS Score
               </span>
               <div className="icon-3d-pod icon-3d-pod-blue p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Target size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
+                <Target size={14} className="lucide-3d sm:w-4 sm:h-4" />
               </div>
             </div>
             <div className="text-xl sm:text-3xl font-black text-blue-600">
@@ -239,7 +235,7 @@ const Dashboard = () => {
                 Tracked Jobs
               </span>
               <div className="icon-3d-pod icon-3d-pod-amber p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Briefcase size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
+                <Briefcase size={14} className="lucide-3d sm:w-4 sm:h-4" />
               </div>
             </div>
             <div className="text-xl sm:text-3xl font-black text-amber-600">
@@ -258,7 +254,7 @@ const Dashboard = () => {
                 Offers
               </span>
               <div className="icon-3d-pod icon-3d-pod-purple p-1.5 sm:p-2 rounded-lg sm:rounded-xl">
-                <Award size={14} className="lucide-3d text-white sm:w-4 sm:h-4" />
+                <Award size={14} className="lucide-3d sm:w-4 sm:h-4" />
               </div>
             </div>
             <div className="text-xl sm:text-3xl font-black text-purple-600">
@@ -279,7 +275,7 @@ const Dashboard = () => {
             className="group relative bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200 cursor-pointer flex flex-col justify-between min-h-[160px] sm:h-72 overflow-hidden"
           >
             <div className="icon-3d-pod icon-3d-pod-emerald w-12 h-12 rounded-2xl flex items-center justify-center">
-              <Plus size={24} className="lucide-3d text-white" />
+              <Plus size={24} className="lucide-3d" />
             </div>
 
             <div>

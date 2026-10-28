@@ -175,10 +175,24 @@ Analyze and return JSON matching this exact structure:
   });
 
   let rawOutput = response.choices[0]?.message?.content?.trim() || "{}";
-  if (rawOutput.startsWith("```")) {
-    rawOutput = rawOutput.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  if (rawOutput.includes("```")) {
+    rawOutput = rawOutput.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
   }
-  const parsedResult = JSON.parse(rawOutput);
+  let parsedResult = {};
+  try {
+    parsedResult = JSON.parse(rawOutput);
+  } catch (err) {
+    const match = rawOutput.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        parsedResult = JSON.parse(match[0]);
+      } catch (e) {
+        console.warn("ATS Engine regex JSON parse error:", e.message);
+      }
+    } else {
+      console.warn("ATS Engine failed to parse JSON output:", err.message);
+    }
+  }
 
   // Deterministic Mathematical Set-Theoretic Scoring Verification
   const matchedKws = Array.isArray(parsedResult.keywords?.matched) ? parsedResult.keywords.matched.length : 0;

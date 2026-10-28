@@ -53,6 +53,12 @@ export const analyzeResume = async (req, res) => {
 
       resumeTitle = resumeDoc.title || "My Resume";
       resumeText = formatResumeTextForAts(resumeDoc);
+
+      if (!resumeText || resumeText.trim().length < 30) {
+        return res.status(400).json({
+          message: "The selected resume does not contain sufficient details to analyze. Please add some experience, skills, or summary first.",
+        });
+      }
     } else if (req.file) {
       // Parse uploaded PDF / Word DOC / DOCX file
       const dataBuffer = fs.readFileSync(req.file.path);
@@ -107,21 +113,21 @@ export const analyzeResume = async (req, res) => {
       userId,
       resumeId: resumeDoc ? resumeDoc._id : null,
       resumeTitle,
-      jobTitle: customJobTitle || parsedResult.jobTitle || "Target Role",
+      jobTitle: customJobTitle || jobTitle || "Target Role",
       jobDescription: trimmedJd,
       overallScore,
       summary: {
         label: matchLabel,
         message: summaryMessage,
       },
-      scores: clampedScores,
-      skills: parsedResult.skills || { matched: [], missing: [], partial: [] },
-      keywords: parsedResult.keywords || { matched: [], missing: [], important: [] },
-      experience: parsedResult.experience || { requiredYears: 0, resumeYears: 0, score: 0 },
-      strengths: parsedResult.strengths || [],
-      improvements: parsedResult.improvements || [],
-      atsIssues: parsedResult.atsIssues || [],
-      recommendations: parsedResult.recommendations || [],
+      scores,
+      skills: skills || { matched: [], missing: [], partial: [] },
+      keywords: keywords || { matched: [], missing: [], important: [] },
+      experience: experience || { requiredYears: 0, resumeYears: 0, score: 0, analysis: "" },
+      strengths: strengths || [],
+      improvements: improvements || [],
+      atsIssues: atsIssues || [],
+      recommendations: recommendations || [],
     };
 
     const createdReport = await AtsReport.create(reportData);
@@ -132,7 +138,8 @@ export const analyzeResume = async (req, res) => {
     });
   } catch (error) {
     console.error("ATS Analysis Error:", error);
-    return res.status(400).json({
+    const statusCode = error.statusCode || error.status || 500;
+    return res.status(statusCode >= 400 && statusCode < 600 ? statusCode : 500).json({
       message: error.message || "Failed to complete ATS resume analysis",
     });
   } finally {

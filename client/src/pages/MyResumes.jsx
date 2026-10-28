@@ -168,22 +168,28 @@ const MyResumes = () => {
               <span>Back to Dashboard</span>
             </button>
 
-            <div className="flex items-center gap-2 flex-wrap pt-0.5 sm:pt-1">
-              <h1 className="text-xl sm:text-3xl font-black text-slate-950 tracking-tight">
-                My Resumes Vault
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200/70">
-                {resumes.length} {resumes.length === 1 ? "Resume" : "Resumes"}
-              </span>
-              {publicCount > 0 && (
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200/70">
-                  {publicCount} Public
-                </span>
-              )}
+            <div className="flex items-center gap-3 pt-0.5 sm:pt-1">
+              
+
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl sm:text-3xl font-black text-slate-950 dark:text-white tracking-tight">
+                    My Resumes Vault
+                  </h1>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60">
+                    {resumes.length} {resumes.length === 1 ? "Resume" : "Resumes"}
+                  </span>
+                  {publicCount > 0 && (
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60">
+                      {publicCount} Public
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl font-medium">
+                  Manage, customize, duplicate, and export your tailored resumes with live ATS compatibility scores.
+                </p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-xl font-medium">
-              Manage, customize, duplicate, and export your tailored resumes with live ATS compatibility scores.
-            </p>
           </div>
 
           {/* ACTION BUTTONS */}
@@ -225,7 +231,7 @@ const MyResumes = () => {
                 Total Resumes
               </span>
               <div className="icon-3d-pod icon-3d-pod-emerald p-1.5 rounded-xl">
-                <FileText size={15} className="lucide-3d text-white" />
+                <FileText size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -248,7 +254,7 @@ const MyResumes = () => {
                 Public Live
               </span>
               <div className="icon-3d-pod icon-3d-pod-blue p-1.5 rounded-xl">
-                <Globe size={15} className="lucide-3d text-white" />
+                <Globe size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -271,7 +277,7 @@ const MyResumes = () => {
                 ATS Format
               </span>
               <div className="icon-3d-pod icon-3d-pod-purple p-1.5 rounded-xl">
-                <ShieldCheck size={15} className="lucide-3d text-white" />
+                <ShieldCheck size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -287,14 +293,14 @@ const MyResumes = () => {
           </div>
 
           {/* Card 4: AI Optimization */}
-          <div className="relative overflow-hidden p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all group">
             <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-500/15 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform duration-500" />
             <div className="flex items-center justify-between text-slate-500 mb-2">
               <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 AI Powered
               </span>
               <div className="icon-3d-pod icon-3d-pod-amber p-1.5 rounded-xl">
-                <Sparkles size={15} className="lucide-3d text-white" />
+                <Sparkles size={15} className="lucide-3d" />
               </div>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -413,8 +419,14 @@ const MyResumes = () => {
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-500/10 via-purple-400/5 to-transparent rounded-tr-full pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center space-y-4">
-              <BrandIcon size="lg" className="shadow-lg shadow-emerald-500/20" />
-              <h3 className="text-lg font-black text-slate-900">
+              <div className="size-16 sm:size-20 p-2.5 rounded-3xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/50 shadow-lg shadow-emerald-500/10 flex items-center justify-center">
+                <img
+                  src="/froggie_logo.png"
+                  alt="froggie logo"
+                  className="size-full object-contain select-none hover:scale-105 transition-transform"
+                />
+              </div>
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
                 {searchQuery ? "No matching resumes found" : "No resumes in your vault yet"}
               </h3>
               <p className="text-slate-500 text-xs sm:text-sm max-w-md mx-auto font-medium">

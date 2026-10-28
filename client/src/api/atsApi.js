@@ -15,7 +15,7 @@ export const atsApi = {
 
     if (payload instanceof FormData) {
       requestData = payload;
-      headers["Content-Type"] = "multipart/form-data";
+      // Do not manually override Content-Type so Axios/browser computes multipart boundary automatically
     } else if (payload.file instanceof File || payload.file instanceof Blob) {
       const formData = new FormData();
       formData.append("resume", payload.file);
@@ -24,7 +24,7 @@ export const atsApi = {
         formData.append("customJobTitle", payload.customJobTitle);
       }
       requestData = formData;
-      headers["Content-Type"] = "multipart/form-data";
+      // Do not manually override Content-Type so Axios/browser computes multipart boundary automatically
     }
 
     const { data } = await api.post("/api/ats/analyze", requestData, { headers });

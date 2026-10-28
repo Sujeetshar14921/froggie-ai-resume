@@ -228,7 +228,7 @@ const FaqPage = () => {
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ATS Pass Rate</span>
                   <div className="icon-3d-pod icon-3d-pod-emerald p-1 rounded-lg">
-                    <ShieldCheck size={14} className="lucide-3d text-white" />
+                    <ShieldCheck size={14} className="lucide-3d" />
                   </div>
                 </div>
                 <span className="text-lg font-black text-slate-950">99%+</span>
@@ -240,7 +240,7 @@ const FaqPage = () => {
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">AI Engine</span>
                   <div className="icon-3d-pod icon-3d-pod-blue p-1 rounded-lg">
-                    <Sparkles size={14} className="lucide-3d text-white" />
+                    <Sparkles size={14} className="lucide-3d" />
                   </div>
                 </div>
                 <span className="text-lg font-black text-blue-600">Gemini 2.5</span>
@@ -252,7 +252,7 @@ const FaqPage = () => {
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Export Type</span>
                   <div className="icon-3d-pod icon-3d-pod-purple p-1 rounded-lg">
-                    <Download size={14} className="lucide-3d text-white" />
+                    <Download size={14} className="lucide-3d" />
                   </div>
                 </div>
                 <span className="text-lg font-black text-purple-600">PDF & DOC</span>
@@ -264,7 +264,7 @@ const FaqPage = () => {
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Cost</span>
                   <div className="icon-3d-pod icon-3d-pod-amber p-1 rounded-lg">
-                    <Zap size={14} className="lucide-3d text-white" />
+                    <Zap size={14} className="lucide-3d" />
                   </div>
                 </div>
                 <span className="text-lg font-black text-amber-600">100% Free</span>
